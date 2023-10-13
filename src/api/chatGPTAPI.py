@@ -8,12 +8,12 @@ def set_api_key(key):
     openai.api_key = key
 
 
-def get_chat_response(question, model="gpt-3.5-turbo"):
-    messages = [{"role": "system", "content": "question"}]
-    chat = openai.ChatCompletion.create(
-        model=model,
-        messages=messages)
-    return chat.choices[0].message.content
+# def get_chat_response(question, model="gpt-3.5-turbo"):
+#     messages = [{"role": "system", "content": "question"}]
+#     chat = openai.ChatCompletion.create(
+#         model=model,
+#         messages=messages)
+#     return chat.choices[0].message.content
 
 
 # messages = [{"role": "system", "content": "You are a intelligent assistant."}]
