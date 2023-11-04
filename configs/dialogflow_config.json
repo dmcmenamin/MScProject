@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "msc-dynamic-powerpoint",
+  "private_key_id": "b2cb7fe662ac85a573072f601f2b06500833f9a5",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDi4lpk5QLsH2GA\niGW0xsq7X2iPXyDjXB/3kFXhSW07CITC6grT3rRVeAZfGwujOQ7wUx6hP70bXUE/\n1awGKsJKhdj1HWRn1yJ6a8X0k8TYHvzlayngiPogdcaUVPgGgXOs6bGz9kvu2Y/9\nLdhCHCa/M3/G/xW7atslvxd/reiPFwnpr23DTXN/uXWTH7jQw4Fnar66cJG3WsWz\n8v2KAn6Yg1wxpeQvT3F+a7lf3R9/tqDwFMDrfciDTMjsm8es0krLVtA+AsRNOBmf\noHQ3tsieRvrvXSfH4wiZNKVV9I6jERqqi4RNX95iWWI/GquFzQWYJoYmif/vNQuV\nsSjKyXMdAgMBAAECggEAD5vkfaf+wzlmdxYLLzx08p6d/i0cgV/TaDADJIhtbiAI\nKDO7UneyHuYuxAjDjHNuumxxgUT2EOWhyU89MkBrVP6v3i8rOvSjT9pNyGWJJ5g8\nLFlqzGKIGMcZhhdxZ9ssluMOAXRKpZBMtm2awPOYW9OicRGYEGiJ0qc6qeNQSlW5\ngWFdbWaqhr3PfQ0feGkvV3Nr/FCtEFuIuJP0/SPR8Cc1GTgAFVfzboPItkI/dwCd\ntQS3WkPSA0z5Bk3vHYQ6IrK1Nk3zYa07N9+wUosJUPivKhLoCbL9RrCaKPoj8j6Y\n2qLJo5ZpUZhNv4Du+sNgFNlQOccgQ1rdD9QSNsGC4QKBgQD4BsyVKjaVQdYmNPjK\nJXRPa+ZCF9HMafPcJCgvcxeYRRZxJ9ninzHjRqoF4vSpRAKu1h4R24e4fKEJTXYg\noiDHnleVORzwCmI1tEFt+cjD2T5OdWLThJmpvzy5z8vpV1fJJjpwMuuZz2AsmzVz\nLKrRlv8QNpXXYHl2XwQHZCvsYQKBgQDqLY6j671C+Nch1ttYPzG9w28OfFeiVs62\nkXikjPFIaYhMqKvzofhoIrU9VFeULxCq0pVNRtPopK+tGJzgsF4nKAJmqrlq9Uis\nikyo20Vduhb9B852IA3TUoQdV7mtLisRiuxhZm9j5rqewyfkqOMhjY8iTCRcbP/H\nT0g/NIYgPQKBgG6p0fQoDoyQAHWxouPGzFt3YBhTOmeDSqwJceih6IAnKzk3t662\nqvKmH8xalCFF2BCcNnRvR+IXsV5OMoui6w9F5fwNrIyphWJC2AKytVI1BujI1Vxc\nyJcFXZnmTiwBrYhxRxeykI5jCZ09bx7BakHzpkBcqoSbZfZbtJd7qWFhAoGBALf6\nUrY13tte5KWRR4JtI4cSo42d4ruHt593anDcyjM5tfuECJPADIjDu+ATAztIPq/2\nAZZUrud3ew1i6N0dstrQdBJ0zndZfV8QyGlg235nVOg12d60ECiWC3WCFj4Yp32A\nx3U+JQU3oCZa7FyY0tjpfipT5701ZT4Q65G8kiOBAoGAeOGvvuTMbPe4lxfVdMDO\n/Asw9dKdQnOlqowK9SlLZmI9x6D6OnfWD6aEJ89PjyvPTe5bOaOcAbcXtuoxUMC0\nfsCQa29VS1oQ19htY/mHckLO2hkc9R2oT1P4++jO8rUZpRITe/Ek8ewTihoU0c+Q\n2xCQMefudf3Ct+wGb2KcHyw=\n-----END PRIVATE KEY-----\n",
+  "client_email": "mscdynamicpowerpoint@msc-dynamic-powerpoint.iam.gserviceaccount.com",
+  "client_id": "104181677577945529402",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/mscdynamicpowerpoint%40msc-dynamic-powerpoint.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
