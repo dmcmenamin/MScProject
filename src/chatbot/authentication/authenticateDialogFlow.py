@@ -27,4 +27,5 @@ def authenticate_implicit_with_adc(project_id="msc-dynamic-powerpoint"):
         print(bucket.name)
     print("Listed all storage buckets.")
 
+
 authenticate_implicit_with_adc()
