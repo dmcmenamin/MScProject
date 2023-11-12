@@ -1,7 +1,7 @@
-import openai
+from openai import OpenAI
 
 # TODO: Move API key to .env file
-openai.api_key = "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"
+api_key = "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"
 
 
 # ChatGPTAPI class to handle all OpenAI API calls
@@ -18,7 +18,7 @@ class ChatGPTAPI:
         if not openai_api_key:
             raise ValueError("OpenAI API key cannot be empty.")
         else:
-            self.openai_api_key = openai_api_key
+            self.client = OpenAI(api_key=openai_api_key)
 
         if not model:
             raise ValueError("OpenAI model cannot be empty.")
@@ -28,15 +28,22 @@ class ChatGPTAPI:
     def __str__(self):
         return f"ChatGPTAPI(openai_api_key={self.openai_api_key}, model={self.model})"
 
-
     # Returns a chat response from OpenAI - inputs are question and model
-    def get_chat_response(self, question, model):
-        messages = [{"role": "system", "content": question}]
-        chat = openai.ChatCompletion.create(
-            model=model,
-            messages=messages)
+    def get_chat_response(self, question, llm_model):
+        if not question:
+            raise ValueError("Question cannot be empty.")
+        else:
+            chat_completion = self.client.chat.completions.create(
+                messages=[
+                    {
+                        "role": "user",
+                        "content": question,
+                    }
+                ],
+                model=llm_model,
+            )
+        return chat_completion.choices[0].message.content
 
-        return chat.choices[0].message.content
 
     # Returns a question prompt for OpenAI - inputs are topic, audience size and time
     def set_question_prompt(self, topic, audience_size, time):
@@ -51,14 +58,14 @@ class ChatGPTAPI:
 
         # Prompt for OpenAI
         prompt = (f"Create a slide deck that explains the {topic} to be presented to "
-                    f"{audience_size} people, over {time} minutes, please also include "
-                    f"any image recommendations in square brackets , and notes for the lecturer for each slide")
+                  f"{audience_size} people, over {time} minutes, please also include "
+                  f"any image recommendations in square brackets , and notes for the lecturer for each slide")
 
         return prompt
 
     # Returns a presentation deck from OpenAI - inputs are topic, audience size and time
-    def get_presentation_slides(self, topic, audience_size, time):
-        question = self.set_question_prompt(topic, audience_size, time)
+    def get_presentation_slides(self, question):
+        # question = self.set_question_prompt(topic, audience_size, time)
         response = self.get_chat_response(question, self.model)
 
         if not response:
@@ -75,10 +82,3 @@ class ChatGPTAPI:
         )
         image_url = response['data'][0]['url']
         return image_url
-
-
-if __name__ == '__main__':
-    chatGPTAPI = ChatGPTAPI("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", "gpt-3.5-turbo")
-    print(chatGPTAPI.set_question_prompt("Dynamic PowerPoint", "100", "10"))
-    # print(chatGPTAPI.get_presentation_slides("Dynamic PowerPoint", "100", "10"))
-    # print(chatGPTAPI.get_presentation_image("Dynamic PowerPoint"))
