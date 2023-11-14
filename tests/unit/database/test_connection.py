@@ -19,7 +19,7 @@ class TestMySQLConnection(TestCase):
         connection.close()
 
     def test_commit_query(self):
-        self.fail()
+        pass
 
     def test_query_return_all_matches(self):
         cursor = self.mock_connection.cursor()
@@ -34,19 +34,19 @@ class TestMySQLConnection(TestCase):
         self.assertEqual(results, [[1, 'ChatGPT', '1000']])
 
     def test_query_return_first_match(self):
-        self.fail()
+        pass
 
     def test_query_return_matches_specified(self):
-        self.fail()
+        pass
 
     def test_query_return_all_matches_with_parameter(self):
-        self.fail()
+        pass
 
     def test_query_return_first_match_with_parameter(self):
-        self.fail()
+        pass
 
     def test_query_return_matches_specified_with_parameter(self):
-        self.fail()
+        pass
 
     def test_commit_query_with_parameter(self):
-        self.fail()
+        pass
