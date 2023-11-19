@@ -8,64 +8,91 @@ from src.powerpoint.presentation import PowerPointPresentation
 #           "image or not. Please also include notes for Frank for each slide. Please also include a title slide and "
 #           "a thank you slide. Please also include a slide with a list of references.")
 
-prompt = ("f Frank is preparing to give a presentation on {topic} to {audience_size} people. The presentation will "
-          "last {time} minutes. At the end of the presentation, wants the audience to be able to {audience_outcome}. "
-          "Please create a slide deck for Frank to use, which should include title and content. Please also include "
-          "notes for Frank for each slide. Please also include a title slide and "
-          "a thank you slide, and ensure that there is content to cover the entire duration. "
-          "Finally please also include a slide with a list of references.")
-
-
-# prompt = prompt.format(topic="Talend", audience_size=250, time=15, audience_outcome="understand the basics of Talend")
-# print(prompt)
+prompt = ("f {presenter_name} is preparing to give a presentation on {topic} to {audience_size} people. "
+          "The presentation will last {time} minutes. At the end of the presentation, wants the audience to be "
+          "able to {audience_outcome}. Please create a slide deck for {presenter_name} to use, which should "
+          "include title and content. Please also include notes for {presenter_name} for each slide. "
+          "Please also ensure that each title slide, content and notes are clearly labelled. Finally please also "
+          "include a slide with a list of references.")
 
 
 def slice_presentation(presentation):
     slide_pages = []
     current_slide = []
 
-    for line in presentation.splitlines():
-        if line.startswith("Slide"):
+    for presentation_line in presentation.splitlines():
+        if presentation_line.startswith("Slide"):
             slide_pages.append(current_slide)
             current_slide = []
         else:
-            current_slide.append(line)
+            current_slide.append(presentation_line)
 
     return slide_pages
 
 
+def get_slide_sections(slide_sections):
+    slide_title = ""
+    slide_subtitle = ""
+    slide_content = ""
+    slide_notes = ""
+    last_section = ""
+    for section in slide_sections:
+        if len(section) >= 1:
+            if section.startswith("Title:"):
+                slide_title = section.replace("Title:", "").strip()
+            elif section.startswith("Subtitle:"):
+                slide_subtitle = section.replace("Subtitle:", "").strip()
+            elif section.startswith("Content:"):
+                slide_content = section.replace("Content:", "").replace("-", "").strip() + "\n"
+                last_section = "Content"
+            elif section.startswith("Notes"):
+                slide_content = slide_content.strip() + " \n"
+                last_section = "Notes"
+            elif last_section == "Content":
+                slide_content += section.replace("-", "").strip() + "\n"
+            elif last_section == "Notes":
+                slide_notes += section.strip() + "\n"
+    return slide_title, slide_subtitle, slide_content, slide_notes
+
+
 if __name__ == "__main__":
+    presenter_name = input("What is the name of the presenter? ")
     topic = input("What do you want a presentation on? ")
     audience_size = input("How many people will be in the audience? ")
     time = input("How many minutes will the presentation be? ")
     audience_outcome = input("What do you want the audience to be able to do at the end of the presentation? ")
 
-    prompt = prompt.format(topic=topic, audience_size=audience_size, time=time, audience_outcome=audience_outcome)
+    prompt = prompt.format(presenter_name=presenter_name,
+                           topic=topic, audience_size=audience_size, time=time, audience_outcome=audience_outcome)
 
     orchestrator = Orchestrator("chat", "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",
                                 "gpt-3.5-turbo-1106")
 
     slide_presentation = slice_presentation(orchestrator.call_large_language_model().get_presentation_slides(prompt))
 
-    # print(slide_presentation)
+    # output slide_presentation to a file
+    with open(topic + '.txt', 'w') as f:
+        for item in slide_presentation:
+            f.write("%s\n" % item)
+
+    print(slide_presentation)
     powerpoint_presentation = PowerPointPresentation()
 
     for sections in slide_presentation:
-        # Check if there are enough sections before accessing them
-        # if len(sections) >= 4:
-        if len(sections) >= 1:
-            title = sections[0].replace('-', '').strip()
-            text = ""
-            for line in sections[1: len(sections) - 2]:
-                text += line.replace('-', '').strip("") + "\n"
-            notes = sections[len(sections) - 2].replace('-', '').strip("")
 
-            powerpoint_presentation.add_slide(1, title=title, text=text, notes=notes)
-    # else:
-    #     print(f"Skipping incomplete slide data: {sections}")
+        if len(sections) == 0:
+            continue
+        title, subtitle, content, notes = get_slide_sections(sections)
 
-    # powerpoint_presentation.add_slide(1, title=sections[0], text=sections[1], notes=sections[3])
-    # for slide in slide_presentation:
-    #     powerpoint_presentation.add_slide(5, slide[0], slide[1], slide[2], slide[3])
-    #
-    powerpoint_presentation.save("presentation.pptx")
+        if title and subtitle:
+            powerpoint_presentation.add_slide(0, title=title, text=subtitle, notes=notes)
+        elif title and content:
+            powerpoint_presentation.add_slide(1, title=title, text=content, notes=notes)
+        elif title:
+            powerpoint_presentation.add_slide(0, title=title, notes=notes)
+        elif content:
+            powerpoint_presentation.add_slide(1, text=content, notes=notes)
+        else:
+            powerpoint_presentation.add_slide(0, title="Slide", notes=notes)
+
+    powerpoint_presentation.save(topic + ".pptx")

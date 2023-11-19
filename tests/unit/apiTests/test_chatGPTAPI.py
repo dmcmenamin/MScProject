@@ -1,18 +1,29 @@
+import os
 import unittest
+import json
 from unittest.mock import Mock, patch, MagicMock
+
+import openai
+
 from src.api.chatGPTAPI import ChatGPTAPI  # Import your ChatGPTAPI class
 from src.controllers.controller import prompt
+from openai import OpenAI
 
 
 class TestChatGPTAPI(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
+        # Mock the OpenAI API
+        cls.client = Mock(spec=OpenAI)
+        with open("../configs/env_variables.json") as f:
+            env_variables = json.load(f)
+            cls.api_key = env_variables["MockChatGPT"]["MOCK_API_KEY"]
+
         # Initialize the ChatGPTAPI instance with a mock API key and model
-        cls.api_key = "mock-api-key"
         cls.model = "mock-model"
         cls.chatgpt = ChatGPTAPI(cls.api_key, cls.model)
-        cls.question = prompt.format(topic="Test", audience_size=250, time=15,
+        cls.question = prompt.format(presenter_name="Fake Presenter", topic="Test", audience_size=250, time=15,
                                      audience_outcome="understand the basics of Testing")
 
     def test_constructor(self):
@@ -80,12 +91,22 @@ class TestChatGPTAPI(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.chatgpt.set_question_prompt(topic, audience_size, "")
 
-    @patch("openai.ChatCompletion.create")
+    # @patch("openai.chat.completions.create")
+    # def test_get_chat_response(self, mock_chat_create):
+    #     # Test get_chat_response with a mock response
+    #     question = "Can you explain AI to me?"
+    #     mock_response = MagicMock()
+    #     mock_response.choices[0].message.content = "Data is the new Gold of the modern age."
+    #     mock_chat_create.return_value = mock_response
+    #     response = self.chatgpt.get_chat_response(question, self.model)
+    #     self.assertEqual(response, "Data is the new Gold of the modern age.")
+
+    @patch("openai.chat.completions.create")
     def test_get_chat_response(self, mock_chat_create):
         # Test get_chat_response with a mock response
         question = "Can you explain AI to me?"
         mock_response = MagicMock()
-        mock_response.choices[0].message.content = "Data is the new Gold of the modern age."
+        mock_response.choices[0].text = "Data is the new Gold of the modern age."
         mock_chat_create.return_value = mock_response
         response = self.chatgpt.get_chat_response(question, self.model)
         self.assertEqual(response, "Data is the new Gold of the modern age.")
