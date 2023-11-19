@@ -42,7 +42,7 @@ class TestOrchestrator(unittest.TestCase):
 
         # Check if the result is the mock instance
         self.assertEqual(result.model, self.model)
-        self.assertEqual(result.openai_api_key, self.api_key)
+        self.assertEqual(result.client.api_key, self.api_key)
 
     # Test the call_large_language_model method for bard
     # Pass for now as it is not implemented yet

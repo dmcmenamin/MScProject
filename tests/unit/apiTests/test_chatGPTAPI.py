@@ -1,21 +1,35 @@
+import os
 import unittest
+import json
 from unittest.mock import Mock, patch, MagicMock
+
+import openai
+
 from src.api.chatGPTAPI import ChatGPTAPI  # Import your ChatGPTAPI class
+from src.controllers.controller import prompt
+from openai import OpenAI
 
 
 class TestChatGPTAPI(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
+        # Mock the OpenAI API
+        cls.client = Mock(spec=OpenAI)
+        with open("../configs/env_variables.json") as f:
+            env_variables = json.load(f)
+            cls.api_key = env_variables["MockChatGPT"]["MOCK_API_KEY"]
+
         # Initialize the ChatGPTAPI instance with a mock API key and model
-        cls.api_key = "mock-api-key"
         cls.model = "mock-model"
         cls.chatgpt = ChatGPTAPI(cls.api_key, cls.model)
+        cls.question = prompt.format(presenter_name="Fake Presenter", topic="Test", audience_size=250, time=15,
+                                     audience_outcome="understand the basics of Testing")
 
     def test_constructor(self):
         # Test constructor with valid input
         chatgpt = ChatGPTAPI(self.api_key, self.model)
-        self.assertEqual(chatgpt.openai_api_key, self.api_key)
+        self.assertEqual(chatgpt.client.api_key, self.api_key)
         self.assertEqual(chatgpt.model, self.model)
 
         # Test constructor with empty API key
@@ -35,35 +49,35 @@ class TestChatGPTAPI(unittest.TestCase):
             ChatGPTAPI()
 
         # Test constructor with incorrect api key
-        self.assertNotEquals(chatgpt.openai_api_key, "incorrect-api-key")
+        self.assertNotEqual(chatgpt.client.api_key, "incorrect-api-key")
 
         # Test constructor with incorrect model
-        self.assertNotEquals(chatgpt.model, "incorrect-model")
+        self.assertNotEqual(chatgpt.model, "incorrect-model")
 
     def test_set_question_prompt(self):
         # Test set_question_prompt with valid input
         topic = "Fake Topic"
         audience_size = 100
         time = 50
-        prompt = self.chatgpt.set_question_prompt(topic, audience_size, time)
+        test_prompt = self.chatgpt.set_question_prompt(topic, audience_size, time)
         expected_prompt = (
             f"Create a slide deck that explains the {topic} to be presented to "
             f"{audience_size} people, over {time} minutes, please also include "
             f"any image recommendations in square brackets , and notes for the lecturer for each slide"
         )
-        self.assertEqual(prompt, expected_prompt)
+        self.assertEqual(test_prompt, expected_prompt)
 
         # Test set_question_prompt with incorrect Topic
-        prompt = self.chatgpt.set_question_prompt("Incorrect Topic", audience_size, time)
-        self.assertNotEquals(prompt, expected_prompt)
+        test_prompt = self.chatgpt.set_question_prompt("Incorrect Topic", audience_size, time)
+        self.assertNotEqual(test_prompt, expected_prompt)
 
         # Test set_question_prompt with incorrect audience_size
-        prompt = self.chatgpt.set_question_prompt(topic, 50, time)
-        self.assertNotEquals(prompt, expected_prompt)
+        test_prompt = self.chatgpt.set_question_prompt(topic, 50, time)
+        self.assertNotEqual(test_prompt, expected_prompt)
 
         # Test set_question_prompt with incorrect time
-        prompt = self.chatgpt.set_question_prompt(topic, audience_size, 75)
-        self.assertNotEquals(prompt, expected_prompt)
+        test_prompt = self.chatgpt.set_question_prompt(topic, audience_size, 75)
+        self.assertNotEquals(test_prompt, expected_prompt)
 
         # Test set_question_prompt with empty topic
         with self.assertRaises(ValueError):
@@ -77,12 +91,22 @@ class TestChatGPTAPI(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.chatgpt.set_question_prompt(topic, audience_size, "")
 
-    @patch("openai.ChatCompletion.create")
+    # @patch("openai.chat.completions.create")
+    # def test_get_chat_response(self, mock_chat_create):
+    #     # Test get_chat_response with a mock response
+    #     question = "Can you explain AI to me?"
+    #     mock_response = MagicMock()
+    #     mock_response.choices[0].message.content = "Data is the new Gold of the modern age."
+    #     mock_chat_create.return_value = mock_response
+    #     response = self.chatgpt.get_chat_response(question, self.model)
+    #     self.assertEqual(response, "Data is the new Gold of the modern age.")
+
+    @patch("openai.chat.completions.create")
     def test_get_chat_response(self, mock_chat_create):
         # Test get_chat_response with a mock response
         question = "Can you explain AI to me?"
         mock_response = MagicMock()
-        mock_response.choices[0].message.content = "Data is the new Gold of the modern age."
+        mock_response.choices[0].text = "Data is the new Gold of the modern age."
         mock_chat_create.return_value = mock_response
         response = self.chatgpt.get_chat_response(question, self.model)
         self.assertEqual(response, "Data is the new Gold of the modern age.")
@@ -97,7 +121,7 @@ class TestChatGPTAPI(unittest.TestCase):
         mock_response = MagicMock()
         mock_response.choices[0].message.content = "Slide 1: Growth of API infrastructure"
         mock_chat_create.return_value = mock_response
-        response = self.chatgpt.get_presentation_slides(topic, audience_size, time)
+        response = self.chatgpt.get_presentation_slides(self.question)
         self.assertEqual(response, "Slide 1: Growth of API infrastructure")
 
     # @patch("openai.Image.create")
