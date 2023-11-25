@@ -46,16 +46,16 @@ def get_ai_image_suggestion(string):
 
 
 if __name__ == "__main__":
-    presenter_name = "Darren McMenamin"
-    topic = "The importance of Python as a programming language"
-    audience_size = "100"
-    time = "15"
-    audience_outcome = "Understand the importance of Python as a programming language"
-    # presenter_name = input("What is the name of the presenter? ")
-    # topic = input("What do you want a presentation on? ")
-    # audience_size = input("How many people will be in the audience? ")
-    # time = input("How many minutes will the presentation be? ")
-    # audience_outcome = input("What do you want the audience to be able to do at the end of the presentation? ")
+    # presenter_name = "Darren McMenamin"
+    # topic = "The importance of Python as a programming language"
+    # audience_size = "100"
+    # time = "15"
+    # audience_outcome = "Understand the importance of Python as a programming language"
+    presenter_name = input("What is the name of the presenter? ")
+    topic = input("What do you want a presentation on? ")
+    audience_size = input("How many people will be in the audience? ")
+    time = input("How many minutes will the presentation be? ")
+    audience_outcome = input("What do you want the audience to be able to do at the end of the presentation? ")
 
     prompt = prompt.format(presenter_name=presenter_name,
                            topic=topic, audience_size=audience_size, time=time, audience_outcome=audience_outcome)

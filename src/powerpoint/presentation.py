@@ -1,3 +1,5 @@
+import re
+
 from pptx import Presentation
 
 # Define constants for slide layouts
@@ -43,11 +45,11 @@ class PowerPointPresentation:
 
             for presentation_line in presliced_presentation.splitlines():
                 if presentation_line.startswith("Slide"):
-                    presentation_line.replace("Slide", "Title").strip()
                     # If the presentation line starts with Slide, then it is the start of a new slide
                     # Add the line to the sliced presentation as a new slide, including a new line, so it can be
-                    # formatted correctly
-                    sliced_presentation.append(presentation_line + "\n")
+                    # formatted correctly. Done via regex to replace "Slide x:" with "Title:"
+                    slide_title = re.sub(r"Slide \d+:", "Title:", presentation_line)
+                    sliced_presentation.append(slide_title + "\n")
                 else:
                     # Otherwise, it is part of the previous slide
                     # Add the line to the previous slide, including a new line, so it can be formatted correctly
@@ -160,7 +162,7 @@ class PowerPointPresentation:
             if subtitle:
                 created_slide.placeholders[1].text = subtitle
             if text:
-                created_slide.placeholders[2].text = text
+                created_slide.placeholders[1].text = text
         if notes:
             created_slide.notes_slide.notes_text_frame.text = notes
         return created_slide
