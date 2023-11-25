@@ -75,10 +75,13 @@ class ChatGPTAPI:
 
     # Returns an image from OpenAI - inputs are image query and image size
     def get_presentation_image(self, image_query, image_size="256x256"):
-        response = openai.Image.create(
+        response = self.client.images.generate(
+            model="dall-e-3",
             prompt=image_query,
             n=1,
-            size=image_size,
+            size="1024x1024",
+            quality="standard"
         )
-        image_url = response['data'][0]['url']
+        image_url = response.data[0].url
+
         return image_url

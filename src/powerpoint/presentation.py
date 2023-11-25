@@ -1,3 +1,5 @@
+import re
+
 from pptx import Presentation
 
 # Define constants for slide layouts
@@ -20,11 +22,10 @@ SLIDE_PICTURE_WITH_CAPTION_LAYOUT = 8
 class PowerPointPresentation:
 
     # Initialise the class
-    def __init__(self, presentation=None):
-        if presentation:
-            self.presentation = Presentation(presentation)
-            # self.slides = self.__slice_presentation(presentation)
-            self.populate_presentation()
+    def __init__(self, presentation_string=None):
+        if presentation_string:
+            self.presentation = Presentation()
+            self.populate_presentation(presentation_string)
         else:
             self.presentation = Presentation()
 
@@ -36,21 +37,25 @@ class PowerPointPresentation:
     # Inputs: presentation
     # presentation is a string - Raises ValueError if presentation is empty
     # Returns a list of slides
-    def __slice_presentation(self, presentation):
-        if not presentation:
+    def __slice_presentation(self, presliced_presentation):
+        if not presliced_presentation:
             raise ValueError("Presentation cannot be empty.")
         else:
-            slide_pages = []
-            current_slide = []
+            sliced_presentation = []
 
-            for presentation_line in presentation.splitlines():
+            for presentation_line in presliced_presentation.splitlines():
                 if presentation_line.startswith("Slide"):
-                    slide_pages.append(current_slide)
-                    current_slide = []
+                    # If the presentation line starts with Slide, then it is the start of a new slide
+                    # Add the line to the sliced presentation as a new slide, including a new line, so it can be
+                    # formatted correctly. Done via regex to replace "Slide x:" with "Title:"
+                    slide_title = re.sub(r"Slide \d+:", "Title:", presentation_line)
+                    sliced_presentation.append(slide_title + "\n")
                 else:
-                    current_slide.append(presentation_line)
+                    # Otherwise, it is part of the previous slide
+                    # Add the line to the previous slide, including a new line, so it can be formatted correctly
+                    sliced_presentation[-1] += presentation_line + "\n"
 
-            return slide_pages
+            return sliced_presentation
 
     # Private Method to get slide content
     # Inputs: slide_pages
@@ -64,8 +69,9 @@ class PowerPointPresentation:
             slide_subtitle = ""
             slide_content = ""
             slide_notes = ""
+            slide_image = ""
             last_section = ""
-            for section in slide_pages:
+            for section in slide_pages.splitlines():
                 if len(section) >= 1:
                     if section.startswith("Title:"):
                         slide_title = section.replace("Title:", "").strip()
@@ -79,11 +85,13 @@ class PowerPointPresentation:
                     elif section.startswith("Notes"):
                         slide_notes = section.strip() + " \n"
                         last_section = "Notes"
+                    elif section.startswith("Image:"):
+                        slide_image += section.replace("Image:", "").strip()
                     elif last_section == "Content":
                         slide_content += section.replace("-", "").strip() + "\n"
                     elif last_section == "Notes":
                         slide_notes += section.strip() + "\n"
-            return slide_title, slide_subtitle, slide_content, slide_notes
+            return slide_title, slide_subtitle, slide_content, slide_notes, slide_image
 
     # Private Method to set the slide layouts
     # Inputs: None
@@ -91,14 +99,14 @@ class PowerPointPresentation:
     def __set_layouts(self, title, subtitle, content, image, notes):
         if title and subtitle:
             return SLIDE_TITLE_LAYOUT
+        elif image:
+            return SLIDE_PICTURE_WITH_CAPTION_LAYOUT
         elif title and content:
             return SLIDE_TITLE_AND_CONTENT_LAYOUT
         elif title:
             return SLIDE_TITLE_ONLY_LAYOUT
         elif content:
             return SLIDE_CONTENT_WITH_CAPTION_LAYOUT
-        elif image:
-            return SLIDE_PICTURE_WITH_CAPTION_LAYOUT
         else:
             return SLIDE_BLANK_LAYOUT
 
@@ -110,14 +118,14 @@ class PowerPointPresentation:
     # image is a string - defaults to None
     # notes is a string - defaults to None
     # Returns the populated presentation
-    def populate_presentation(self):
-        sections = self.__slice_presentation(self.presentation)
-        for sections in self.presentation:
+    def populate_presentation(self, input_presentation):
+        sliced_presentation = self.__slice_presentation(input_presentation)
+        for section in sliced_presentation:
 
-            if len(sections) == 0:
+            if len(section) == 0:
                 continue
-            title, subtitle, content, notes = self.__get_slide_content(sections)
-            self.add_slide(title=title, subtitle=subtitle, text=content, notes=notes)
+            title, subtitle, content, notes, image = self.__get_slide_content(section)
+            self.add_slide(title=title, subtitle=subtitle, text=content, notes=notes, image=image)
 
     # Add a slide to the presentation
     # Inputs: slide_layout, title, text, image, notes
@@ -137,15 +145,24 @@ class PowerPointPresentation:
         slide_layout = self.__set_layouts(title, subtitle, text, image, notes)
 
         created_slide = self.presentation.slides.add_slide(self.presentation.slide_layouts[slide_layout])
-        if title:
-            created_slide.shapes.title.text = title
-        if text:
-            created_slide.placeholders[1].text = text
         if slide_layout == SLIDE_PICTURE_WITH_CAPTION_LAYOUT:
             if image:
+                # created_slide.shapes.add_picture(image, top=50, left=50, height=300, width=300)
+                # created_slide.shapes.add_textbox(left=50, top=350, width=300, height=50).text = text
                 created_slide.placeholders[1].insert_picture(image)
             else:
                 raise ValueError("Image must be provided for picture with caption layout.")
+            if title:
+                created_slide.shapes.title.text = title
+            if text:
+                created_slide.placeholders[2].text = text
+        else:
+            if title:
+                created_slide.shapes.title.text = title
+            if subtitle:
+                created_slide.placeholders[1].text = subtitle
+            if text:
+                created_slide.placeholders[1].text = text
         if notes:
             created_slide.notes_slide.notes_text_frame.text = notes
         return created_slide
