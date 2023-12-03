@@ -12,4 +12,4 @@ test:
     - echo "Running tests..."
     - pwd
     - echo "Current working directory" $PWD
-    - python -m unittest tests
+    - python -m unittest \tests
