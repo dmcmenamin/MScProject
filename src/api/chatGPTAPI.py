@@ -99,16 +99,18 @@ class ChatGPTAPI:
             raise ValueError(f"OpenAI API request failed: {e}")
 
     # Returns an image from OpenAI - inputs are image query and image size
-    def get_presentation_image(self, image_query, image_size="1024x1024"):
+    def get_presentation_image(self, image_query, image_size):
         if not image_query:
             raise ValueError("Image query cannot be empty.")
+        if not image_size:
+            image_size = "1024x1024" # defaulting image size
 
         try:
             response = self.client.images.generate(
                 model="dall-e-3",
                 prompt=image_query,
                 n=1,
-                size="1024x1024",
+                size=image_size,
                 quality="standard"
             )
             image_url = response.data[0].url
