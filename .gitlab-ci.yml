@@ -10,4 +10,6 @@ test:
   stage: test
   script:
     - echo "Running tests..."
+    - pwd
+    - echo "Current working directory" $PWD
     - python -m unittest tests
