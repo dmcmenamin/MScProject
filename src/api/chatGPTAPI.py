@@ -1,4 +1,5 @@
 from openai import OpenAI
+import openai
 
 # TODO: Move API key to .env file
 api_key = "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"
@@ -42,8 +43,8 @@ class ChatGPTAPI:
                 ],
                 model=llm_model,
             )
-        return chat_completion.choices[0].message.content
 
+        return chat_completion.choices[0].message.content
 
     # Returns a question prompt for OpenAI - inputs are topic, audience size and time
     def set_question_prompt(self, topic, audience_size, time):
@@ -65,23 +66,72 @@ class ChatGPTAPI:
 
     # Returns a presentation deck from OpenAI - inputs are topic, audience size and time
     def get_presentation_slides(self, question):
-        # question = self.set_question_prompt(topic, audience_size, time)
-        response = self.get_chat_response(question, self.model)
+        try:
+            response = self.get_chat_response(question, self.model)
 
-        if not response:
-            raise ValueError("ChatGPT failed to generate a presentation deck.")
+            # Check if response is empty or an error message
+            # If so, raise a ValueError
+            # Otherwise, return the response
+            if not response:
+                raise ValueError("ChatGPT failed to generate a presentation deck.")
+            elif response == "Sorry, I don't have an answer for that.":
+                raise ValueError("ChatGPT failed to generate a presentation deck.")
+            else:
+                return response
 
-        return response
+        except openai.APIConnectionError as e:
+            # Catching connection error here
+            raise ValueError(f"Failed to connect to OpenAI API: {e}")
+        except openai.APIError as e:
+            # Catching API error here
+            raise ValueError(f"OpenAI API returned an API Error: {e}")
+        except openai.RateLimitError as e:
+            # Catching Error where Token has exceeded rate limit
+            raise ValueError(f"OpenAI API request exceeded rate limit: {e}")
+        except openai.AuthenticationError as e:
+            # Catching Error where Token is invalid
+            raise ValueError(f"OpenAI API request failed due to invalid token: {e}")
+        except openai.OpenAIError as e:
+            # Catching Error where OpenAI API fails
+            raise ValueError(f"OpenAI API request failed: {e}")
+        except Exception as e:
+            # Catching any other errors
+            raise ValueError(f"OpenAI API request failed: {e}")
 
     # Returns an image from OpenAI - inputs are image query and image size
-    def get_presentation_image(self, image_query, image_size="256x256"):
-        response = self.client.images.generate(
-            model="dall-e-3",
-            prompt=image_query,
-            n=1,
-            size="1024x1024",
-            quality="standard"
-        )
-        image_url = response.data[0].url
+    def get_presentation_image(self, image_query, image_size="1024x1024"):
+        if not image_query:
+            raise ValueError("Image query cannot be empty.")
 
-        return image_url
+        try:
+            response = self.client.images.generate(
+                model="dall-e-3",
+                prompt=image_query,
+                n=1,
+                size="1024x1024",
+                quality="standard"
+            )
+            image_url = response.data[0].url
+
+            # Check if image_url is empty
+            # If so, raise a ValueError
+            # Otherwise, return the image_url
+            if not image_url:
+                raise ValueError("ChatGPT failed to generate an image.")
+            else:
+                return image_url
+        except openai.APIError as e:
+            # Catching API error here
+            raise ValueError(f"OpenAI API returned an API Error: {e}")
+        except openai.RateLimitError as e:
+            # Catching Error where Token has exceeded rate limit
+            raise ValueError(f"OpenAI API request exceeded rate limit: {e}")
+        except openai.AuthenticationError as e:
+            # Catching Error where Token is invalid
+            raise ValueError(f"OpenAI API request failed due to invalid token: {e}")
+        except openai.OpenAIError as e:
+            # Catching Error where OpenAI API fails
+            raise ValueError(f"OpenAI API request failed: {e}")
+        except Exception as e:
+            # Catching any other errors
+            raise ValueError(f"OpenAI API request failed: {e}")
