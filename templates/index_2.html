@@ -12,7 +12,38 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
           rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
           crossorigin="anonymous">
+
+    <!-- JQuery -->
+        <!-- JQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.3.js"
+        integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM=" crossorigin="anonymous"></script>
+
+    <!-- Scripts -->
+    <script>
+    // Scripts that are run, when page is loaded
+        $(document).ready(function () {
+                // Hide the Login and Signup Containers
+                $(".Login-In-Container").hide();
+                $(".Sign-Up-Container").hide();
+
+                // If User Clicks on Login Button - Show the Login Container
+                // And hide the Sign-up Container
+                $(".button-login").click(function () {
+                    $(".Sign-Up-Container").hide();
+                    $(".Login-In-Container").show();
+                });
+
+                // If User Clicks on Signup Button - Show the Signup Container
+                // And hide the Login Container
+                $(".button-signup").click(function () {
+                    $(".Login-In-Container").hide();
+                    $(".Sign-Up-Container").show();
+                });
+            });
+    </script>
 </head>
+
+
 <body class="bg-custom">
 
 <!-- Navbar -->
@@ -37,7 +68,6 @@
         <div class="row">
             <div class="col-12">
                 <h1 class="text-center font-header-custom">Welcome to your DynaPoint</h1>
-                <h1 class="text-center font-header-custom">Your Dynamic Presentation Creator </h1>
             </div>
         </div>
     </div>
@@ -69,14 +99,75 @@
         <div class="row">
             <div class="col-12">
                 <div class="text-center">
-                    <a href="sign-up.html" class="btn btn-primary btn-lg active" role="button" aria-pressed="true">Sign-Up</a>
-                    <a href="login.html" class="btn btn-primary btn-lg active" role="button" aria-pressed="true">Login</a>
+                    <button type="button" class="btn btn-info button-signup" aria-pressed="true">Sign-Up</button>
+                    <button type="button" class="btn btn-info button-login" aria-pressed="true">Login</button>
                 </div>
             </div>
         </div>
+    </div>
+
+    <div class="Login-In-Container">
+        <!-- Login Container, which contains a form, where User can enter a Username & Password
+             This then calls the Login-Endpoint for Verification. If successful the user is taken to the moods page
+             Otherwise they are returned and a hidden Error message is displayed -->
+        <form class="row gy-2 gx-3 align-items-center" action="{{ url_for('login') }}" method="POST">
+            <div class="col-md-6">
+                <div class="input-group">
+                    <div class="input-group-text">@</div>
+                    <input type="text" class="form-control" id="autoSizingInputGroup" placeholder="Username"
+                        name="Username">
+                </div>
+            </div>
+            <div class="col-md-6">
+                <input type="text" class="form-control" id="autoSizingInput" placeholder="Password" name="Password">
+            </div>
+
+            <!-- Hidden Error Message that is only displayed if incorrect Username or password is entered -->
+            <span class="login-error" style="display: none;">
+                <p> Incorrect Username or Password </p>
+            </span>
+
+
+            <div class="col-12">
+                <button type="submit" class="btn btn-primary btn-login-submit">Submit</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Signup Container, which contains a form, where USer can enter their Username, Password
+         This then calls the Sign_up-endpoint, where the information is stored to the Database,
+         and then brings them to the moods page. If an error occurs such as a user already existing,
+         they are redirected to the index page and an error message is displayed.-->
+    <div class="Sign-Up-Container">
+        <form class="row g-3 align-items-center" action="/sign_up-endpoint" method="POST">
+            <div class="col-md-6">
+                <div class="input-group">
+                    <div class="input-group-text">@</div>
+                    <input type="text" class="form-control" id="autoSizingInputGroup" placeholder="Username"
+                        name="Username">
+                </div>
+            </div>
+            <div class="col-md-6">
+                <input type="text" class="form-control" id="autoSizingInput" placeholder="Password" name="Password">
+            </div>
+            <div class="input-group">
+                <span class="input-group-text">First and last name</span>
+                <input type="text" aria-label="First name" class="form-control" name="FName">
+                <input type="text" aria-label="Last name" class="form-control" name="LName">
+            </div>
+            <!-- Hidden Error message that is displayed, when an error occurs -->
+            <span class="signup-error" style="display: none;">
+                <p>Username already exists</p>
+            </span>
+
+            <div class="col-12">
+                <button type="submit" class="btn btn-primary btn-signup-submit">Sign up</button>
+            </div>
+        </form>
+    </div>
 
     <!-- Footer -->
-    <footer class="bg-custom">
+    <footer class="bg-custom footer">
         <div class="container-fluid">
             <div class="row">
                 <div class="col-12">

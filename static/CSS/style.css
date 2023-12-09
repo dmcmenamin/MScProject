@@ -19,6 +19,13 @@ body {
     background-color: #2D4263;
 }
 
+.btn-info {
+    font-size: 20px;
+    background: #B6EADA;
+    padding: 10px 20px 10px 20px;
+
+}
+
 .font-footer-custom {
     font-family: 'Roboto', sans-serif;
     font-size: 16px;
@@ -43,9 +50,22 @@ body {
     color: #ECDBBA;
 }
 
+.footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    background-color: #2D4263;
+    text-align: center;
+}
+
 .img-container {
     display: grid;
     place-items: center;
+}
+
+.Login-In-Container {
+    width: 50%;
+    margin: 10px auto auto;
 }
 
 .navbar {
@@ -57,5 +77,10 @@ body {
     justify-content: center;
     align-items: center;
     background-color: #2D4263;
+}
+
+.Sign-Up-Container {
+    width: 50%;
+    margin: 10px auto auto;
 }
 
