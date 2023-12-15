@@ -68,6 +68,10 @@ body {
     margin: 10px auto auto;
 }
 
+.llm-api-key {
+    white-space: nowrap;
+}
+
 .navbar {
     font-size: 32px;
 }
