@@ -4,13 +4,6 @@ import requests
 from io import BytesIO
 import os
 
-# prompt = ("f Frank is preparing to give a presentation on {topic} to {audience_size} people. The presentation will "
-#           "last {time} minutes. At the end of the presentation, wants the audience to be able to {audience_outcome}. "
-#           "Please create a slide deck for Frank to use, which should include title and content. Please also include "
-#           "image recommendations in square brackets, along with a recommendation if the image should be a background "
-#           "image or not. Please also include notes for Frank for each slide. Please also include a title slide and "
-#           "a thank you slide. Please also include a slide with a list of references.")
-
 prompt = ("f {presenter_name} is preparing to give a presentation on {topic} to {audience_size} people. "
           "The presentation will last {time} minutes. At the end of the presentation, the audience will be expected to "
           "{audience_outcome}. Create a slide deck for {presenter_name} to use, which should "
@@ -28,7 +21,8 @@ def get_ai_image_suggestion(string):
     for line in string.splitlines():
         if line.startswith("IMAGE_SUGGESTION"):
             image_requested = line.split("IMAGE_SUGGESTION: ")[1]
-            image_url = orchestrator.call_large_language_model().get_presentation_image(image_requested.rstrip('.'))
+            image_url = (orchestrator.call_large_language_model().
+                         get_presentation_image(image_requested.rstrip('.'), "1024x1024"))
             response = requests.get(image_url)
             image = BytesIO(response.content)
 

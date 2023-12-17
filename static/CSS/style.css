@@ -1,0 +1,90 @@
+/***** Main Styles *****/
+/* Path: static/CSS/style.css */
+body {
+    background-color: #2D4263;
+    font-family: 'Roboto', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.5;
+    color: #212529;
+}
+
+
+/*****  ID Styles *****/
+
+
+/*****  Class Styles *****/
+
+.bg-custom {
+    background-color: #2D4263;
+}
+
+.btn-info {
+    font-size: 20px;
+    background: #B6EADA;
+    padding: 10px 20px 10px 20px;
+
+}
+
+.font-footer-custom {
+    font-family: 'Roboto', sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #ECDBBA;
+}
+
+.font-header-custom {
+    font-family: 'Roboto', sans-serif;
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1.5;
+    color: #ECDBBA;
+}
+
+.font-header-custom-2 {
+    font-family: 'Roboto', sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1.5;
+    color: #ECDBBA;
+}
+
+.footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    background-color: #2D4263;
+    text-align: center;
+}
+
+.img-container {
+    display: grid;
+    place-items: center;
+}
+
+.Login-In-Container {
+    width: 50%;
+    margin: 10px auto auto;
+}
+
+.llm-api-key {
+    white-space: nowrap;
+}
+
+.navbar {
+    font-size: 32px;
+}
+
+.table-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #2D4263;
+}
+
+.Sign-Up-Container {
+    width: 50%;
+    margin: 10px auto auto;
+}
+
