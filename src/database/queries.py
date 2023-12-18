@@ -9,3 +9,12 @@ def insert_user(username, user_first_name, user_last_name, user_password, user_s
             f"VALUES ('{username}', '{user_first_name}', '{user_last_name}', '{user_password}', '{user_salt}')")
 
 
+# Query to get everything from llm_details table
+def get_all_from_llm_table():
+    return "SELECT * FROM llm_details"
+
+
+def get_api_key(username, llm_name):
+    return (f"SELECT api_key_user_key FROM api_key WHERE"
+            "api_key_user = (SELECT user_id FROM user WHERE Username = '{username}')"
+            "AND api_key_llm = (SELECT LLM_Name_ID FROM llm_nname WHERE llm_name_name = '{llm_name}')")
