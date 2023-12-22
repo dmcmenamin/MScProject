@@ -30,87 +30,82 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
           <div class="navbar-nav">
-            <a class="nav-link active" aria-current="page" href="index.html">Home</a>
-            <a class="nav-link" href="signup.html">Sign-Up</a>
-            <a class="nav-link" href="#">Login</a>
-            <a class="nav-link disabled" aria-disabled="true">Chatbot</a>
+            <a class="nav-link active" aria-current="page" href="/">Home</a>
+            <a class="nav-link" href="/signup_endpoint">Sign-Up</a>
+              {% if 'username' in session %}
+                <a class="nav-link" >Chatbot</a>
+                <a class="nav-link ms-auto" href="/logout">Logout</a>
+              {% else %}
+                <a class="nav-link disabled" aria-disabled="true">Chatbot</a>
+                <a class="nav-link disabled" aria-disabled="true">Logout</a>
+              {% endif %}
           </div>
         </div>
       </div>
     </nav>
 
     <!-- Main Content -->
-    <div class="container-fluid">
+    <div class="container-fluid content">
         <div class="row">
             <div class="col-12">
                 <h1 class="text-center font-header-custom">Welcome to your DynaPoint</h1>
             </div>
         </div>
-    </div>
-
-    <!-- Image -->
-    <div class="img-container">
-        <div class="row">
-            <div class="col-12">
-                <img src="../static/Images/Front_Page.jpg" class="img-front-page" alt="Image of a Man sitting at
-                    a computer screen with a Chatbot on the screen" width="512" height="512">
-            </div>
-        </div>
-    </div>
-    <br> <br>
-
-    <div class="font-header-custom-2">
-        <div class="row">
-            <div class="col-12">
-                <h1 class="text-center">What is DynaPoint?</h1>
-                <h2 class="text-center">DynaPoint is a Dynamic Presentation Creator</h2>
-                <p class="text-center">It allows users to create a Presentation based on input from a Chatbot <br>
-                Using Generative AI, to create a presentation based on user input</p>
-            </div>
-        </div>
-    </div>
-
-    <div class="Login-In-Container">
-        <!-- Login Container, which contains a form, where User can enter a Username & Password
-             This then calls the Login-Endpoint for Verification. If successful the user is taken to the moods page
-             Otherwise they are returned and a hidden Error message is displayed -->
-        <hr class="mb-3">
-        <h1 class="text-center font-header-custom">Login</h1>
-        <hr class="mb-3">
-        <form class="row gy-2 gx-3 align-items-center" action="{{ url_for('login') }}" method="POST">
-            <div class="col-md-6">
-                <div class="input-group">
-                    <div class="input-group-text">@</div>
-                    <input type="text" class="form-control" id="autoSizingInputGroup" placeholder="Username"
-                        name="Username">
-                </div>
-            </div>
-            <div class="col-md-6">
-                <input type="text" class="form-control" id="autoSizingInput" placeholder="Password" name="Password">
-            </div>
-
-            <!-- Hidden Error Message that is only displayed if incorrect Username or password is entered -->
-            <span class="login-error" style="display: none;">
-                <p> Incorrect Username or Password </p>
-            </span>
 
 
-            <div class="col-12">
-                <button type="submit" class="btn btn-primary btn-login-submit">Submit</button>
-            </div>
-        </form>
-    </div>
-
-    <!-- Footer -->
-    <footer class="bg-custom footer">
-        <div class="container-fluid">
+        <!-- Image -->
+        <div class="img-container">
             <div class="row">
                 <div class="col-12">
-                    <p class="text-center font-footer-custom">DynaPoint &copy; 2024</p>
+                    <img src="../static/Images/Front_Page.jpg" class="img-front-page" alt="Image of a Man sitting at
+                        a computer screen with a Chatbot on the screen" width="512" height="512">
                 </div>
             </div>
         </div>
-    </footer>
+        <br> <br>
+
+        <div class="font-header-custom-2">
+            <div class="row">
+                <div class="col-12">
+                    <h1 class="text-center">What is DynaPoint?</h1>
+                    <h2 class="text-center">DynaPoint is a Dynamic Presentation Creator</h2>
+                    <p class="text-center">It allows users to create a Presentation based on input from a Chatbot <br>
+                    Using Generative AI, to create a presentation based on user input</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="Login-In-Container">
+            <!-- Login Container, which contains a form, where User can enter a Username & Password
+                 This then calls the Login-Endpoint for Verification. If successful the user is taken to the moods page
+                 Otherwise they are returned and a hidden Error message is displayed -->
+            <hr class="mb-3">
+            <h1 class="text-center font-header-custom">Login</h1>
+            <hr class="mb-3">
+            <form class="row gy-2 gx-3 align-items-center" action="{{ url_for('login') }}" method="POST">
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <div class="input-group-text">@</div>
+                        <input type="text" class="form-control" id="autoSizingInputGroup" placeholder="Username"
+                            name="Username">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <input type="text" class="form-control" id="autoSizingInput" placeholder="Password" name="Password">
+                </div>
+
+                <!-- Hidden Error Message that is only displayed if incorrect Username or password is entered -->
+                <span class="login-error" style="display: none;">
+                    <p> Incorrect Username or Password </p>
+                </span>
+
+
+                <div class="col-12">
+                    <button type="submit" class="btn btn-primary btn-login-submit">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
 </body>
 </html>

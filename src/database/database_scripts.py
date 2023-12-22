@@ -16,3 +16,8 @@ def hash_password(password, salt):
 def check_password(password, salt, hashed_password):
     return hash_password(password, salt) == hashed_password
 
+
+def create_salted_user_password(password):
+    salt = create_salt()
+    hashed_password = hash_password(password, salt)
+    return salt, hashed_password

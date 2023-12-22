@@ -13,7 +13,7 @@ class MySQLConnection:
     # constructor for MySQLConnection class
     # reads in the host, user, password and database from the env_variables.json file
     def __init__(self):
-        with open("../../configs/env_variables.json", "r") as env_variables:
+        with open("./configs/env_variables.json", "r") as env_variables:
             env_variables = json.load(env_variables)
             self.host = env_variables["database"]["host"]
             self.user = env_variables["database"]["user"]

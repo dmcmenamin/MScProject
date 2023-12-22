@@ -52,6 +52,47 @@ def login():
         return render_template('index.html')
 
 
+@app.route('/signup_endpoint', methods=['GET', 'POST'])
+def signup():
+    if request.method == 'GET':
+        available_llms_query = queries.get_available_llms()
+        database_connection = MySQLConnection()
+        returned_llm_model_names = database_connection.query_return_matches_specified(available_llms_query, 100)
+        # convert list of tuples to list of strings
+        for i in range(len(returned_llm_model_names)):
+            returned_llm_model_names[i] = returned_llm_model_names[i][0]
+        # render signup page with list of available llm model names
+        return render_template('signup.html', llm_model_names=list(returned_llm_model_names))
+
+    elif request.method == 'POST':
+        # get user input
+        username = request.form['username']
+        password = request.form['password']
+        first_name = request.form['first_name']
+        last_name = request.form['last_name']
+        llm_model_name = request.form['llm_model_name']
+        llm_api_key = request.form['llm_api_key']
+        # check if user exists
+        find_user_query = queries.check_user_exists(username)
+        database_connection = MySQLConnection()
+        returned_user_information = database_connection.query_return_first_match(find_user_query)
+        # if user exists
+        if returned_user_information:
+            # redirect to login page
+            return redirect(url_for('index'))
+        # if user does not exist
+        else:
+            # create salt and hashed password
+            salt, hashed_password = database_scripts.create_salted_user_password(password)
+            # create user
+            create_user_query = queries.create_user(username, first_name, last_name, hashed_password, salt)
+            database_connection.commit_query(create_user_query)
+            # TODO: create api key
+            # redirect to login page
+            return redirect(url_for('index'))
+    else:
+        return render_template('signup.html')
+
 
 if __name__ == '__main__':
     ssl_context = ('dynamicPowerPoint.crt', 'dynamicPowerPoint.key')

@@ -27,7 +27,7 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
           <div class="navbar-nav">
-            <a class="nav-link active" aria-current="page" href="index.html">Home</a>
+            <a class="nav-link active" aria-current="page" href="/">Home</a>
             <a class="nav-link disabled" aria-disabled="true" href="#">Sign-Up</a>
             <a class="nav-link" href="#">Login</a>
             <a class="nav-link disabled" aria-disabled="true">Chatbot</a>
@@ -64,18 +64,21 @@
                     <label for="password" class="font-header-custom-2">Password</label>
                     <input class="form-control" id="password" type="password" name="password" required>
 
+                    {%  for llm_model_name in llm_model_names %}
                     <!-- Text Box on left which is prefilled with Large Language Model Name, which comes from the database
                             Text Box on right which allows user to enter API Key -->
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="LLM-Name" class="font-header-custom-2">Model Name</label>
-                            <input class="form-control" id="LLM-Name" type="text" name="LLM-Name" value="ChatGPT" readonly>
+                            <input class="form-control" id="LLM-Name" type="text" name="LLM-Name"
+                                   value="{{llm_model_name }}" readonly>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="API-Key" class="font-header-custom-2">API Key</label>
-                            <input class="form-control" id="API-Key" type="text" name="API-Key" required>
+                            <input class="form-control" id="API-Key" type="text" name="API-Key">
                         </div>
                     </div>
+                    {% endfor %}
 
 
                     <hr class="mb-3">
