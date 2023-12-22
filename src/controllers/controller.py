@@ -10,8 +10,13 @@ prompt = ("f {presenter_name} is preparing to give a presentation on {topic} to 
           "include title and content. Also include notes for {presenter_name} for each slide. "
           "Ensure that each title slide, content and notes are clearly labelled. Also provide some image suggestions on"
           "on a new line on the relevant slides throughout the presentation, identified by keyword IMAGE_SUGGESTION at "
-          "the start of the line. In the notes section, define how long the presenter should spend on that slide, "
-          "ensuring the total time adds up to {time}. Finally please also include a slide with a list of references.")
+          "the start of the line. "
+          "In the notes section for each slide, provide a detailed explanation on what that slide contains, "
+          "ensuring it covers the full content on what the presenter should talk about. Please also provide information"
+          "on the time that the presenter should spend on each slide, and ensure that the total time adds up to "
+          "{time}."
+          "For the final slide, provide a summary of the presentation, and also provide a list of references that "
+          "the presenter can use to find out more information on the topic. ")
 
 
 # method that takes in the string, and searches for the keyword IMAGE_SUGGESTION
@@ -40,6 +45,7 @@ def get_ai_image_suggestion(string):
 
 
 if __name__ == "__main__":
+
     # presenter_name = "Darren McMenamin"
     # topic = "The importance of Python as a programming language"
     # audience_size = "100"

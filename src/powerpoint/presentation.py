@@ -78,8 +78,13 @@ class PowerPointPresentation:
                     elif section.startswith("Subtitle:"):
                         slide_subtitle = section.replace("Subtitle:", "").strip()
                     elif section.startswith("Content:"):
-                        slide_content = section.replace("Content:", "").replace("-", "").strip() + "\n"
-                        if "(No content required)".lower() in slide_content.lower():
+                        # If the slide content is "Content:", then set the slide content to the section, without the
+                        # "Content:" prefix and the "-" suffix, and strip any whitespace
+                        # This is done to ensure that the slide content is not set to "Content:"
+                        slide_content = section.replace("Content:", "").replace("-", "") + "\n"
+                        # If the slide content is "(No content ", then set the slide content to an empty string
+                        # This is done to ensure that the slide content is not set to "(No content required)"
+                        if "(No content".lower() in slide_content.lower():
                             slide_content = ""
                         last_section = "Content"
                     elif section.startswith("Notes"):
