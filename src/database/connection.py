@@ -27,7 +27,20 @@ class MySQLConnection:
     # connect to the database
     # returns the connection
     def connect(self):
-        return mysql.connector.connect(host=self.host, user=self.user, password=self.password, database=self.database)
+        # attempt to connect to the database
+        # return the connection object if successful, with a success code
+        # otherwise return an exception
+        try:
+            connection = mysql.connector.connect(
+                host=self.host,
+                user=self.user,
+                password=self.password,
+                database=self.database
+            )
+            return connection
+        except mysql.connector.Error as error:
+            print(error)
+            return error
 
     # run query with no return
     # useful for insert, update, delete
