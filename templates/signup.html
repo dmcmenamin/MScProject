@@ -36,56 +36,62 @@
       </div>
     </nav>
 
-    <!-- Sign Up Form -->
-    <form>
-        <div class="container">
-            <div class="row">
-                <div class="col-md-6 offset-md-3">
-                    <h1 class="text-center font-header-custom">Sign Up</h1>
-                    <p class="text-center ">Please fill in this form to create an account.</p>
-                    <hr class="mb-3">
+    {% if error_message %}
+        <div class="font-header-custom" role="alert">
+            <h1 class="text-center">Database Connection Error, please contact system administrator</h1>
+        </div>
+    {% else %}
+        <!-- Sign Up Form -->
+        <form>
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-6 offset-md-3">
+                        <h1 class="text-center font-header-custom">Sign Up</h1>
+                        <p class="text-center font-header-custom-2">
+                            Please fill in this form to create an account.</p>
+                        <hr class="mb-3">
 
-                    <!-- Input Text Box for Username -->
-                    <label for="username" class="font-header-custom-2">Username</label>
-                    <input class="form-control" id="username" type="text" name="username" required>
+                        <!-- Input Text Box for Username -->
+                        <label for="username" class="font-header-custom-2">Username</label>
+                        <input class="form-control" id="username" type="text" name="username" required>
 
-                    <!-- Input Group for First and Last Name, where First Name is on the left and Last Name is on the right -->
-                       <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="firstName" class="font-header-custom-2">First Name</label>
-                                <input class="form-control" id="firstName" type="text" name="firstName" required>
+                        <!-- Input Group for First and Last Name, where First Name is on the left and Last Name is on the right -->
+                           <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="firstName" class="font-header-custom-2">First Name</label>
+                                    <input class="form-control" id="firstName" type="text" name="firstName" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="lastName" class="font-header-custom-2">Last Name</label>
+                                    <input class="form-control" id="lastName" type="text" name="lastName" required>
+                                </div>
                             </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="lastName" class="font-header-custom-2">Last Name</label>
-                                <input class="form-control" id="lastName" type="text" name="lastName" required>
+
+                        <label for="password" class="font-header-custom-2">Password</label>
+                        <input class="form-control" id="password" type="password" name="password" required>
+
+                        {%  for llm_model_name in llm_model_names %}
+                            <!-- Text Box on left which is prefilled with Large Language Model Name, which comes
+                            from the database text Box on right which allows user to enter API Key -->
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="LLM-Name" class="font-header-custom-2">Model Name</label>
+                                    <input class="form-control" id="LLM-Name" type="text" name="LLM-Name"
+                                           value="{{llm_model_name }}" readonly>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="API-Key" class="font-header-custom-2">API Key</label>
+                                    <input class="form-control" id="API-Key" type="text" name="API-Key">
+                                </div>
                             </div>
-                        </div>
+                        {% endfor %}
 
-                    <label for="password" class="font-header-custom-2">Password</label>
-                    <input class="form-control" id="password" type="password" name="password" required>
-
-                    {%  for llm_model_name in llm_model_names %}
-                    <!-- Text Box on left which is prefilled with Large Language Model Name, which comes from the database
-                            Text Box on right which allows user to enter API Key -->
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="LLM-Name" class="font-header-custom-2">Model Name</label>
-                            <input class="form-control" id="LLM-Name" type="text" name="LLM-Name"
-                                   value="{{llm_model_name }}" readonly>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="API-Key" class="font-header-custom-2">API Key</label>
-                            <input class="form-control" id="API-Key" type="text" name="API-Key">
-                        </div>
-                    </div>
-                    {% endfor %}
-
-
-                    <hr class="mb-3">
-                    <!-- Clear Text Box Button -->
-                    <input class="btn btn-primary" type="reset" id="clear" name="clear" value="Reset">
-                    <!-- Submit Button -->
-                    <input class="btn btn-primary" type="submit" id="register" name="create" value="Sign Up">
+                        <hr class="mb-3">
+                        <!-- Clear Text Box Button -->
+                        <input class="btn btn-primary" type="reset" id="clear" name="clear" value="Reset">
+                        <!-- Submit Button -->
+                        <input class="btn btn-primary" type="submit" id="register" name="create" value="Sign Up">
+                    {% endif %}
 
                 </div>
             </div>

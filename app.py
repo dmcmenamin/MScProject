@@ -54,15 +54,22 @@ def login():
 
 @app.route('/signup_endpoint', methods=['GET', 'POST'])
 def signup():
+    # if it is a get request
     if request.method == 'GET':
         available_llms_query = queries.get_available_llms()
         database_connection = MySQLConnection()
-        returned_llm_model_names = database_connection.query_return_matches_specified(available_llms_query, 100)
-        # convert list of tuples to list of strings
-        for i in range(len(returned_llm_model_names)):
-            returned_llm_model_names[i] = returned_llm_model_names[i][0]
-        # render signup page with list of available llm model names
-        return render_template('signup.html', llm_model_names=list(returned_llm_model_names))
+        # if the connection is not an exception, get the available llm model names
+        # otherwise, return an error message to the user and render the signup page
+        if not isinstance(database_connection.connect(), Exception):
+            returned_llm_model_names = (database_connection.
+                                        query_return_matches_specified(available_llms_query, 100))
+            # convert list of tuples to list of strings
+            for i in range(len(returned_llm_model_names)):
+                returned_llm_model_names[i] = returned_llm_model_names[i][0]
+            # render signup page with list of available llm model names
+            return render_template('signup.html', llm_model_names=list(returned_llm_model_names))
+        else:
+            return render_template('signup.html', error_message="Error connecting to database")
 
     elif request.method == 'POST':
         # get user input
