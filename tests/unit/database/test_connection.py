@@ -1,14 +1,14 @@
 from unittest import TestCase
 from unittest.mock import Mock
-from src.database.connection import MySQLConnection
+from src.database.connection import RelDBConnection
 
 
 class TestMySQLConnection(TestCase):
 
     def setUp(self):
-        # Create a mock for the MySQLConnection class
+        # Create a mock for the RelDBConnection class
         self.mock_connection = Mock()
-        self.connection = MySQLConnection("localhost", "root", "", "dynamicpowerpoint")
+        self.connection = RelDBConnection()
         # Override the connect method through the use of a lambda function, to not call the real database
         self.connection.connect = lambda: self.mock_connection
 

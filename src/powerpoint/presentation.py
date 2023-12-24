@@ -1,6 +1,6 @@
+from pptx import Presentation
 import re
 
-from pptx import Presentation
 
 # Define constants for slide layouts
 SLIDE_TITLE_LAYOUT = 0

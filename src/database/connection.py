@@ -1,27 +1,44 @@
 import json
+import os
+
 import mysql.connector
 
 from src.database import queries
 
 
-# MySQLConnection class
+# RelationalDB class
 # This class is used to connect to a MySQL database
 # It can be used to run queries with no return, with return, with parameters
 # It can be used to run insert, update, delete, select
-class MySQLConnection:
+class RelDBConnection:
 
-    # constructor for MySQLConnection class
+    # constructor for RelDBConnection class
     # reads in the host, user, password and database from the env_variables.json file
     def __init__(self):
-        with open("./configs/env_variables.json", "r") as env_variables:
-            env_variables = json.load(env_variables)
-            self.host = env_variables["database"]["host"]
-            self.user = env_variables["database"]["user"]
-            self.password = env_variables["database"]["password"]
-            self.database = env_variables["database"]["database"]
+        # read in the host, user, password and database from the env_variables.json file
+        # store them in the class
+        # this is so that the database connection can be changed easily
+        # without having to change the code
+        # if run locally, the env_variables.json file will be used
+        # if run on a server, the env_variables.json file will be ignored
+        # and the environment variables will be used instead
+        if __name__ == 'app':
+            with open("./configs/env_variables.json", "r") as env_variables:
+                env_variables = json.load(env_variables)
+        else:
+            rel_abs_path = os.path.abspath(os.path.dirname(__file__))
+            abs_path = os.path.join(rel_abs_path, "..\\..\\configs\\env_variables.json")
+            with open(abs_path, "r") as env_variables:
+                env_variables = json.load(env_variables)
+
+        self.host = env_variables["database"]["host"]
+        self.user = env_variables["database"]["user"]
+        self.password = env_variables["database"]["password"]
+        self.database = env_variables["database"]["database"]
+
 
     def __str__(self):
-        return (f"MySQLConnection(host={self.host}, user={self.user}, password={self.password}, "
+        return (f"RelDBConnection(host={self.host}, user={self.user}, password={self.password}, "
                 f"database={self.database})")
 
     # connect to the database
@@ -39,7 +56,6 @@ class MySQLConnection:
             )
             return connection
         except mysql.connector.Error as error:
-            print(error)
             return error
 
     # run query with no return
@@ -122,6 +138,6 @@ class MySQLConnection:
 
 
 if __name__ == '__main__':
-    connect = MySQLConnection()
+    connect = RelDBConnection()
     query = queries.get_all_from_llm_table()
     print(connect.query_return_all_matches(query))

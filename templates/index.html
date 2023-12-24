@@ -75,36 +75,44 @@
             </div>
         </div>
 
-        <div class="Login-In-Container">
-            <!-- Login Container, which contains a form, where User can enter a Username & Password
-                 This then calls the Login-Endpoint for Verification. If successful the user is taken to the moods page
-                 Otherwise they are returned and a hidden Error message is displayed -->
-            <hr class="mb-3">
-            <h1 class="text-center font-header-custom">Login</h1>
-            <hr class="mb-3">
-            <form class="row gy-2 gx-3 align-items-center" action="{{ url_for('login') }}" method="POST">
-                <div class="col-md-6">
-                    <div class="input-group">
-                        <div class="input-group-text">@</div>
-                        <input type="text" class="form-control" id="autoSizingInputGroup" placeholder="Username"
-                            name="Username">
+        <!-- Validation on if Database is down -->
+        {% if database_error %}
+            <!-- Database is down, so display an error message -->
+            <h1 class="text-center font-header-custom-2">{{ database_error}}</h1>
+        {% else %}
+            <!-- Database is up, so display the Login Form -->
+            <div class="Login-In-Container">
+                <!-- Login Container, which contains a form, where User can enter a Username & Password
+                     This then calls the Login-Endpoint for Verification. If successful the user is taken to the moods page
+                     Otherwise they are returned and a hidden Error message is displayed -->
+                <hr class="mb-3">
+                <h1 class="text-center font-header-custom">Login</h1>
+                <hr class="mb-3">
+                <form class="row gy-2 gx-3 align-items-center" action="{{ url_for('login') }}" method="POST">
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <div class="input-group-text">@</div>
+                            <input type="text" class="form-control" id="autoSizingInputGroup" placeholder="username"
+                                name="username">
+                        </div>
                     </div>
-                </div>
-                <div class="col-md-6">
-                    <input type="text" class="form-control" id="autoSizingInput" placeholder="Password" name="Password">
-                </div>
+                    <div class="col-md-6">
+                        <input type="text" class="form-control" id="autoSizingInput" placeholder="password" name="password">
+                    </div>
 
-                <!-- Hidden Error Message that is only displayed if incorrect Username or password is entered -->
-                <span class="login-error" style="display: none;">
-                    <p> Incorrect Username or Password </p>
-                </span>
+                    <!-- Hidden Error Message that is only displayed if incorrect Username or password is entered -->
+                    {% if login_error %}
+                        <span class="login-error font-header-custom-2 text-center">
+                            <p> {{ login_error }} </p>
+                        </span>
+                    {% endif %}
 
-
-                <div class="col-12">
-                    <button type="submit" class="btn btn-primary btn-login-submit">Submit</button>
-                </div>
-            </form>
-        </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary btn-login-submit">Submit</button>
+                    </div>
+                </form>
+            </div>
+        {% endif %}
     </div>
 
 </body>

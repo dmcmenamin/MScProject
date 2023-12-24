@@ -36,13 +36,13 @@
       </div>
     </nav>
 
-    {% if error_message %}
+    {% if database_error %}
         <div class="font-header-custom" role="alert">
-            <h1 class="text-center">Database Connection Error, please contact system administrator</h1>
+            <h1 class="text-center"> {{ database_error }}</h1>
         </div>
     {% else %}
         <!-- Sign Up Form -->
-        <form>
+        <form action="/signup_endpoint" method="post">
             <div class="container">
                 <div class="row">
                     <div class="col-md-6 offset-md-3">
@@ -91,12 +91,11 @@
                         <input class="btn btn-primary" type="reset" id="clear" name="clear" value="Reset">
                         <!-- Submit Button -->
                         <input class="btn btn-primary" type="submit" id="register" name="create" value="Sign Up">
-                    {% endif %}
-
+                    </div>
                 </div>
             </div>
-        </div>
-    </form>
-
+        </form>
+    {% endif %}
 </body>
+
 </html>
