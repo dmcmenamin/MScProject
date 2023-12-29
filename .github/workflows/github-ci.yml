@@ -15,5 +15,4 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt  # Assuming you have a requirements.txt file
       - name: Run tests
-        echo: "Running tests..."
         run: python -m unittest discover -s tests
