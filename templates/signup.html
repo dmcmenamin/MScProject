@@ -55,8 +55,7 @@
                         <input class="form-control" id="username" type="text" name="username" required>
                         <!-- Validation message to check if username is already taken -->
                         {% if username_taken_error %}
-                            <div class="font-header-custom-2">
-                                <br><br>
+                            <div class="font-header-error-2">
                                 <h1 class="text-center"> {{ username_taken_error }}</h1>
                             </div>
                         {% endif %}
@@ -64,11 +63,11 @@
                            <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="firstName" class="font-header-custom-2">First Name</label>
-                                    <input class="form-control" id="firstName" type="text" name="firstName" required>
+                                    <input class="form-control" id="firstName" type="text" name="first_name" required>
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="lastName" class="font-header-custom-2">Last Name</label>
-                                    <input class="form-control" id="lastName" type="text" name="lastName" required>
+                                    <input class="form-control" id="lastName" type="text" name="last_name" required>
                                 </div>
                             </div>
 
@@ -81,12 +80,12 @@
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="LLM-Name" class="font-header-custom-2">Model Name</label>
-                                    <input class="form-control" id="LLM-Name" type="text" name="LLM-Name"
+                                    <input class="form-control" id="LLM-Name" type="text" name="llm_name_{{ llm_model_name }}"
                                            value="{{llm_model_name }}" readonly>
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="API-Key" class="font-header-custom-2">API Key</label>
-                                    <input class="form-control" id="API-Key" type="text" name="API-Key">
+                                    <input class="form-control" id="API-Key" type="text" name="api_key_{{ llm_model_name }}">
                                 </div>
                             </div>
                         {% endfor %}
