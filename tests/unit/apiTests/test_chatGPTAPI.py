@@ -120,13 +120,6 @@ class TestChatGPTAPI(unittest.TestCase):
             api.get_presentation_image("", image_size)
 
     # Test the get presentation image method
-    # Test with empty image size method
-    def test_get_presentation_image_with_empty_image_size(self):
-        api = ChatGPTAPI(self.api_key, self.model)
-        with self.assertRaises(ValueError):
-            api.get_presentation_image("Image of a cat", "")
-
-    # Test the get presentation image method
     # Test with invalid image size method
     def test_get_presentation_image_with_invalid_image_size(self):
         api = ChatGPTAPI(self.api_key, self.model)

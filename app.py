@@ -98,7 +98,7 @@ def signup():
         # if user exists
         if returned_user_information:
             # redirect to login page
-            return redirect(url_for('index'))
+            return render_template('signup.html', username_taken_error="User already exists")
         # if user does not exist
         else:
             # create salt and hashed password

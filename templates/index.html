@@ -78,7 +78,7 @@
         <!-- Validation on if Database is down -->
         {% if database_error %}
             <!-- Database is down, so display an error message -->
-            <h1 class="text-center font-header-custom-2">{{ database_error}}</h1>
+            <h1 class="text-center font-header-error-2">{{ database_error}}</h1>
         {% else %}
             <!-- Database is up, so display the Login Form -->
             <div class="Login-In-Container">
@@ -102,7 +102,7 @@
 
                     <!-- Hidden Error Message that is only displayed if incorrect Username or password is entered -->
                     {% if login_error %}
-                        <span class="login-error font-header-custom-2 text-center">
+                        <span class="login-error font-header-error-2 text-center">
                             <p> {{ login_error }} </p>
                         </span>
                     {% endif %}
