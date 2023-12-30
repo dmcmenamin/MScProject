@@ -9,7 +9,9 @@ stages:
 test:
   stage: test
   script:
+    - echo "Installing pip..."
+    - apt-get update && apt-get install -y python3-pip
     - echo "Installing dependencies..."
-    - python pip install -r requirements.txt
+    - pip install -r requirements.txt
     - echo "Running tests..."
     - python -m unittest discover -s tests
