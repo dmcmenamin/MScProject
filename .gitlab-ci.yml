@@ -1,5 +1,5 @@
 # Specify the base image with Python and environment setup
-image: python:3.11.0a1-alpine3.14
+image: python:3.9
 
 # Define stages for your CI/CD pipeline
 stages:
