@@ -1,5 +1,5 @@
 # Specify the base image with Python and environment setup
-image: python:3.11
+image: python:3.11.0a1-alpine3.14
 
 # Define stages for your CI/CD pipeline
 stages:
@@ -9,8 +9,6 @@ stages:
 test:
   stage: test
   script:
-    - echo "Installing pip..."
-    - apt-get update && apt-get install -y python3-pip
     - echo "Installing dependencies..."
     - pip install -r requirements.txt
     - echo "Running tests..."
