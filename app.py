@@ -52,10 +52,10 @@ def login():
                     # store user information in session
                     session['user_id'] = user_id
                     session['username'] = username
-                    session['user_first_name'] = user_first_name
-                    session['user_last_name'] = user_last_name
-                    # redirect to chatbot page
-                    return render_template('index.html', session=session)
+                    session['first_name'] = user_first_name
+                    session['last_name'] = user_last_name
+                    # successful login user redirect to presentation generator page
+                    return redirect(url_for('presentation_generator'))
                 else:
                     # if password is incorrect
                     # redirect to login page
@@ -138,20 +138,64 @@ def signup():
             session['user_first_name'] = first_name
             session['user_last_name'] = last_name
 
-            # get first llm model name & api key from dictionary
-            first_llm_model_name = list(llm.keys())[0]
-            first_api_key = list(llm.values())[0]
-            # store api key in session
-            session['api_key'] = first_api_key
-
-            # redirect to login page
-            return render_template('index.html', session=session)
+            # successful login user redirect to presentation generator page
+            return redirect(url_for('presentation_generator'))
     else:
         return render_template('signup.html', database_error="Database error. "
                                                              "Please try again later.")
 
 
-@app.route('/logout')
+@app.route('/presentation_generator_endpoint', methods=['GET', 'POST'])
+def presentation_generator():
+    if request.method == 'GET':
+        # if user is not logged in, redirect to login page
+        if 'username' not in session:
+            return render_template('index.html', login_error="Please login to access this page.")
+        else:
+            # get user's available llm model names
+            database_connection = RelDBConnection()
+            params = (session['username'],)
+            returned_llm_model_names = (
+                database_connection.
+                query_return_all_matches_with_parameter(queries.get_all_llms_which_user_has_access_to(),  params))
+            # convert list of tuples to list of strings
+            for i in range(len(returned_llm_model_names)):
+                returned_llm_model_names[i] = returned_llm_model_names[i][0]
+
+            # get specific llm models
+            specific_llm_models = {}
+            for llm_model in returned_llm_model_names:
+                params = (llm_model,)
+                returned_llm_model_information = (
+                    database_connection.
+                    query_return_all_matches_with_parameter(queries.get_specific_llm(), params))
+
+                # convert list of tuples to list of strings for each llm model
+                for i in range(len(returned_llm_model_information)):
+                    if returned_llm_model_information[i][3] == "text":
+                        specific_llm_models[i] = returned_llm_model_information[i][2]
+
+            # render presentation generator page with list of available llm model names
+            return render_template('presentation_generator.html',
+                                   llm_model_names=list(returned_llm_model_names),
+                                   specific_llm_models=list(specific_llm_models.values()))
+    elif request.method == 'POST':
+        # get user input
+        print(request.form)
+        print(session['first_name'])
+        presenter_name = session['first_name'] + " " + session['last_name']
+        topic = request.form['presentation_topic']
+        audience_size = request.form['audience_size']
+        time = request.form['presentation_length']
+        audience_outcome = request.form['expected_outcome']
+
+        # get large language model & exact model name
+        # split the string to get the large language model name and the specific model name
+        large_language_model, model_name = request.form['llm_model_name'].split("_")
+        return render_template('presentation_generator.html')
+
+
+@app.route('/logout_endpoint')
 def logout():
     session.clear()
     return redirect(url_for('index'))
