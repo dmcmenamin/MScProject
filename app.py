@@ -3,6 +3,7 @@ import os
 from flask import Flask, render_template, redirect, url_for, request, session
 from werkzeug.serving import run_simple
 
+from src.controllers import controller
 from src.database import queries, database_scripts
 from src.database.connection import RelDBConnection
 
@@ -157,28 +158,31 @@ def presentation_generator():
             params = (session['username'],)
             returned_llm_model_names = (
                 database_connection.
-                query_return_all_matches_with_parameter(queries.get_all_llms_which_user_has_access_to(),  params))
+                query_return_all_matches_with_parameter(queries.get_all_llms_which_user_has_access_to(), params))
             # convert list of tuples to list of strings
             for i in range(len(returned_llm_model_names)):
                 returned_llm_model_names[i] = returned_llm_model_names[i][0]
 
             # get specific llm models
             specific_llm_models = {}
+            llm_names_and_models = {}
             for llm_model in returned_llm_model_names:
+                llm_names_and_models[llm_model] = []
                 params = (llm_model,)
                 returned_llm_model_information = (
                     database_connection.
                     query_return_all_matches_with_parameter(queries.get_specific_llm(), params))
 
+                text_llm_model_information = []
                 # convert list of tuples to list of strings for each llm model
                 for i in range(len(returned_llm_model_information)):
                     if returned_llm_model_information[i][3] == "text":
-                        specific_llm_models[i] = returned_llm_model_information[i][2]
-
+                        text_llm_model_information.append(returned_llm_model_information[i][2])
+                llm_names_and_models[llm_model] = text_llm_model_information
             # render presentation generator page with list of available llm model names
+            print(llm_names_and_models)
             return render_template('presentation_generator.html',
-                                   llm_model_names=list(returned_llm_model_names),
-                                   specific_llm_models=list(specific_llm_models.values()))
+                                   llm_names_and_models=llm_names_and_models)
     elif request.method == 'POST':
         # get user input
         print(request.form)
@@ -192,6 +196,7 @@ def presentation_generator():
         # get large language model & exact model name
         # split the string to get the large language model name and the specific model name
         large_language_model, model_name = request.form['llm_model_name'].split("_")
+        controller.generate_presentation(topic, audience_size, time, audience_outcome, large_language_model, model_name)
         return render_template('presentation_generator.html')
 
 

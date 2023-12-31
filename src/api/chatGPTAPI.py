@@ -31,6 +31,8 @@ class ChatGPTAPI:
 
     # Returns a chat response from OpenAI - inputs are question and model
     def get_chat_response(self, question, llm_model):
+        print(question)
+        print(llm_model)
         if not question:
             raise ValueError("Question cannot be empty.")
         else:

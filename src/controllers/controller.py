@@ -20,8 +20,11 @@ def prompt(presenter_name, topic, audience_size, time, audience_outcome):
             "talk about. Please also provide information on the time that the presenter should spend on each slide, "
             "and ensure that the total time adds up to {time}."
             "For the final slide, provide a summary of the presentation, and also provide a list of references that "
-            "the presenter can use to find out more information on the topic.", presenter_name,
-            topic, audience_size, time, audience_outcome)
+            "the presenter can use to find out more information on the topic.").format(presenter_name=presenter_name,
+                                                                                       topic=topic,
+                                                                                       audience_size=audience_size,
+                                                                                       time=time,
+                                                                                       audience_outcome=audience_outcome)
 
 
 # method that takes in the string, and searches for the keyword IMAGE_SUGGESTION
