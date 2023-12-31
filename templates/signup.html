@@ -29,7 +29,6 @@
           <div class="navbar-nav">
             <a class="nav-link active" aria-current="page" href="/">Home</a>
             <a class="nav-link disabled" aria-disabled="true" href="#">Sign-Up</a>
-            <a class="nav-link" href="#">Login</a>
             <a class="nav-link disabled" aria-disabled="true">Chatbot</a>
           </div>
         </div>
@@ -37,7 +36,7 @@
     </nav>
 
     {% if database_error %}
-        <div class="font-header-custom" role="alert">
+        <div class="font-header-error" role="alert">
             <h1 class="text-center"> {{ database_error }}</h1>
         </div>
     {% else %}
@@ -54,16 +53,21 @@
                         <!-- Input Text Box for Username -->
                         <label for="username" class="font-header-custom-2">Username</label>
                         <input class="form-control" id="username" type="text" name="username" required>
-
+                        <!-- Validation message to check if username is already taken -->
+                        {% if username_taken_error %}
+                            <div class="font-header-error-2">
+                                <h1 class="text-center"> {{ username_taken_error }}</h1>
+                            </div>
+                        {% endif %}
                         <!-- Input Group for First and Last Name, where First Name is on the left and Last Name is on the right -->
                            <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="firstName" class="font-header-custom-2">First Name</label>
-                                    <input class="form-control" id="firstName" type="text" name="firstName" required>
+                                    <input class="form-control" id="firstName" type="text" name="first_name" required>
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="lastName" class="font-header-custom-2">Last Name</label>
-                                    <input class="form-control" id="lastName" type="text" name="lastName" required>
+                                    <input class="form-control" id="lastName" type="text" name="last_name" required>
                                 </div>
                             </div>
 
@@ -76,12 +80,12 @@
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="LLM-Name" class="font-header-custom-2">Model Name</label>
-                                    <input class="form-control" id="LLM-Name" type="text" name="LLM-Name"
+                                    <input class="form-control" id="LLM-Name" type="text" name="llm_name_{{ llm_model_name }}"
                                            value="{{llm_model_name }}" readonly>
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="API-Key" class="font-header-custom-2">API Key</label>
-                                    <input class="form-control" id="API-Key" type="text" name="API-Key">
+                                    <input class="form-control" id="API-Key" type="text" name="api_key_{{ llm_model_name }}">
                                 </div>
                             </div>
                         {% endfor %}

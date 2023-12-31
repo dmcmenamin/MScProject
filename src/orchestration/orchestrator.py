@@ -23,9 +23,9 @@ class Orchestrator:
         self.model = model
 
     def call_large_language_model(self):
-        if self.large_language_model == "chat":
+        if self.large_language_model == "ChatGPT":
             return self.call_chatgpt_api(self.api_key, self.model)
-        elif self.large_language_model == "bard":
+        elif self.large_language_model == "Bard":
             return self.call_bard_api()
         else:
             raise ValueError("Large Language Model is not supported.")
