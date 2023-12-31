@@ -1,0 +1,19 @@
+# Specify the base image with Python and environment setup
+image: python:3.11
+
+# Define stages for your CI/CD pipeline
+stages:
+  - build
+  - test
+
+# Define job for running tests
+build:
+  stage: build
+  script:
+    - echo "Installing dependencies..."
+    - pip install -r requirements.txt
+test:
+  stage: test
+  script:
+    - echo "Running tests..."
+    - python -m unittest discover -s tests

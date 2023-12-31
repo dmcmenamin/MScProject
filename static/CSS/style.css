@@ -1,0 +1,119 @@
+/***** Main Styles *****/
+/* Path: static/CSS/style.css */
+body {
+    background-color: #2D4263;
+    font-family: 'Roboto', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.5;
+    color: #212529;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+html {
+    height: 100%;
+}
+
+
+/*****  ID Styles *****/
+
+
+/*****  Class Styles *****/
+
+.bg-custom {
+    background-color: #2D4263;
+}
+
+.btn-info {
+    font-size: 20px;
+    background: #B6EADA;
+    padding: 10px 20px 10px 20px;
+}
+
+.content {
+    flex: 1 0 auto;
+}
+
+.font-header-custom {
+    font-family: 'Roboto', sans-serif;
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1.5;
+    color: #ECDBBA;
+    flex-shrink: 0;
+}
+
+.font-header-custom-2 {
+    font-family: 'Roboto', sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1.5;
+    color: #ECDBBA;
+}
+
+.font-header-error {
+    font-family: 'Roboto', sans-serif;
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1.5;
+    color: #B31312;
+    flex-shrink: 0;
+    animation: animate 1s linear infinite; /*** Animation Blink for error message ***/
+}
+
+.font-header-error-2 {
+    font-family: 'Roboto', sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1.5;
+    color: #B31312;
+    animation: animate 1s linear infinite; /*** Animation Blink for error message ***/
+}
+
+.img-container {
+    display: grid;
+    place-items: center;
+}
+
+.Login-In-Container {
+    width: 50%;
+    margin: 10px auto auto;
+}
+
+.llm-api-key {
+    white-space: nowrap;
+}
+
+.navbar {
+    font-size: 32px;
+}
+
+.table-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #2D4263;
+}
+
+.Sign-Up-Container {
+    width: 50%;
+    margin: 10px auto auto;
+}
+
+/***** Animation Styles *****/
+@keyframes animate {
+    0% {
+        opacity: 0;
+    }
+
+    50% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+

@@ -1,0 +1,14 @@
+{
+  "database": {
+    "host": "localhost",
+    "user": "root",
+    "password": "",
+    "database": "dynamicpowerpoint"
+  },
+
+  "MockChatGPT": {
+    "MOCK_API_KEY": "MOCK_API_KEY",
+    "MOCK_MODEL_NAME": "MOCK_MODEL_NAME"
+  }
+
+}

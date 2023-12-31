@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Page</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" type="text/css" href="../static/CSS/style.css">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+          rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+          crossorigin="anonymous">
+
+    <!-- JQuery -->
+        <!-- JQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.3.js"
+        integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM=" crossorigin="anonymous"></script>
+</head>
+
+
+<body class="bg-custom">
+
+<!-- Navbar -->
+    <nav class="navbar navbar-expand-lg bg-body-tertiary" data-bs-theme="dark">
+      <div class="container-fluid">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+          <div class="navbar-nav">
+            <a class="nav-link active" aria-current="page" href="/">Home</a>
+            <a class="nav-link" href="/signup_endpoint">Sign-Up</a>
+              {% if 'username' in session %}
+                <a class="nav-link" href="presentation_generator_endpoint">Presentation Generator</a>
+                <a class="nav-link ms-auto" href="/logout_endpoint">Logout</a>
+              {% else %}
+                <a class="nav-link disabled" aria-disabled="true">Presentation Generator</a>
+                <a class="nav-link disabled" aria-disabled="true">Logout</a>
+              {% endif %}
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container-fluid content">
+        <div class="row">
+            <div class="col-12">
+                <h1 class="text-center font-header-custom">Welcome to DynaPoint</h1>
+            </div>
+        </div>
+
+
+        <!-- Image -->
+        <div class="img-container">
+            <div class="row">
+                <div class="col-12">
+                    <img src="../static/Images/Front_Page.jpg" class="img-front-page" alt="Image of a Man sitting at
+                        a computer screen with a Chatbot on the screen" width="512" height="512">
+                </div>
+            </div>
+        </div>
+        <br> <br>
+
+        <div class="font-header-custom-2">
+            <div class="row">
+                <div class="col-12">
+                    <h1 class="text-center">What is DynaPoint?</h1>
+                    <h2 class="text-center">DynaPoint is a Dynamic Presentation Creator</h2>
+                    <p class="text-center">It allows users to create a Presentation based on input from a Chatbot <br>
+                    Using Generative AI, to create a presentation based on user input</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Validation on if Database is down -->
+        {% if database_error %}
+            <!-- Database is down, so display an error message -->
+            <h1 class="text-center font-header-error-2">{{ database_error}}</h1>
+        {% else %}
+            <!-- Database is up, so display the Login Form -->
+            <div class="Login-In-Container">
+                <!-- Login Container, which contains a form, where User can enter a Username & Password
+                     This then calls the Login-Endpoint for Verification. If successful the user is taken to the moods page
+                     Otherwise they are returned and a hidden Error message is displayed -->
+                <hr class="mb-3">
+                <h1 class="text-center font-header-custom">Login</h1>
+                <hr class="mb-3">
+                <form class="row gy-2 gx-3 align-items-center" action="{{ url_for('login') }}" method="POST">
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <div class="input-group-text">@</div>
+                            <input type="text" class="form-control" id="autoSizingInputGroup" placeholder="username"
+                                name="username">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <input type="text" class="form-control" id="autoSizingInput" placeholder="password" name="password">
+                    </div>
+
+                    <!-- Hidden Error Message that is only displayed if incorrect Username or password is entered -->
+                    {% if login_error %}
+                        <span class="login-error font-header-error-2 text-center">
+                            <p> {{ login_error }} </p>
+                        </span>
+                    {% endif %}
+
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary btn-login-submit">Submit</button>
+                    </div>
+                </form>
+            </div>
+        {% endif %}
+    </div>
+
+</body>
+</html>
