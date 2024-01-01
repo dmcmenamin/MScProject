@@ -24,6 +24,7 @@ class RelDBConnection:
         # and the environment variables will be used instead
         if __name__ == 'app':
             with open("./configs/env_variables.json", "r") as env_variables:
+                print(__name__)
                 env_variables = json.load(env_variables)
         else:
             rel_abs_path = os.path.abspath(os.path.dirname(__file__))
