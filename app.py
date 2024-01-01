@@ -13,8 +13,7 @@ app.secret_key = os.urandom(24)
 
 @app.route('/')
 def index():
-    name_value = __name__
-    return render_template('index.html', name_value=name_value)
+    return render_template('index.html', session=session)
 
 
 @app.route('/login', methods=['GET', 'POST'])
