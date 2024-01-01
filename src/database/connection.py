@@ -22,9 +22,9 @@ class RelDBConnection:
         # if run locally, the env_variables.json file will be used
         # if run on a server, the env_variables.json file will be ignored
         # and the environment variables will be used instead
+        print(__name__)
         if __name__ == 'app':
             with open("./configs/env_variables.json", "r") as env_variables:
-                print(__name__)
                 env_variables = json.load(env_variables)
         else:
             rel_abs_path = os.path.abspath(os.path.dirname(__file__))
