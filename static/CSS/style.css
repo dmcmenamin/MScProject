@@ -72,6 +72,15 @@ html {
     animation: animate 1s linear infinite; /*** Animation Blink for error message ***/
 }
 
+.font-footer-custom {
+    font-family: 'Roboto', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.5;
+    color: #ECDBBA;
+    flex-shrink: 0;
+}
+
 .img-container {
     display: grid;
     place-items: center;
