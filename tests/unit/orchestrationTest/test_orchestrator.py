@@ -16,8 +16,8 @@ class TestOrchestrator(unittest.TestCase):
     # Test the constructor
     def test_constructor(self):
         # Test constructor with valid input
-        orchestrator = Orchestrator("chat", self.api_key, self.model)
-        self.assertEqual(orchestrator.large_language_model, "chat")
+        orchestrator = Orchestrator("ChatGPT", self.api_key, self.model)
+        self.assertEqual(orchestrator.large_language_model, "ChatGPT")
         self.assertEqual(orchestrator.api_key, self.api_key)
         self.assertEqual(orchestrator.model, self.model)
 
@@ -27,12 +27,12 @@ class TestOrchestrator(unittest.TestCase):
 
         # Test constructor with empty API key
         with self.assertRaises(ValueError):
-            Orchestrator("chat", "", self.model)
+            Orchestrator("ChatGPT", "", self.model)
 
     # Test the call_large_language_model method with the Mock class
     @patch("src.api.chatGPTAPI.ChatGPTAPI")
     def test_call_large_language_model_chat(self, mock_chatgptapi):
-        orchestrator = Orchestrator("chat", self.api_key, self.model)
+        orchestrator = Orchestrator("ChatGPT", self.api_key, self.model)
 
         # Create a mock ChatGPTAPI instance
         chatgpt_mock = Mock(spec=ChatGPTAPI)
@@ -47,7 +47,7 @@ class TestOrchestrator(unittest.TestCase):
     # Test the call_large_language_model method for bard
     # Pass for now as it is not implemented yet
     def test_call_large_language_model_bard(self):
-        orchestrator = Orchestrator("bard", self.api_key, self.model)
+        orchestrator = Orchestrator("Bard", self.api_key, self.model)
         pass
 
     # Test the call_large_language_model method with invalid input#
