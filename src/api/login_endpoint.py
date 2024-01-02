@@ -4,7 +4,7 @@ from src.database import queries, database_scripts
 from src.database.connection import RelDBConnection
 
 
-def login(data):
+def login_api(data):
     # Get the data from the request
     username = data.get("username")
     password = data.get("password")

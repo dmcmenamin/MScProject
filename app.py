@@ -2,7 +2,7 @@ import os
 
 from flask import Flask, render_template, redirect, url_for, request, session, jsonify
 
-from src.api.login_endpoint import login
+from src.api.login_endpoint import login_api
 from src.api.signup_endpoint import signup_get, signup_post
 from src.controllers import controller
 from src.database import queries, database_scripts
@@ -19,7 +19,7 @@ def index():
 
 @app.route('/login', methods=['POST'])
 def login():
-    response, status_code = login(request.form)
+    response, status_code = login_api(request.form)
     if status_code == 200:
         session['username'] = response.json['username']
         session['user_id'] = response.json['user_id']
@@ -39,7 +39,7 @@ def signup():
         if status_code == 200:
             return render_template('signup.html', llm_model_names=response.json['llm_model_names'])
         else:
-            return render_template('signup.html', response=response.json['error'])
+            return render_template('signup.html', response=response)
 
     # if it is a post request
     elif request.method == 'POST':
