@@ -145,4 +145,3 @@ class RelDBConnection:
 if __name__ == '__main__':
     connect = RelDBConnection()
     query = queries.get_all_from_llm_table()
-    print(connect.query_return_all_matches(query))

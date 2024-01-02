@@ -180,13 +180,10 @@ def presentation_generator():
                         text_llm_model_information.append(returned_llm_model_information[i][2])
                 llm_names_and_models[llm_model] = text_llm_model_information
             # render presentation generator page with list of available llm model names
-            print(llm_names_and_models)
             return render_template('presentation_generator.html',
                                    llm_names_and_models=llm_names_and_models)
     elif request.method == 'POST':
         # get user input
-        print(request.form)
-        print(session['first_name'])
         presenter_name = session['first_name'] + " " + session['last_name']
         topic = request.form['presentation_topic']
         audience_size = request.form['audience_size']
