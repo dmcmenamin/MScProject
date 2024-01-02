@@ -194,7 +194,7 @@ def presentation_generator():
         # split the string to get the large language model name and the specific model name
         large_language_model, model_name = request.form['llm_model_name'].split("_")
         controller.generate_presentation(topic, audience_size, time, audience_outcome, large_language_model, model_name)
-        return render_template('presentation_generator.html')
+        return render_template('index.html')
 
 
 @app.route('/logout_endpoint')
