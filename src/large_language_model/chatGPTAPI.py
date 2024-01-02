@@ -1,8 +1,7 @@
 from openai import OpenAI
 import openai
 
-# TODO: Move API key to .env file
-api_key = "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"
+from src.large_language_model import large_language_model_parent
 
 
 # ChatGPTAPI class to handle all OpenAI API calls
@@ -12,10 +11,11 @@ api_key = "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"
 #  - get_presentation_slides: returns a presentation deck from OpenAI - inputs are topic, audience size and time
 #  - get_presentation_image: returns an image from OpenAI - inputs are image query and image size
 #
-class ChatGPTAPI:
+class ChatGPTAPI(large_language_model_parent.LargeLanguageModel):
 
     # Constructor for ChatGPTAPI class - inputs are OpenAI API key and model
     def __init__(self, openai_api_key, model):
+        super().__init__(openai_api_key, model)
         if not openai_api_key:
             raise ValueError("OpenAI API key cannot be empty.")
         else:
@@ -27,7 +27,7 @@ class ChatGPTAPI:
             self.model = model
 
     def __str__(self):
-        return f"ChatGPTAPI(openai_api_key={self.openai_api_key}, model={self.model})"
+        return f"ChatGPTAPI(openai_api_key={self.client}, model={self.model})"
 
     # Returns a chat response from OpenAI - inputs are question and model
     def get_chat_response(self, question, llm_model):
