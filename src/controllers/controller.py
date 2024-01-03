@@ -1,11 +1,13 @@
-from flask import session
+import shutil
+from datetime import datetime
 
-from src.orchestration import orchestrator
+import requests
+import os
+
+from flask import session, jsonify
 from src.orchestration.orchestrator import Orchestrator
 from src.powerpoint.presentation import PowerPointPresentation
-import requests
 from io import BytesIO
-import os
 
 
 def prompt(presenter_name, topic, audience_size, time, audience_outcome):
@@ -96,24 +98,73 @@ def generate_presentation(presentation_topic, audience_size, presentation_length
     # get the presentation slides
     presentation_string = orchestration_service.call_large_language_model().get_presentation_slides(populated_prompt)
 
+    file_location = create_unique_folder(presentation_topic)
+
     # save the presentation string to a file - this is used for debugging purposes
-    with open("presentation.txt", "w") as f:
+    with open(file_location + "/presentation.txt", "w") as f:
         f.write(presentation_string)
 
     # extract the image suggestions from the presentation string, and replace them with the image url
     presentation_string = get_ai_image_suggestion(presentation_string, large_language_model, specific_model_name)
 
     # save the presentation string to a file - this is used for debugging purposes
-    with open(presentation_topic + " .txt", "w") as f:
+    with open(file_location + "/presentation_with_images.txt", "w") as f:
         f.write(presentation_string)
 
     # create the PowerPoint presentation from the presentation string by calling the PowerPoint Class
     powerpoint_presentation = PowerPointPresentation(presentation_string)
 
     # save the PowerPoint presentation
-    powerpoint_presentation.save(presentation_topic + ".pptx")
+    powerpoint_presentation.save(file_location + "/" + presentation_topic + ".pptx")
 
     # clean up the jpg files
-    for file in os.listdir():
+    for file in os.listdir(file_location):
         if file.endswith(".jpg"):
             os.remove(file)
+
+    if os.path.exists(file_location + "/" + presentation_topic + ".pptx"):
+        return jsonify({"message": "Presentation generated successfully"}), 200
+    else:
+        return jsonify({"message": "Presentation not found"}), 500
+
+
+def create_unique_folder(filename):
+    """ Creates a unique folder for the user to store their presentations
+    :param filename: The name of the folder to be created
+    :return: None
+    """
+
+    # create a unique filename for the user to store their presentations,
+    # based on their username and the current date and time
+    unique_file_name = session['username'] + "_" + filename + datetime.now().strftime("%Y%m%d-%H%M%S")
+
+    # create a unique folder for the user to store their presentations
+    if not os.path.exists(unique_file_name):
+        os.makedirs(filename)
+    else:
+        # if the folder already exists, delete it and create a new one
+        shutil.rmtree(unique_file_name)
+        os.makedirs(unique_file_name)
+
+    return unique_file_name
+
+
+def download_presentation(folder_name, presentation_file, download_location):
+    """ Downloads a presentation
+    :param folder_name: The name of the folder to be downloaded
+    :param presentation_file: The name of the presentation file to be downloaded
+    :param download_location: The location to download the folder to, this is the user's downloads folder
+
+    """
+
+    if os.path.exists(folder_name):
+        with open(folder_name + "/" + presentation_file, 'rb') as server_file:
+            data = server_file.read()
+            with open(download_location + "/" + presentation_file, 'wb') as user_file:
+                user_file.write(data)
+        return jsonify({"message": "Presentation downloaded successfully"})
+    else:
+        return jsonify({"message": "Presentation not found"})
+
+
+
