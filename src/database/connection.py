@@ -6,22 +6,17 @@ import mysql.connector
 from src.database import queries
 
 
-# RelationalDB class
-# This class is used to connect to a MySQL database
-# It can be used to run queries with no return, with return, with parameters
-# It can be used to run insert, update, delete, select
 class RelDBConnection:
+    """ The RelDBConnection class
+    This class is used to connect to a MySQL database
+    """
 
     # constructor for RelDBConnection class
     # reads in the host, user, password and database from the env_variables.json file
     def __init__(self):
-        # read in the host, user, password and database from the env_variables.json file
-        # store them in the class
-        # this is so that the database connection can be changed easily
-        # without having to change the code
-        # if run locally, the env_variables.json file will be used
-        # if run on a server, the env_variables.json file will be ignored
-        # and the environment variables will be used instead
+        """ The constructor for the RelDBConnection class
+        Reads in the host, user, password and database from the env_variables.json file
+        """
         if __name__ == 'app':
             # for production purposes
             with open(".env_variables.json", "r") as env_variables:
@@ -43,15 +38,17 @@ class RelDBConnection:
         self.database = env_variables["database"]["database"]
 
     def __str__(self):
+        """ The string representation of the RelDBConnection class
+        :return: The string representation of the RelDBConnection class
+        """
+
         return (f"RelDBConnection(host={self.host}, user={self.user}, password={self.password}, "
                 f"database={self.database})")
 
-    # connect to the database
-    # returns the connection
     def connect(self):
-        # attempt to connect to the database
-        # return the connection object if successful, with a success code
-        # otherwise return an exception
+        """ Connects to the database
+        :return: The connection to the database, or an error if the connection fails
+        """
         try:
             connection = mysql.connector.connect(
                 host=self.host,
@@ -63,18 +60,22 @@ class RelDBConnection:
         except mysql.connector.Error as error:
             return error
 
-    # run query with no return
-    # useful for insert, update, delete
     def commit_query(self, passed_query):
+        """ Runs a query with no return and commits it
+        :param passed_query: The query to be run
+        :return: None
+        """
+
         connection = self.connect()
         cursor = connection.cursor()
         cursor.execute(passed_query)
         connection.commit()
         connection.close()
 
-    # run query with return. returns all rows
-    # useful for select
     def query_return_all_matches(self, passed_query):
+        """ Runs a query with return and returns all rows
+        :param passed_query: The query to be run
+        :return: All rows from the query"""
         connection = self.connect()
         cursor = connection.cursor()
         cursor.execute(passed_query)
@@ -82,9 +83,11 @@ class RelDBConnection:
         connection.close()
         return result
 
-    # run query with return. returns first matching row
-    # useful for select
     def query_return_first_match(self, passed_query):
+        """ Runs a query with return and returns the first matching row
+        :param passed_query: The query to be run
+        :return: The first matching row from the query
+        """
         connection = self.connect()
         cursor = connection.cursor()
         cursor.execute(passed_query)
@@ -92,9 +95,12 @@ class RelDBConnection:
         connection.close()
         return result
 
-    # run query with return. returns number of rows specified by size
-    # useful for select
     def query_return_matches_specified(self, passed_query, size):
+        """ Runs a query with return and returns the number of rows specified by size
+        :param passed_query: The query to be run
+        :param size: The number of rows to be returned
+        :return: The number of rows specified by size
+        """
         connection = self.connect()
         cursor = connection.cursor()
         cursor.execute(passed_query)
@@ -102,9 +108,12 @@ class RelDBConnection:
         connection.close()
         return result
 
-    # run query with a parameter and return all rows
-    # useful for select
     def query_return_all_matches_with_parameter(self, passed_query, params):
+        """ Runs a query with a parameter and returns all rows
+        :param passed_query: The query to be run
+        :param params: The parameter to be used in the query
+        :return: All rows from the query
+        """
         connection = self.connect()
         cursor = connection.cursor()
         cursor.execute(passed_query, params)
@@ -112,9 +121,12 @@ class RelDBConnection:
         connection.close()
         return result
 
-    # run query with a parameter and return first match
-    # useful for select
     def query_return_first_match_with_parameter(self, passed_query, params):
+        """ Runs a query with a parameter and returns the first matching row
+        :param passed_query: The query to be run
+        :param params: The parameter to be used in the query
+        :return: The first matching row from the query
+        """
         connection = self.connect()
         cursor = connection.cursor()
         cursor.execute(passed_query, params)
@@ -122,9 +134,13 @@ class RelDBConnection:
         connection.close()
         return result
 
-    # run query with a parameter and return number of rows specified by size
-    # useful for select
     def query_return_matches_specified_with_parameter(self, passed_query, params, size):
+        """ Runs a query with a parameter and returns the number of rows specified by size
+        :param passed_query: The query to be run
+        :param params: The parameter to be used in the query
+        :param size: The number of rows to be returned
+        :return: The number of rows specified by size
+        """
         connection = self.connect()
         cursor = connection.cursor()
         cursor.execute(passed_query, params)
@@ -132,16 +148,15 @@ class RelDBConnection:
         connection.close()
         return result
 
-    # run query with no return, with parameter
-    # useful for insert, update, delete
     def commit_query_with_parameter(self, passed_query, params):
+        """ Runs a query with a parameter and commits it
+        :param passed_query: The query to be run
+        :param params: The parameter to be used in the query
+        :return: None
+        """
+
         connection = self.connect()
         cursor = connection.cursor()
         cursor.execute(passed_query, params)
         connection.commit()
         connection.close()
-
-
-if __name__ == '__main__':
-    connect = RelDBConnection()
-    query = queries.get_all_from_llm_table()

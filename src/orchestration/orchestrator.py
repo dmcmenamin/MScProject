@@ -7,7 +7,14 @@ from src.large_language_model.chatGPTAPI import ChatGPTAPI
 #   the user knowing.
 
 class Orchestrator:
+    """ Orchestrator class to handle all Large Language Model API calls
+    """
     def __init__(self, large_language_model, api_key, model):
+        """ Constructor for Orchestrator class
+        :param large_language_model: The Large Language Model to use
+        :param api_key: The API key
+        :param model: The model
+        """
 
         if not large_language_model:
             raise ValueError("Large Language Model cannot be empty.")
@@ -23,6 +30,10 @@ class Orchestrator:
         self.model = model
 
     def call_large_language_model(self):
+        """ Returns the Large Language Model to be used
+        :return: The Large Language Model to be used
+        """
+
         if self.large_language_model == "ChatGPT":
             return self._call_chatgpt_api(self.api_key, self.model)
         elif self.large_language_model == "Bard":
@@ -30,11 +41,18 @@ class Orchestrator:
         else:
             raise ValueError("Large Language Model is not supported.")
 
-    # Private method to call ChatGPTAPI
     def _call_chatgpt_api(self, api_key, model):
+        """ Returns the ChatGPTAPI to be used
+        :param api_key: The API key
+        :param model: The model
+        :return: The ChatGPTAPI to be used
+        """
+
         chatgpt = ChatGPTAPI(api_key, model)
         return chatgpt
 
-    # Private method to call BardAPI
     def _call_bard_api(self):
+        """ Returns the BardAPI to be used - not implemented yet
+        :return: The BardAPI to be used
+        """
         pass

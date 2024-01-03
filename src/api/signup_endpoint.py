@@ -5,7 +5,11 @@ from src.database.connection import RelDBConnection
 
 
 def signup_get():
-    # if it is a get request
+    """ The signup endpoint for the API - for GET requests
+    Checks all available llm model names and returns them
+    :return: The response and status code
+    """
+    # get available llm model names
     available_llms_query = queries.get_available_llms()
     database_connection = RelDBConnection()
     # if the connection is not an exception, get the available llm model names
@@ -31,6 +35,15 @@ def signup_get():
 
 
 def signup_post(data):
+    """ The signup endpoint for the API - for POST requests
+    Checks if the user exists, if not, creates the user, and returns the user information
+    :param data: The data from the request containing the username, password, first name, last name, and api keys
+    :return: The response and status code
+    """
+
+    if not data:
+        return jsonify({"error": "No data was provided."}), 400
+
     # get user input
     username = data.get('username')
     password = data.get('password')
@@ -42,16 +55,19 @@ def signup_post(data):
     if (data.form.get('api_key_{{llm_model_name}})' is not None) or
             (data.form.get('api_key_{{llm_model_name}})' is not ""))):
         llm[data.form['llm_model_name']] = data.form['api_key_{{llm_model_name}}']
+    else:
+        return jsonify({"error": "API key cannot be empty."}), 400
+
     # check if user exists
     database_connection = RelDBConnection()
     try:
+        # check if user exists
         params = (username,)
         returned_user_information = (
             database_connection.query_return_first_match_with_parameter(queries.check_user_exists(), params))
         # if user exists
         if returned_user_information:
             # get available llm model names
-            # TODO: Clean up reused code
             available_llms_query = queries.get_available_llms()
             returned_llm_model_names = (database_connection.
                                         query_return_matches_specified(available_llms_query, 100))
@@ -86,4 +102,4 @@ def signup_post(data):
         return jsonify({"error": f"Database error: {str(e)}. Please try again later."}), 500
     except Exception as e:
         # Catching any other errors
-        response_value = {"error": f" {str(e)}. "}
+        return jsonify({"error": f" {str(e)}. "}), 500

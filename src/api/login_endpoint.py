@@ -5,6 +5,11 @@ from src.database.connection import RelDBConnection
 
 
 def login_api(data):
+    """ The login endpoint for the API
+    :param data: The data from the request, containing the username and password
+    :return: The response and status code
+    """
+
     # Get the data from the request
     username = data.get("username")
     password = data.get("password")
@@ -64,4 +69,3 @@ def login_api(data):
         # Catching any other errors
         response_value = {"error": f" {str(e)}. "}
         return jsonify(response_value), 500
-

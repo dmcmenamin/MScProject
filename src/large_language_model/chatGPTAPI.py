@@ -12,9 +12,17 @@ from src.large_language_model import large_language_model_parent
 #  - get_presentation_image: returns an image from OpenAI - inputs are image query and image size
 #
 class ChatGPTAPI(large_language_model_parent.LargeLanguageModel):
+    """ ChatGPTAPI class to handle all OpenAI API calls
+    """
 
     # Constructor for ChatGPTAPI class - inputs are OpenAI API key and model
     def __init__(self, openai_api_key, model):
+        """ Constructor for ChatGPTAPI class
+        :param openai_api_key: The OpenAI API key
+        :param model: The OpenAI model
+        """
+
+        # Call the parent constructor
         super().__init__(openai_api_key, model)
         if not openai_api_key:
             raise ValueError("OpenAI API key cannot be empty.")
@@ -27,10 +35,19 @@ class ChatGPTAPI(large_language_model_parent.LargeLanguageModel):
             self.model = model
 
     def __str__(self):
+        """ Returns the string representation of the ChatGPTAPI class
+        :return: The string representation of the ChatGPTAPI class
+        """
+
         return f"ChatGPTAPI(openai_api_key={self.client}, model={self.model})"
 
-    # Returns a chat response from OpenAI - inputs are question and model
     def get_chat_response(self, question, llm_model):
+        """ Returns a chat response from OpenAI
+        :param question: The question to ask OpenAI
+        :param llm_model: The Large Language Model to use
+        :return: The chat response from OpenAI
+        """
+
         if not question:
             raise ValueError("Question cannot be empty.")
         else:
@@ -46,8 +63,13 @@ class ChatGPTAPI(large_language_model_parent.LargeLanguageModel):
 
         return chat_completion.choices[0].message.content
 
-    # Returns a question prompt for OpenAI - inputs are topic, audience size and time
     def set_question_prompt(self, topic, audience_size, time):
+        """ Returns a question prompt for OpenAI
+        :param topic: The topic of the presentation
+        :param audience_size: The audience size of the presentation
+        :param time: The time of the presentation
+        :return: The question prompt for OpenAI
+        """
         if not topic:
             raise ValueError("Topic cannot be empty.")
 
@@ -64,8 +86,11 @@ class ChatGPTAPI(large_language_model_parent.LargeLanguageModel):
 
         return prompt
 
-    # Returns a presentation deck from OpenAI - inputs are topic, audience size and time
     def get_presentation_slides(self, question):
+        """ Returns a text document representing the content of the presentation deck from OpenAI
+        :param question: The question to ask OpenAI
+        :return: The text document representing the presentation deck from OpenAI
+        """
         try:
             response = self.get_chat_response(question, self.model)
 
@@ -98,8 +123,12 @@ class ChatGPTAPI(large_language_model_parent.LargeLanguageModel):
             # Catching any other errors
             raise ValueError(f"OpenAI API request failed: {e}")
 
-    # Returns an image from OpenAI - inputs are image query and image size
     def get_presentation_image(self, image_query, image_size):
+        """ Returns an image from OpenAI
+        :param image_query: The image query to ask OpenAI
+        :param image_size: The size of the image
+        :return: An image url from OpenAI
+        """
         if not image_query:
             raise ValueError("Image query cannot be empty.")
         if not image_size:

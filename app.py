@@ -14,11 +14,18 @@ app.secret_key = os.urandom(24)
 
 @app.route('/')
 def index():
+    """ The index page for the website
+    :return: The index page
+    """
     return render_template('index.html', session=session)
 
 
 @app.route('/login', methods=['POST'])
 def login():
+    """ The login endpoint for the website
+    :return: If successful, the presentation generator page, otherwise, the index page with an error message
+    """
+
     response, status_code = login_api(request.form)
     if status_code == 200:
         session['username'] = response.json['username']
@@ -33,6 +40,10 @@ def login():
 
 @app.route('/signup_endpoint', methods=['GET', 'POST'])
 def signup():
+    """ The signup endpoint for the website
+    :return: If successful, the presentation generator page, otherwise, the signup page with an error message
+    """
+
     # if it is a get request
     if request.method == 'GET':
         response, status_code = signup_get()
@@ -103,6 +114,10 @@ def presentation_generator():
 
 @app.route('/logout_endpoint')
 def logout():
+    """ The logout endpoint for the website, clears the session information
+    :return: The index page
+    """
+
     session.clear()
     return redirect(url_for('index'))
 
