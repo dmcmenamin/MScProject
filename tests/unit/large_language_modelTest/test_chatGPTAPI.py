@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import MagicMock, patch
-from src.api.chatGPTAPI import ChatGPTAPI
+from src.large_language_model.chatGPTAPI import ChatGPTAPI
 
 
 # Unit tests for ChatGPTAPI class
@@ -9,8 +9,8 @@ class TestChatGPTAPI(unittest.TestCase):
     # Set up the ChatGPTAPI instance with a mock API key and model
     # This is run before each test
     def setUp(self):
-        self.api_key = "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"
-        self.model = "your_model"
+        self.api_key = "Test API Key"
+        self.model = "Test Model"
 
     # Test the constructor
     # Test with valid input
@@ -128,7 +128,7 @@ class TestChatGPTAPI(unittest.TestCase):
 
     # Test the get presentation image method
     # Test with valid input using the MagicMock class & patch decorator
-    @patch("src.api.chatGPTAPI.ChatGPTAPI.get_chat_response", return_value="Image of a Cat")
+    @patch("src.large_language_model.chatGPTAPI.ChatGPTAPI.get_chat_response", return_value="Image of a Cat")
     def test_get_presentation_image_with_valid_input(self, mock_get_chat_response):
         api = ChatGPTAPI(self.api_key, self.model)
         mock_response = MagicMock()
@@ -140,7 +140,7 @@ class TestChatGPTAPI(unittest.TestCase):
 
     # Test the get presentation image method
     # Test with invalid input using the MagicMock class & patch decorator
-    @patch("src.api.chatGPTAPI.ChatGPTAPI.get_chat_response", return_value="Image of a Dog")
+    @patch("src.large_language_model.chatGPTAPI.ChatGPTAPI.get_chat_response", return_value="Image of a Dog")
     def test_get_presentation_image_with_invalid_input(self, mock_get_chat_response):
         api = ChatGPTAPI(self.api_key, self.model)
         mock_response = MagicMock()

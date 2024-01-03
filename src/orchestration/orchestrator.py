@@ -1,4 +1,4 @@
-from src.api.chatGPTAPI import ChatGPTAPI
+from src.large_language_model.chatGPTAPI import ChatGPTAPI
 
 
 # class Controller:
@@ -24,15 +24,17 @@ class Orchestrator:
 
     def call_large_language_model(self):
         if self.large_language_model == "ChatGPT":
-            return self.call_chatgpt_api(self.api_key, self.model)
+            return self._call_chatgpt_api(self.api_key, self.model)
         elif self.large_language_model == "Bard":
-            return self.call_bard_api()
+            return self._call_bard_api()
         else:
             raise ValueError("Large Language Model is not supported.")
 
-    def call_chatgpt_api(self, api_key, model):
+    # Private method to call ChatGPTAPI
+    def _call_chatgpt_api(self, api_key, model):
         chatgpt = ChatGPTAPI(api_key, model)
         return chatgpt
 
-    def call_bard_api(self):
+    # Private method to call BardAPI
+    def _call_bard_api(self):
         pass
