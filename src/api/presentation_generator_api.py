@@ -47,13 +47,13 @@ def presentation_generator_get():
 
 def presentation_generator_post(data):
     # get user input
-    topic = data.form['presentation_topic']
-    audience_size = data.form['audience_size']
-    time = data.form['presentation_length']
-    audience_outcome = data.form['expected_outcome']
+    topic = data.get('presentation_topic')
+    audience_size = data.get('audience_size')
+    time = data.get('presentation_length')
+    audience_outcome = data.get('expected_outcome')
 
     # get large language model & exact model name
     # split the string to get the large language model name and the specific model name
-    large_language_model, model_name = data.form['llm_model_name'].split("_")
+    large_language_model, model_name = data.get('llm_model_name').split("_")
     return controller.generate_presentation(topic, audience_size, time, audience_outcome,
                                             large_language_model, model_name)

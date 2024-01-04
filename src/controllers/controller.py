@@ -39,13 +39,14 @@ def prompt(presenter_name, topic, audience_size, time, audience_outcome):
                                                                                        audience_outcome=audience_outcome)
 
 
-def get_ai_image_suggestion(string, large_language_model, specific_model_name):
+def get_ai_image_suggestion(string, large_language_model, specific_model_name, folder_name):
     """ Gets the image suggestion from the large language model and replaces it with the image url
     it takes in the string, and searches for the keyword IMAGE_SUGGESTION, if it finds this, it will take the
     following line and use it to search for an image, it will then return the image url
     :param string: The string to be searched for the image suggestion
     :param large_language_model: The large language model to be used
     :param specific_model_name:  The specific model name to be used
+    :param folder_name: The name of the folder to be downloaded
     :return: The string with the image suggestion replaced with the image url
     """
 
@@ -64,10 +65,10 @@ def get_ai_image_suggestion(string, large_language_model, specific_model_name):
             else:
                 local_path = image_requested + ".jpg"
 
-            with open(local_path, "wb") as image_file:
+            with open(folder_name + "/" + local_path, "wb") as image_file:
                 image_file.write(image.read())
 
-            string = string.replace(line, "Image: " + local_path, 1)
+            string = string.replace(line, "Image: " + folder_name + "/" + local_path, 1)
     return string
 
 
@@ -105,7 +106,8 @@ def generate_presentation(presentation_topic, audience_size, presentation_length
         f.write(presentation_string)
 
     # extract the image suggestions from the presentation string, and replace them with the image url
-    presentation_string = get_ai_image_suggestion(presentation_string, large_language_model, specific_model_name)
+    presentation_string = get_ai_image_suggestion(presentation_string, large_language_model,
+                                                  specific_model_name, file_location)
 
     # save the presentation string to a file - this is used for debugging purposes
     with open(file_location + "/presentation_with_images.txt", "w") as f:
@@ -136,11 +138,11 @@ def create_unique_folder(filename):
 
     # create a unique filename for the user to store their presentations,
     # based on their username and the current date and time
-    unique_file_name = session['username'] + "_" + filename + datetime.now().strftime("%Y%m%d-%H%M%S")
+    unique_file_name = session['username'] + "_" + filename + "_" + datetime.now().strftime("%Y%m%d-%H%M%S")
 
     # create a unique folder for the user to store their presentations
     if not os.path.exists(unique_file_name):
-        os.makedirs(filename)
+        os.makedirs(unique_file_name)
     else:
         # if the folder already exists, delete it and create a new one
         shutil.rmtree(unique_file_name)
@@ -167,4 +169,10 @@ def download_presentation(folder_name, presentation_file, download_location):
         return jsonify({"message": "Presentation not found"})
 
 
-
+if __name__ == '__main__':
+    rel_abs_path = os.path.abspath(os.path.dirname(__file__))
+    file_location = os.path.join(rel_abs_path, "..\\..\\Admin_Cloud Computing_20240103-152900")
+    print(file_location)
+    for file in os.listdir(file_location):
+        if file.endswith(".jpg"):
+            os.remove(file)
