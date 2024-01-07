@@ -1,7 +1,6 @@
 from flask import jsonify, session
 
-from src.controllers import controller
-from src.database import queries, database_scripts
+from src.database import queries
 from src.database.connection import RelDBConnection
 
 
@@ -55,5 +54,6 @@ def presentation_generator_post(data):
     # get large language model & exact model name
     # split the string to get the large language model name and the specific model name
     large_language_model, model_name = data.get('llm_model_name').split("_")
-    return controller.generate_presentation(topic, audience_size, time, audience_outcome,
-                                            large_language_model, model_name)
+
+    return jsonify({"topic": topic, "audience_size": audience_size, "time": time, "audience_outcome": audience_outcome,
+                    "large_language_model": large_language_model, "model_name": model_name}), 200

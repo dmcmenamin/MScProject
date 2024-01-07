@@ -90,6 +90,26 @@ def presentation_generator():
             return render_template('presentation_generator.html', response=response)
 
 
+@app.route('/presentation_generating_in_progress_endpoint', methods=['POST'])
+def presentation_generating_in_progress():
+    """ The presentation generating in progress endpoint for the website
+    :return: If successful, the presentation generating in progress page, otherwise, the presentation generator page
+    with an error message
+    """
+
+    if request.method == 'POST':
+        """ The presentation generating in progress endpoint for the website - for POST requests
+        Calls the generate_presentation function from the controller
+        :return: If successful, the presentation generating in progress page, otherwise, 
+        the presentation generator page with an error
+        """
+        response, status_code = presentation_generator_post(request.form)
+        if status_code == 200:
+            return render_template('presentation_successfully_created.html', response=response)
+        else:
+            return render_template('presentation_generator.html', response=response)
+
+
 @app.route('/logout_endpoint')
 def logout():
     """ The logout endpoint for the website, clears the session information

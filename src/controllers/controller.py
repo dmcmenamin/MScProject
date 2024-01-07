@@ -73,8 +73,7 @@ def get_ai_image_suggestion(string, large_language_model, specific_model_name, f
 
 
 def generate_presentation(presentation_topic, audience_size, presentation_length, expected_outcome,
-                          large_language_model,
-                          specific_model_name):
+                          large_language_model, specific_model_name):
     """ Generates a presentation based on the user's input
     :param presentation_topic: A short description of the presentation topic, this will be used as the filename
     :param audience_size: The number of people the presentation will be given to
