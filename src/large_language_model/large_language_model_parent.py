@@ -19,11 +19,15 @@ class LargeLanguageModel:
 
         raise NotImplementedError("Subclass must implement abstract method")
 
-    def set_question_prompt(self, topic, audience_size, time):
+    def set_question_prompt(self, presenter_name, presentation_topic, audience_size, presentation_length,
+                            audience_outcome):
         """ Returns a question prompt for Large Language Model - should be implemented by child classes
-        :param topic: The topic of the presentation
+        :param presenter_name: The name of the presenter
+        :param presentation_topic: The topic of the presentation
         :param audience_size: The audience size of the presentation
-        :param time: The time of the presentation
+        :param presentation_length: The time of the presentation
+        :param audience_outcome: A description of what you expect the audience to
+                                 know or be able to do after the presentation
         :return: The question prompt for Large Language Model
         """
 

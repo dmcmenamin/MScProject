@@ -1,6 +1,7 @@
 import unittest
 from unittest.mock import MagicMock, patch
 from src.large_language_model.chatGPTAPI import ChatGPTAPI
+from src.large_language_model.prompt import prompt_for_llm
 
 
 # Unit tests for ChatGPTAPI class
@@ -77,18 +78,19 @@ class TestChatGPTAPI(unittest.TestCase):
     # Test with valid input
     def test_set_question_prompt_with_valid_input(self):
         api = ChatGPTAPI(self.api_key, self.model)
-        prompt = api.set_question_prompt("Topic", "100", "30")
-        self.assertEqual(prompt,
-                         "Create a slide deck that explains the Topic to be presented to 100 people, "
-                         "over 30 minutes, please also include any image recommendations in square brackets , "
-                         "and notes for the lecturer for each slide")
+        expected_prompt = api.set_question_prompt("Test User", "Test Topic", "100",
+                                                  "30", "Test Outcome")
+        actual_prompt = prompt_for_llm("Test User", "Test Topic", "100",
+                                       "30", "Test Outcome")
+        self.assertEqual(expected_prompt, actual_prompt)
 
     # Test the set question prompt method
     # Test with empty topic
     def test_set_question_prompt_with_empty_topic(self):
         api = ChatGPTAPI(self.api_key, self.model)
         with self.assertRaises(ValueError):
-            api.set_question_prompt("", "100", "30")
+            api.set_question_prompt("Test User", "", "100",
+                                    "30", "Test Outcome")
 
     # Test the get presentation slides method
     # Test with valid input

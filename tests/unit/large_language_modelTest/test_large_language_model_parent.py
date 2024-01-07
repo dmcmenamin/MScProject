@@ -37,7 +37,9 @@ class TestLargeLanguageModel(TestCase):
     def test_set_question_prompt(self):
         llm = LargeLanguageModel(self.api_key, self.model)
         with self.assertRaises(NotImplementedError):
-            llm.set_question_prompt("topic", "audience_size", "time")
+            llm.set_question_prompt("presenter_name", "presentation_topic",
+                                    "audience_size", "presentation_length",
+                                    "audience_outcome")
 
     def test_get_presentation_slides(self):
         llm = LargeLanguageModel(self.api_key, self.model)

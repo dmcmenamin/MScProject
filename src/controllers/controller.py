@@ -10,35 +10,6 @@ from src.powerpoint.presentation import PowerPointPresentation
 from io import BytesIO
 
 
-def prompt(presenter_name, topic, audience_size, time, audience_outcome):
-    """ Generates a prompt for the large language model to generate a presentation
-    :param presenter_name: The name of the presenter
-    :param topic: The topic of the presentation
-    :param audience_size: The number of people the presentation will be given to
-    :param time: The length of the presentation in minutes
-    :param audience_outcome: A description of what you expect the audience to
-                                know or be able to do after the presentation
-    :return: A prompt for the large language model to generate a presentation
-    """
-
-    return ("f {presenter_name} is preparing to give a presentation on {topic} to {audience_size} people. "
-            "The presentation will last {time} minutes. At the end of the presentation, the audience will be "
-            "expected to {audience_outcome}. Create a slide deck for {presenter_name} to use, which should "
-            "include title and content. Also include notes for {presenter_name} for each slide. "
-            "Ensure that each title slide, content and notes are clearly labelled. Also provide some image "
-            "suggestions on a new line on the relevant slides throughout the presentation, identified by keyword "
-            "IMAGE_SUGGESTION at the start of the line. In the notes section for each slide, provide a detailed "
-            "explanation on what that slide contains, ensuring it covers the full content on what the presenter should "
-            "talk about. Please also provide information on the time that the presenter should spend on each slide, "
-            "and ensure that the total time adds up to {time}."
-            "For the final slide, provide a summary of the presentation, and also provide a list of references that "
-            "the presenter can use to find out more information on the topic.").format(presenter_name=presenter_name,
-                                                                                       topic=topic,
-                                                                                       audience_size=audience_size,
-                                                                                       time=time,
-                                                                                       audience_outcome=audience_outcome)
-
-
 def get_ai_image_suggestion(string, large_language_model, specific_model_name, folder_name):
     """ Gets the image suggestion from the large language model and replaces it with the image url
     it takes in the string, and searches for the keyword IMAGE_SUGGESTION, if it finds this, it will take the
@@ -90,11 +61,13 @@ def generate_presentation(presentation_topic, audience_size, presentation_length
     api_key = session['api_key']
 
     # generate the prompt
-    populated_prompt = prompt(presenter_name, presentation_topic, audience_size, presentation_length, expected_outcome)
 
-    # call the large language model via an orchestrator, that allows for different models to be used
     orchestration_service = Orchestrator(large_language_model, api_key, specific_model_name)
-
+    populated_prompt = orchestration_service.call_large_language_model().set_question_prompt(presenter_name,
+                                                                                             presentation_topic,
+                                                                                             audience_size,
+                                                                                             presentation_length,
+                                                                                             expected_outcome)
     # get the presentation slides
     presentation_string = orchestration_service.call_large_language_model().get_presentation_slides(populated_prompt)
 
@@ -166,12 +139,3 @@ def download_presentation(folder_name, presentation_file, download_location):
         return jsonify({"message": "Presentation downloaded successfully"})
     else:
         return jsonify({"message": "Presentation not found"})
-
-
-if __name__ == '__main__':
-    rel_abs_path = os.path.abspath(os.path.dirname(__file__))
-    file_location = os.path.join(rel_abs_path, "..\\..\\Admin_Cloud Computing_20240103-152900")
-    print(file_location)
-    for file in os.listdir(file_location):
-        if file.endswith(".jpg"):
-            os.remove(file)

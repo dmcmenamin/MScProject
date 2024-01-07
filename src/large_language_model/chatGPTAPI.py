@@ -2,6 +2,7 @@ from openai import OpenAI
 import openai
 
 from src.large_language_model import large_language_model_parent
+from src.large_language_model.prompt import prompt_for_llm
 
 
 # ChatGPTAPI class to handle all OpenAI API calls
@@ -63,28 +64,29 @@ class ChatGPTAPI(large_language_model_parent.LargeLanguageModel):
 
         return chat_completion.choices[0].message.content
 
-    def set_question_prompt(self, topic, audience_size, time):
+    def set_question_prompt(self, presenter_name, presentation_topic, audience_size,
+                            presentation_length, audience_outcome):
         """ Returns a question prompt for OpenAI
-        :param topic: The topic of the presentation
+        :param presenter_name: The name of the presenter
+        :param presentation_topic: The topic of the presentation
         :param audience_size: The audience size of the presentation
-        :param time: The time of the presentation
+        :param presentation_length: The time of the presentation
+        :param audience_outcome: The audience outcome of the presentation
         :return: The question prompt for OpenAI
         """
-        if not topic:
+        if not presenter_name or presenter_name == "":
+            raise ValueError("Presenter name cannot be empty.")
+
+        if not presentation_topic or presentation_topic == "":
             raise ValueError("Topic cannot be empty.")
 
-        if not audience_size:
+        if not audience_size or audience_size == "":
             raise ValueError("Audience size cannot be empty.")
 
-        if not time:
+        if not presentation_length or presentation_length == "":
             raise ValueError("Time cannot be empty.")
 
-        # Prompt for OpenAI
-        prompt = (f"Create a slide deck that explains the {topic} to be presented to "
-                  f"{audience_size} people, over {time} minutes, please also include "
-                  f"any image recommendations in square brackets , and notes for the lecturer for each slide")
-
-        return prompt
+        return prompt_for_llm(presenter_name, presentation_topic, audience_size, presentation_length, audience_outcome)
 
     def get_presentation_slides(self, question):
         """ Returns a text document representing the content of the presentation deck from OpenAI
