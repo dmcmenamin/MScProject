@@ -3,7 +3,7 @@ import os
 from flask import Flask, render_template, redirect, url_for, request, session, jsonify
 
 from src.api.login_endpoint import login_api
-from src.api.presentation_generator_api import presentation_generator_get, presentation_generator_post
+from src.api.presentation_generator_endpoint import presentation_generator_get, presentation_generator_post
 from src.api.signup_endpoint import signup_get, signup_post
 from src.controllers import controller
 from src.controllers.controller import generate_presentation
