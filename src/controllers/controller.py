@@ -71,7 +71,7 @@ def generate_presentation(presentation_topic, audience_size, presentation_length
     # get the presentation slides
     presentation_string = orchestration_service.call_large_language_model().get_presentation_slides(populated_prompt)
 
-    file_location = create_unique_folder(presentation_topic)
+    file_location, absolute_file_path = create_unique_folder(presentation_topic)
 
     # save the presentation string to a file - this is used for debugging purposes
     with open(file_location + "/presentation.txt", "w") as f:
@@ -92,11 +92,11 @@ def generate_presentation(presentation_topic, audience_size, presentation_length
     powerpoint_presentation.save(file_location + "/" + presentation_topic + ".pptx")
 
     # clean up the jpg files
-    for file in os.listdir(file_location):
+    for file in os.listdir(absolute_file_path):
         if file.endswith(".jpg"):
             os.remove(file)
 
-    if os.path.exists(file_location + "/" + presentation_topic + ".pptx"):
+    if os.path.exists(absolute_file_path + "/" + presentation_topic + ".pptx"):
         return jsonify({"message": "Presentation generated successfully"}), 200
     else:
         return jsonify({"message": "Presentation not found"}), 500
@@ -105,7 +105,7 @@ def generate_presentation(presentation_topic, audience_size, presentation_length
 def create_unique_folder(filename):
     """ Creates a unique folder for the user to store their presentations
     :param filename: The name of the folder to be created
-    :return: None
+    :return: The full path of the folder and the absolute path of the folder
     """
 
     # create a unique filename for the user to store their presentations,
@@ -120,7 +120,8 @@ def create_unique_folder(filename):
         shutil.rmtree(unique_file_name)
         os.makedirs(unique_file_name)
 
-    return unique_file_name
+    # return the full path of the folder
+    return unique_file_name, os.path.abspath(unique_file_name)
 
 
 def download_presentation(folder_name, presentation_file, download_location):

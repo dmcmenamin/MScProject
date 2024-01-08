@@ -19,6 +19,39 @@
 </head>
 <body class="bg-custom">
 
+    <!-- Hidden input to store the response data -->
+    <input type="hidden" id="response-data" value="{{ response }}">
+
+    <script>
+
+        // When the page is loaded
+        $(document).ready(function() {
+
+            // Get the response data from the hidden input
+            const responseData = $('#response-data').val();
+
+            console.log(responseData);
+
+            // Send a POST request when the page is loaded
+            $.ajax({
+                type: 'POST',
+                url: '/presentation_generating_in_progress_endpoint',
+                data: {
+                    'response': responseData
+                },
+                success: function(data) {
+                    // Handle success response
+                    $('body').html(data);
+                },
+                error: function() {
+                    // Handle error response
+                    alert('Error occurred while generating presentation.');
+                }
+            });
+        });
+    </script>
+
+
     <div class="container-fluid content">
             <div class="row">
                 <div class="col-12">
