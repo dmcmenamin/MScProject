@@ -1,4 +1,5 @@
-from flask import jsonify
+import flask
+from flask import jsonify, logging
 
 from src.database import queries, database_scripts
 from src.database.connection import RelDBConnection
@@ -59,13 +60,13 @@ def login_api(data):
             return jsonify(response_value), 401
     except ConnectionError as e:
         # can't connect to database for login
-        response_value = {"error": f"fDatabase error: {str(e)}. Please try again later."}
+        response_value = {"error": "Database currently not available. Please try again later."}
         return jsonify(response_value), 500
     except AttributeError as e:
         # Catching attribute error here
-        response_value = {"error": f"Database error: {str(e)}. Please try again later."}
+        response_value = {"error": "Database error. Please try again later."}
         return jsonify(response_value), 500
     except Exception as e:
         # Catching any other errors
-        response_value = {"error": f" {str(e)}. "}
+        response_value = {"error": "Database error. Please try again later. "}
         return jsonify(response_value), 500

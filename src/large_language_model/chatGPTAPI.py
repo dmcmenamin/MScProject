@@ -1,10 +1,7 @@
-import json
-
 from flask import jsonify
 from openai import OpenAI
 import openai
 
-from app import app
 from src.large_language_model import large_language_model_parent
 from src.large_language_model.prompt import prompt_for_llm
 
@@ -112,31 +109,24 @@ class ChatGPTAPI(large_language_model_parent.LargeLanguageModel):
 
         except openai.BadRequestError as e:
             # Catching bad request error
-            app.logger.error(f"OpenAI API request failed: {e.message}")
             return jsonify({"error": f"OpenAI API request failed"}), 400
         except openai.APIConnectionError as e:
             # Catching connection error here
-            app.logger.error(f"OpenAI API request failed: {e.message}")
             return jsonify({"error": f"OpenAI API request failed, Please retry"}), 400
         except openai.RateLimitError as e:
             # Catching Error where Token has exceeded rate limit
-            app.logger.error(f"OpenAI API request exceeded rate limit: {e.message}")
             return jsonify({"error": f"Insufficient Balance complete. Please top up OpenAI account"}), 400
         except openai.APIError as e:
             # Catching API error here
-            app.logger.error(f"OpenAI API returned an API Error: {e.message}")
             return jsonify({"error": f"OpenAI API returned an API Error, please contact support"}), 400
         except openai.AuthenticationError as e:
             # Catching Error where Token is invalid
-            app.logger.error(f"OpenAI API request failed due to invalid token: {e.message}")
             return jsonify({"error": f"OpenAI API request failed due to invalid token, please check your API key"}), 400
         except openai.OpenAIError as e:
             # Catching Error where OpenAI API fails
-            app.logger.error(f"OpenAI API request failed: {e}")
             return jsonify({"error": f"OpenAI API request failed, please contact support"}), 400
         except Exception as e:
             # Catching any other errors
-            app.logger.error(f"OpenAI API request failed: {e}")
             return jsonify({"error": f"OpenAI API request failed, please contact support"}), 400
 
     def get_presentation_image(self, image_query, image_size):
@@ -170,29 +160,22 @@ class ChatGPTAPI(large_language_model_parent.LargeLanguageModel):
 
         except openai.BadRequestError as e:
             # Catching bad request error
-            app.logger.error(f"OpenAI API request failed: {e.message}")
             return jsonify({"error": f"OpenAI API request failed, please contact support"}), 400
         except openai.APIConnectionError as e:
             # Catching connection error here
-            app.logger.error(f"OpenAI API request failed: {e.message}")
             return jsonify({"error": f"OpenAI API request failed, Please retry"}), 400
         except openai.RateLimitError as e:
             # Catching Error where Token has exceeded rate limit
-            app.logger.error(f"OpenAI API request exceeded rate limit: {e.message}")
             return jsonify({"error": f"Insufficient Balance complete. Please top up OpenAI account"}), 400
         except openai.AuthenticationError as e:
             # Catching Error where Token is invalid
-            app.logger.error(f"OpenAI API request failed due to invalid token: {e.message}")
             return jsonify({"error": f"penAI API request failed due to invalid token, please check your API key"}), 400
         except openai.APIError as e:
             # Catching API error here
-            app.logger.error(f"OpenAI API returned an API Error: {e.message}")
             return jsonify({"error": f"OpenAI API returned an API Error, please contact support"}), 400
         except openai.OpenAIError as e:
             # Catching Error where OpenAI API fails
-            app.logger.error(f"OpenAI API request failed: {e}")
             return jsonify({"error": f"OpenAI API request failed, please contact support"}), 400
         except Exception as e:
             # Catching any other errors
-            app.logger.error(f"OpenAI API request failed: {e}")
             return jsonify({"error": f"OpenAI API request failed, please contact support"}), 400

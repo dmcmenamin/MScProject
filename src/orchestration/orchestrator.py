@@ -1,7 +1,5 @@
-from src.large_language_model.chatGPTAPI import ChatGPTAPI
 
-
-# class Controller:
+# class Orchestrator
 #   The purpose of this class is to allow obfuscation of the Large Language Model being used
 #   instead allowing for a single point of entry, so that different models can be used without
 #   the user knowing.
@@ -47,6 +45,7 @@ class Orchestrator:
         :param model: The model
         :return: The ChatGPTAPI to be used
         """
+        from src.large_language_model.chatGPTAPI import ChatGPTAPI
 
         chatgpt = ChatGPTAPI(api_key, model)
         return chatgpt

@@ -58,7 +58,7 @@ html {
     font-size: 32px;
     font-weight: 700;
     line-height: 1.5;
-    color: #B31312;
+    color: White;
     flex-shrink: 0;
     animation: animate 1s linear infinite; /*** Animation Blink for error message ***/
 }
@@ -68,7 +68,7 @@ html {
     font-size: 24px;
     font-weight: 700;
     line-height: 1.5;
-    color: #B31312;
+    color: White;
     animation: animate 1s linear infinite; /*** Animation Blink for error message ***/
 }
 

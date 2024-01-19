@@ -19,7 +19,7 @@ class RelDBConnection:
         """
         if __name__ == 'app':
             # for production purposes
-            with open(".env_variables.json", "r") as env_variables:
+            with open("/etc/secrets/env_variables.json", "r") as env_variables:
                 env_variables = json.load(env_variables)
         elif __name__ == "__main__":
             # for development purposes

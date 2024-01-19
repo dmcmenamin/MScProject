@@ -141,7 +141,6 @@ def presentation_generating_in_progress():
         the presentation generator page with an error
         """
         response, status_code = presentation_generating_in_progress_post(request.form)
-        app.logger.info(status_code)
         if status_code == 200:
             return render_template('presentation_success.html', response=response)
         else:
