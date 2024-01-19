@@ -9,6 +9,8 @@ def prompt_for_llm(presenter_name, topic, audience_size, presentation_length, au
     :return: A prompt for the large language model to generate a presentation
     """
 
+# TODO: Clean up Prompt so that TITLE, CONTENT, NOTES are clearly labelled, without proceeding text
+
     return ("f {presenter_name} is preparing to give a presentation on {topic} to {audience_size} people. "
             "The presentation will last {presentation_length} minutes. At the end of the presentation, "
             "the audience will be expected to {audience_outcome}. Create a slide deck for {presenter_name} to use, "

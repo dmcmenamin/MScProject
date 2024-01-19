@@ -26,9 +26,14 @@ def get_ai_image_suggestion(string, large_language_model, specific_model_name, f
             image_requested = line.split("IMAGE_SUGGESTION: ")[1]
             orchestration_service = Orchestrator(large_language_model, session['api_key'],
                                                  specific_model_name)
-            image_url = (orchestration_service.call_large_language_model().
-                         get_presentation_image(image_requested.rstrip('.'), "1024x1024"))
-            response = requests.get(image_url)
+            image_url, status_code = (orchestration_service.call_large_language_model().
+                                      get_presentation_image(image_requested.rstrip('.'), "1024x1024"))
+
+            # if there is an image, don't proceed, and instead return the status code and the error message
+            if status_code != 200:
+                return image_url, status_code
+
+            response = requests.get(image_url['image_url'])
             image = BytesIO(response.content)
 
             if image_requested.endswith("."):
@@ -40,7 +45,7 @@ def get_ai_image_suggestion(string, large_language_model, specific_model_name, f
                 image_file.write(image.read())
 
             string = string.replace(line, "Image: " + folder_name + "/" + local_path, 1)
-    return string
+    return string, 200
 
 
 def generate_presentation(presentation_topic, audience_size, presentation_length, expected_outcome,
@@ -61,7 +66,6 @@ def generate_presentation(presentation_topic, audience_size, presentation_length
     api_key = session['api_key']
 
     # generate the prompt
-
     orchestration_service = Orchestrator(large_language_model, api_key, specific_model_name)
     populated_prompt = orchestration_service.call_large_language_model().set_question_prompt(presenter_name,
                                                                                              presentation_topic,
@@ -69,7 +73,12 @@ def generate_presentation(presentation_topic, audience_size, presentation_length
                                                                                              presentation_length,
                                                                                              expected_outcome)
     # get the presentation slides
-    presentation_string = orchestration_service.call_large_language_model().get_presentation_slides(populated_prompt)
+    presentation_string, status_code = (orchestration_service.
+                                        call_large_language_model().get_presentation_slides(populated_prompt))
+
+    # if there is an error, don't proceed, and instead return the status code and the error message
+    if status_code != 200:
+        return presentation_string, status_code
 
     file_location, absolute_file_path = create_unique_folder(presentation_topic)
 
@@ -78,8 +87,12 @@ def generate_presentation(presentation_topic, audience_size, presentation_length
         f.write(presentation_string)
 
     # extract the image suggestions from the presentation string, and replace them with the image url
-    presentation_string = get_ai_image_suggestion(presentation_string, large_language_model,
-                                                  specific_model_name, file_location)
+    presentation_string, status_code = get_ai_image_suggestion(presentation_string, large_language_model,
+                                                               specific_model_name, file_location)
+
+    # if there is an error, don't proceed, and instead return the status code and the error message
+    if status_code != 200:
+        return presentation_string, status_code
 
     # save the presentation string to a file - this is used for debugging purposes
     with open(file_location + "/presentation_with_images.txt", "w") as f:
@@ -91,10 +104,11 @@ def generate_presentation(presentation_topic, audience_size, presentation_length
     # save the PowerPoint presentation
     powerpoint_presentation.save(file_location + "/" + presentation_topic + ".pptx")
 
-    # clean up the jpg files
-    for file in os.listdir(absolute_file_path):
-        if file.endswith(".jpg"):
-            os.remove(file)
+    # TODO - sort out how jpg files are deleted
+    # # clean up the jpg files
+    # for file in os.listdir(absolute_file_path):
+    #     if file.endswith(".jpg"):
+    #         os.remove(file)
 
     if os.path.exists(absolute_file_path + "/" + presentation_topic + ".pptx"):
         return jsonify({"message": "Presentation generated successfully"}), 200

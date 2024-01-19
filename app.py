@@ -140,8 +140,6 @@ def presentation_generating_in_progress():
         :return: If successful, the presentation generating in progress page, otherwise, 
         the presentation generator page with an error
         """
-        app.logger.info('Generating presentation')
-        app.logger.info(request.form)
         response, status_code = presentation_generating_in_progress_post(request.form)
         app.logger.info(status_code)
         if status_code == 200:

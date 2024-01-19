@@ -12,8 +12,6 @@ def presentation_generating_in_progress_post(data):
     :return: The response and status code
     """
 
-    print("data: ", data)
-
     if not data:
         return jsonify({"error": "No data was provided."}), 400
     elif 'username' not in session:
@@ -21,7 +19,6 @@ def presentation_generating_in_progress_post(data):
     else:
         response_string = data.get('response')
         response_dictionary = ast.literal_eval(response_string) if response_string else {}
-        print("response_dictionary: ", response_dictionary)
 
         topic = response_dictionary.get('topic')
         audience_size = response_dictionary.get('audience_size')
@@ -30,15 +27,5 @@ def presentation_generating_in_progress_post(data):
         large_language_model = response_dictionary.get('large_language_model')
         specific_model_name = response_dictionary.get('model_name')
 
-        print("topic: ", topic)
-        print("audience_size: ", audience_size)
-        print("time: ", time)
-        print("audience_outcome: ", audience_outcome)
-        print("large_language_model: ", large_language_model)
-        print("specific_model_name: ", specific_model_name)
-
-        if controller.generate_presentation(topic, audience_size, time, audience_outcome,
-                                            large_language_model, specific_model_name):
-            return jsonify({"success": "Presentation generated"}), 200
-        else:
-            return jsonify({"error": "Presentation not generated"}), 500
+        return controller.generate_presentation(topic, audience_size, time, audience_outcome,
+                                                large_language_model, specific_model_name)
