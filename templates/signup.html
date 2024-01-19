@@ -35,9 +35,9 @@
       </div>
     </nav>
 
-    {% if database_error %}
+    {% if response %}
         <div class="font-header-error" role="alert">
-            <h1 class="text-center"> {{ database_error }}</h1>
+            <h1 class="text-center"> {{ response.json['error'] }}</h1>
         </div>
     {% else %}
         <!-- Sign Up Form -->

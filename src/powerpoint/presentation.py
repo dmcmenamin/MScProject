@@ -20,9 +20,13 @@ SLIDE_PICTURE_WITH_CAPTION_LAYOUT = 8
 # The class has methods to add slides, save the presentation and get slides
 # The class also has methods to get a slide layout, and get a slide by slide number
 class PowerPointPresentation:
+    """ PowerPointPresentation class to handle all PowerPoint Presentation API calls
+    """
 
-    # Initialise the class
     def __init__(self, presentation_string=None):
+        """ Constructor for PowerPointPresentation class
+        :param presentation_string: The presentation string
+        """
         if presentation_string:
             self.presentation = Presentation()
             self.populate_presentation(presentation_string)
@@ -31,13 +35,18 @@ class PowerPointPresentation:
 
     # Return a string representation of the class
     def __str__(self):
+        """ Returns the string representation of the PowerPointPresentation class
+        :return: The string representation of the PowerPointPresentation class
+        """
+
         return f"PowerPointPresentation(presentation={self.presentation})"
 
-    # Private Method to slice a presentation into slides
-    # Inputs: presentation
-    # presentation is a string - Raises ValueError if presentation is empty
-    # Returns a list of slides
-    def __slice_presentation(self, presliced_presentation):
+    def _slice_presentation(self, presliced_presentation):
+        """ Private Method - returns a sliced presentation
+        :param presliced_presentation: The presentation to slice
+        :return: The sliced presentation
+        :raises ValueError: If the presentation is empty
+        """
         if not presliced_presentation:
             raise ValueError("Presentation cannot be empty.")
         else:
@@ -57,11 +66,12 @@ class PowerPointPresentation:
 
             return sliced_presentation
 
-    # Private Method to get slide content
-    # Inputs: slide_pages
-    # slide_pages is a list of slides - Raises ValueError if slide_pages is empty
-    # Returns a title, subtitle, content and notes for each slide
-    def __get_slide_content(self, slide_pages):
+    def _get_slide_content(self, slide_pages):
+        """ Private Method - returns a title, subtitle, content and notes for each slide - if they exist
+        :param slide_pages: The slide pages
+        :return: A title, subtitle, content and notes for each slide
+        :raises ValueError: If the slide pages are empty
+        """
         if not slide_pages:
             raise ValueError("Slide pages cannot be empty.")
         else:
@@ -98,10 +108,16 @@ class PowerPointPresentation:
                         slide_notes += section.strip() + "\n"
             return slide_title, slide_subtitle, slide_content, slide_notes, slide_image
 
-    # Private Method to set the slide layouts
-    # Inputs: None
-    # Returns the best slide layout for the presentation
-    def __set_layouts(self, title, subtitle, content, image, notes):
+    def _set_layouts(self, title, subtitle, content, image, notes):
+        """ Private Method - returns the best slide layout for the presentation
+        :param title: The title of the slide
+        :param subtitle: The subtitle of the slide
+        :param content: The content of the slide
+        :param image: The image of the slide
+        :param notes: The notes of the slide
+        :return: The best slide layout for the presentation
+        """
+
         if title and subtitle:
             return SLIDE_TITLE_LAYOUT
         elif image:
@@ -115,39 +131,30 @@ class PowerPointPresentation:
         else:
             return SLIDE_BLANK_LAYOUT
 
-    # Populate the presentation with content
-    # Inputs: title, subtitle, content, image, notes
-    # title is a string - defaults to None
-    # subtitle is a string - defaults to None
-    # content is a string - defaults to None
-    # image is a string - defaults to None
-    # notes is a string - defaults to None
-    # Returns the populated presentation
     def populate_presentation(self, input_presentation):
-        sliced_presentation = self.__slice_presentation(input_presentation)
+        """ Returns a populated presentation
+        :param input_presentation: The input presentation
+        :return: The populated presentation
+        """
+        sliced_presentation = self._slice_presentation(input_presentation)
         for section in sliced_presentation:
 
             if len(section) == 0:
                 continue
-            title, subtitle, content, notes, image = self.__get_slide_content(section)
+            title, subtitle, content, notes, image = self._get_slide_content(section)
             self.add_slide(title=title, subtitle=subtitle, text=content, notes=notes, image=image)
 
-    # Add a slide to the presentation
-    # Inputs: slide_layout, title, text, image, notes
-    # slide_layout is an integer between 0 and 8 - Raises ValueError if slide_layout is not between 0 and 8
-    #               or not an integer
-    # title is a string - defaults to None
-    # text is a string - defaults to None
-    # image is a string - defaults to None - Raises ValueError if image is not provided for picture with caption layout
-    # notes is a string - defaults to None
-    # Returns the created slide
     def add_slide(self, title=None, subtitle=None, text=None, image=None, notes=None):
-        # if slide_layout not in range(0, 9):
-        #     raise ValueError("Slide layout must be between 0 and 8.")
-        # elif not isinstance(slide_layout, int):
-        #     raise ValueError("Slide layout must be an integer.")
+        """ Returns the created slide
+        :param title: The title of the slide
+        :param subtitle: The subtitle of the slide
+        :param text: The text of the slide
+        :param image: The image of the slide
+        :param notes: The notes of the slide
+        :return: The created slide
+        """
 
-        slide_layout = self.__set_layouts(title, subtitle, text, image, notes)
+        slide_layout = self._set_layouts(title, subtitle, text, image, notes)
 
         created_slide = self.presentation.slides.add_slide(self.presentation.slide_layouts[slide_layout])
         if slide_layout == SLIDE_PICTURE_WITH_CAPTION_LAYOUT:
@@ -172,11 +179,12 @@ class PowerPointPresentation:
             created_slide.notes_slide.notes_text_frame.text = notes
         return created_slide
 
-    # Save the presentation
-    # Inputs: filename
-    # filename is a string - Raises ValueError if filename is empty or does not end with .pptx
-    # Returns the saved presentation
     def save(self, filename):
+        """ Returns the saved presentation
+        :param filename: The filename of the presentation
+        :return: The saved presentation
+        :raises ValueError: If the filename is empty or does not end with .pptx
+        """
         if not filename:
             raise ValueError("Filename cannot be empty.")
         elif not filename.endswith(".pptx"):
@@ -184,12 +192,12 @@ class PowerPointPresentation:
         else:
             return self.presentation.save(filename)
 
-    # Get a slide layout
-    # Inputs: slide_layout
-    # slide_layout is an integer between 0 and 8 - Raises ValueError if slide_layout is not between 0 and 8 or not an
-    #               integer
-    # Returns the slide layout
     def get_slide_layout(self, slide_layout):
+        """ Returns the slide layout
+        :param slide_layout: The slide layout
+        :return: The slide layout
+        :raises ValueError: If the slide layout is not between 0 and 8 or not an integer
+        """
         if slide_layout not in range(0, 9):
             raise ValueError("Slide layout must be between 0 and 8.")
         elif not isinstance(slide_layout, int):
@@ -197,11 +205,14 @@ class PowerPointPresentation:
         else:
             return self.presentation.slide_layouts[slide_layout]
 
-    # Get a slide by slide number
-    # Inputs: slide_number
-    # slide_number is an integer - Raises ValueError if slide_number is not an integer
-    # Returns the slide
     def get_slide(self, slide_number):
+        """ Returns the slide specified by the slide number
+        :param slide_number: The slide number
+        :return: The slide
+        :raises ValueError: If the slide number is not between 0 and the number of slides in the presentation or not
+        an integer
+        """
+
         if not isinstance(slide_number, int):
             raise ValueError("Slide number must be an integer.")
         elif slide_number < 0 or slide_number > len(self.presentation.slides):
@@ -209,16 +220,9 @@ class PowerPointPresentation:
         else:
             return self.presentation.slides[slide_number]
 
-    # Get all slides in the presentation
-    # Returns all slides in the presentation
     def get_slides(self):
+        """ Returns all slides in the presentation
+        :return: All slides in the presentation
+        """
+
         return self.presentation.slides
-
-
-if __name__ == '__main__':
-    ppt = PowerPointPresentation()
-    ppt.add_slide(SLIDE_TITLE_LAYOUT, "Slide 1", "Slide 1 Text", notes="This is presenter notes")
-    ppt.add_slide(SLIDE_TITLE_AND_CONTENT_LAYOUT, "Slide 2", "Slide 2 Text")
-    ppt.add_slide(SLIDE_PICTURE_WITH_CAPTION_LAYOUT, image="D:\\Code\\Python\\MScProject"
-                                                           "\\tests\\unit\\powerpointTests\\img.png")
-    ppt.save('../../test.pptx')

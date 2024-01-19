@@ -1,6 +1,7 @@
 import unittest
 from unittest.mock import Mock, patch
-from src.api.chatGPTAPI import ChatGPTAPI
+
+from src.large_language_model.chatGPTAPI import ChatGPTAPI
 from src.orchestration.orchestrator import Orchestrator
 
 
@@ -30,7 +31,7 @@ class TestOrchestrator(unittest.TestCase):
             Orchestrator("ChatGPT", "", self.model)
 
     # Test the call_large_language_model method with the Mock class
-    @patch("src.api.chatGPTAPI.ChatGPTAPI")
+    @patch("src.large_language_model.chatGPTAPI.ChatGPTAPI")
     def test_call_large_language_model_chat(self, mock_chatgptapi):
         orchestrator = Orchestrator("ChatGPT", self.api_key, self.model)
 
