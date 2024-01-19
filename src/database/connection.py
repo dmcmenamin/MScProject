@@ -17,7 +17,7 @@ class RelDBConnection:
         """ The constructor for the RelDBConnection class
         Reads in the host, user, password and database from the env_variables.json file
         """
-        if __name__ == 'app':
+        if os.environ.get("ENVIRONMENT_LIVE"):
             # for production purposes
             with open("/etc/secrets/env_variables.json", "r") as env_variables:
                 env_variables = json.load(env_variables)
