@@ -9,22 +9,33 @@ def prompt_for_llm(presenter_name, topic, audience_size, presentation_length, au
     :return: A prompt for the large language model to generate a presentation
     """
 
-# TODO: Clean up Prompt so that TITLE, CONTENT, NOTES are clearly labelled, without proceeding text
+    # TODO: Clean up Prompt so that TITLE, CONTENT, NOTES are clearly labelled, without proceeding text
 
     return ("f {presenter_name} is preparing to give a presentation on {topic} to {audience_size} people. "
-            "The presentation will last {presentation_length} minutes. At the end of the presentation, "
-            "the audience will be expected to {audience_outcome}. Create a slide deck for {presenter_name} to use, "
-            "which should include title and content. Also include notes for {presenter_name} for each slide. "
-            "Ensure that each title slide, content and notes are clearly labelled. Also provide some image "
-            "suggestions on a new line on the relevant slides throughout the presentation, identified by keyword "
-            "IMAGE_SUGGESTION at the start of the line. In the notes section for each slide, provide a detailed "
-            "explanation on what that slide contains, ensuring it covers the full content on what the presenter should "
-            "talk about. Please also provide information on the time that the presenter should spend on each slide, "
-            "and ensure that the total time adds up to {presentation_length}."
-            "For the final slide, provide a summary of the presentation, and also provide a list of references that "
-            "the presenter can use to find out more information on the topic.").format(
+            "The presentation will last for {presentation_length} minutes. At the end of the presentation, "
+            "the audience of {audience_type} will be expected to {audience_outcome}. "
+            "Please create a Slide Deck for {presenter_name} to use. "
+            "The first page should have a title that is labelled using keyword TITLE: at the start of the line; "
+            "which is the title of the topic, and a subtitle that is labelled using keyword SUBTITLE: at the start "
+            "of the line, which is the Outcome of the presentation, followed by the presenters name. "
+            "Each following Slide should have a clear title, which is identified by the keyword TITLE: at the start "
+            "of the line and content which is labelled using the keyword CONTENT: at the start of the line. "
+            "Each slide should also have a notes section, which is labelled using the keyword NOTES: at the start "
+            "of the line. The notes section should include information on how long to spend on that slide; "
+            "where the total at the end of the presentation should add up to {presentation_length}. "
+            "In addition the notes section should provide {presenter_name} with a full script on what to talk about "
+            "on that slide. Please ensure there is enough content, with a maximum of 3 minutes spend on each slide. "
+            "Please also include {no_of_images} image suggestions for the entire presentation, on the slide where that "
+            "image would be most relevant. Make sure that the image suggestion is clearly labelled by the keyword "
+            "IMAGE_SUGGESTION: at the start of the line, followed by the image suggestion on the same line. "
+            "The CONTENT: section of the 2nd last slide should have a small summary of the entire presentation. "
+            "And the CONTENT: section of the last slide should have a list of references that were used by "
+            "{LLM} to create the presentation.").format(
         presenter_name=presenter_name,
         topic=topic,
         audience_size=audience_size,
         presentation_length=presentation_length,
-        audience_outcome=audience_outcome)
+        audience_outcome=audience_outcome,
+        audience_type="a group of medical professionals",
+        no_of_images=3,
+        LLM="GPT")

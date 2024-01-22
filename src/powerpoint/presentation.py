@@ -57,12 +57,17 @@ class PowerPointPresentation:
                     # If the presentation line starts with Slide, then it is the start of a new slide
                     # Add the line to the sliced presentation as a new slide, including a new line, so it can be
                     # formatted correctly. Done via regex to replace "Slide x:" with "Title:"
-                    slide_title = re.sub(r"Slide \d+:", "Title:", presentation_line)
+                    slide_title = re.sub(r"Slide \d+:", "TITLE:", presentation_line)
                     sliced_presentation.append(slide_title + "\n")
-                else:
+                elif len(sliced_presentation) != 0:
                     # Otherwise, it is part of the previous slide
                     # Add the line to the previous slide, including a new line, so it can be formatted correctly
                     sliced_presentation[-1] += presentation_line + "\n"
+                else:
+                    # Otherwise, it doesn't start with Slide, but is the first line of the presentation
+                    # This may happen on the first slide of the presentation
+                    # So set it as the first line in the sliced presentation
+                    sliced_presentation.append(presentation_line + "\n")
 
             return sliced_presentation
 
@@ -83,22 +88,22 @@ class PowerPointPresentation:
             last_section = ""
             for section in slide_pages.splitlines():
                 if len(section) >= 1:
-                    if section.startswith("Title:"):
-                        slide_title = section.replace("Title:", "").strip()
-                    elif section.startswith("Subtitle:"):
-                        slide_subtitle = section.replace("Subtitle:", "").strip()
-                    elif section.startswith("Content:"):
+                    if section.startswith("TITLE:"):
+                        slide_title = section.replace("TITLE:", "").strip()
+                    elif section.startswith("SUBTITLE:"):
+                        slide_subtitle = section.replace("SUBTITLE:", "").strip()
+                    elif section.startswith("CONTENT:"):
                         # If the slide content is "Content:", then set the slide content to the section, without the
                         # "Content:" prefix and the "-" suffix, and strip any whitespace
                         # This is done to ensure that the slide content is not set to "Content:"
-                        slide_content = section.replace("Content:", "").replace("-", "") + "\n"
+                        slide_content = section.replace("CONTENT:", "").replace("-", "") + "\n"
                         # If the slide content is "(No content ", then set the slide content to an empty string
                         # This is done to ensure that the slide content is not set to "(No content required)"
-                        if "(No content".lower() in slide_content.lower():
+                        if "(No content" in slide_content.lower():
                             slide_content = ""
                         last_section = "Content"
-                    elif section.startswith("Notes"):
-                        slide_notes = section.strip() + " \n"
+                    elif section.startswith("NOTES"):
+                        slide_notes = section.replace("NOTES:", "").strip() + " \n"
                         last_section = "Notes"
                     elif section.startswith("Image:"):
                         slide_image += section.replace("Image:", "").strip()
@@ -155,7 +160,8 @@ class PowerPointPresentation:
         """
 
         slide_layout = self._set_layouts(title, subtitle, text, image, notes)
-
+        print(slide_layout)
+        print(title)
         created_slide = self.presentation.slides.add_slide(self.presentation.slide_layouts[slide_layout])
         if slide_layout == SLIDE_PICTURE_WITH_CAPTION_LAYOUT:
             if image:
