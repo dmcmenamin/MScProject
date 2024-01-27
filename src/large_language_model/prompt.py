@@ -1,4 +1,4 @@
-def prompt_for_llm(presenter_name, topic, audience_size, presentation_length, audience_outcome):
+def prompt_for_llm(presenter_name, topic, audience_size, presentation_length, audience_outcome, audience):
     """ Generates a prompt for the large language model to generate a presentation
     :param presenter_name: The name of the presenter
     :param topic: The topic of the presentation
@@ -6,10 +6,12 @@ def prompt_for_llm(presenter_name, topic, audience_size, presentation_length, au
     :param presentation_length: The length of the presentation in minutes
     :param audience_outcome: A description of what you expect the audience to
                                 know or be able to do after the presentation
+    :param audience: The audience of the presentation
     :return: A prompt for the large language model to generate a presentation
     """
 
     # TODO: Clean up Prompt so that TITLE, CONTENT, NOTES are clearly labelled, without proceeding text
+    # TODO: Add in calling LLM
 
     return ("f {presenter_name} is preparing to give a presentation on {topic} to {audience_size} people. "
             "The presentation will last for {presentation_length} minutes. At the end of the presentation, "
@@ -36,6 +38,6 @@ def prompt_for_llm(presenter_name, topic, audience_size, presentation_length, au
         audience_size=audience_size,
         presentation_length=presentation_length,
         audience_outcome=audience_outcome,
-        audience_type="a group of medical professionals",
+        audience_type=audience,
         no_of_images=3,
         LLM="GPT")

@@ -66,13 +66,14 @@ class ChatGPTAPI(large_language_model_parent.LargeLanguageModel):
         return chat_completion.choices[0].message.content
 
     def set_question_prompt(self, presenter_name, presentation_topic, audience_size,
-                            presentation_length, audience_outcome):
+                            presentation_length, audience_outcome, audience):
         """ Returns a question prompt for OpenAI
         :param presenter_name: The name of the presenter
         :param presentation_topic: The topic of the presentation
         :param audience_size: The audience size of the presentation
         :param presentation_length: The time of the presentation
         :param audience_outcome: The audience outcome of the presentation
+        :param audience: The audience of the presentation
         :return: The question prompt for OpenAI
         """
         if not presenter_name or presenter_name == "":
@@ -87,7 +88,14 @@ class ChatGPTAPI(large_language_model_parent.LargeLanguageModel):
         if not presentation_length or presentation_length == "":
             raise ValueError("Time cannot be empty.")
 
-        return prompt_for_llm(presenter_name, presentation_topic, audience_size, presentation_length, audience_outcome)
+        if not audience_outcome or audience_outcome == "":
+            raise ValueError("Audience outcome cannot be empty.")
+
+        if not audience or audience == "":
+            raise ValueError("Audience cannot be empty.")
+
+        return prompt_for_llm(presenter_name, presentation_topic, audience_size, presentation_length,
+                              audience_outcome, audience)
 
     def get_presentation_slides(self, question):
         """ Returns a text document representing the content of the presentation deck from OpenAI

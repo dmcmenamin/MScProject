@@ -92,40 +92,6 @@ def presentation_generator():
         else:
             return render_template('index.html', response=response)
 
-        # if status_code == 200:
-        #     response, status_code = generate_presentation(json_response.get('topic'), json_response.get('audience_size'),
-        #                                                   json_response.get('time'),
-        #                                                   json_response.get('audience_outcome'),
-        #                                                   json_response.get('large_language_model'),
-        #                                                   json_response.get('model_name'))
-        #     if status_code == 200:
-        #         return render_template('presentation_success.html', response=response)
-        #     else:
-        #         return render_template('index.html', response=response)
-        # else:
-        #     return render_template('index.html', response=response)
-
-
-# @app.route('/presentation_generating.html')
-# def presentation_generating():
-#     """ The presentation generating endpoint for the website
-#     :return: If successful, the presentation generating page, otherwise, the presentation generator page with an error
-#     message
-#     """
-#     # if request.method == 'POST':
-#     #     """ The presentation generating endpoint for the website - for POST requests
-#     #     Calls the presentation generating in progress function from the controller
-#     #     :return: If successful, the presentation generating page, otherwise,
-#     #     the presentation generator page with an error
-#     #     """
-#     response, status_code = generate_presentation(data.get('topic'), data.get('audience_size'), data.get('time'),
-#                                                   data.get('audience_outcome'), data.get('large_language_model'),
-#                                                   data.get('model_name'))
-#     if status_code == 200:
-#         return render_template('presentation_generating.html', response=response)
-#     else:
-#         return render_template('presentation_generator.html', response=response)
-
 
 @app.route('/presentation_generating_in_progress_endpoint', methods=['POST'])
 def presentation_generating_in_progress():

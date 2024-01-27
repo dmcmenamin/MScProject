@@ -56,7 +56,7 @@ def get_ai_image_suggestion(string, large_language_model, specific_model_name, f
 
 
 def generate_presentation(presentation_topic, audience_size, presentation_length, expected_outcome,
-                          large_language_model, specific_model_name):
+                          large_language_model, specific_model_name, who_is_the_audience):
     """ Generates a presentation based on the user's input
     :param presentation_topic: A short description of the presentation topic, this will be used as the filename
     :param audience_size: The number of people the presentation will be given to
@@ -65,6 +65,7 @@ def generate_presentation(presentation_topic, audience_size, presentation_length
                              know or be able to do after the presentation
     :param large_language_model: The large language model to be used
     :param specific_model_name:  The specific model name to be used
+    :param who_is_the_audience: Who is the audience, this is used to determine the presentation style
     :return: None
     """
 
@@ -78,7 +79,8 @@ def generate_presentation(presentation_topic, audience_size, presentation_length
                                                                                              presentation_topic,
                                                                                              audience_size,
                                                                                              presentation_length,
-                                                                                             expected_outcome)
+                                                                                             expected_outcome,
+                                                                                             who_is_the_audience)
     # get the presentation slides
     presentation_response, status_code = (orchestration_service.
                                           call_large_language_model().get_presentation_slides(populated_prompt))

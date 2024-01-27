@@ -18,6 +18,9 @@ def presentation_generating_in_progress_post(data):
         return jsonify({"error": "User not logged in"}), 401
     else:
         response_string = data.get('response')
+
+        # convert string to dictionary
+        # if response string is empty, set response dictionary to empty dictionary
         response_dictionary = ast.literal_eval(response_string) if response_string else {}
 
         topic = response_dictionary.get('topic')
@@ -26,6 +29,7 @@ def presentation_generating_in_progress_post(data):
         audience_outcome = response_dictionary.get('audience_outcome')
         large_language_model = response_dictionary.get('large_language_model')
         specific_model_name = response_dictionary.get('model_name')
+        audience = response_dictionary.get('audience')
 
         return controller.generate_presentation(topic, audience_size, time, audience_outcome,
-                                                large_language_model, specific_model_name)
+                                                large_language_model, specific_model_name, audience)

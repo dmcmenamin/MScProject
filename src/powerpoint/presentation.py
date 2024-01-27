@@ -53,11 +53,11 @@ class PowerPointPresentation:
             sliced_presentation = []
 
             for presentation_line in presliced_presentation.splitlines():
-                if presentation_line.startswith("Slide"):
+                if presentation_line.lower().startswith("slide"):
                     # If the presentation line starts with Slide, then it is the start of a new slide
                     # Add the line to the sliced presentation as a new slide, including a new line, so it can be
                     # formatted correctly. Done via regex to replace "Slide x:" with "Title:"
-                    slide_title = re.sub(r"Slide \d+:", "TITLE:", presentation_line)
+                    slide_title = re.sub(r"Slide \d+:", "TITLE:", presentation_line, flags=re.IGNORECASE)
                     sliced_presentation.append(slide_title + "\n")
                 elif len(sliced_presentation) != 0:
                     # Otherwise, it is part of the previous slide
@@ -111,6 +111,7 @@ class PowerPointPresentation:
                         slide_content += section.replace("-", "").strip() + "\n"
                     elif last_section == "Notes":
                         slide_notes += section.strip() + "\n"
+
             return slide_title, slide_subtitle, slide_content, slide_notes, slide_image
 
     def _set_layouts(self, title, subtitle, content, image, notes):
@@ -147,6 +148,7 @@ class PowerPointPresentation:
             if len(section) == 0:
                 continue
             title, subtitle, content, notes, image = self._get_slide_content(section)
+
             self.add_slide(title=title, subtitle=subtitle, text=content, notes=notes, image=image)
 
     def add_slide(self, title=None, subtitle=None, text=None, image=None, notes=None):
@@ -160,13 +162,10 @@ class PowerPointPresentation:
         """
 
         slide_layout = self._set_layouts(title, subtitle, text, image, notes)
-        print(slide_layout)
-        print(title)
+
         created_slide = self.presentation.slides.add_slide(self.presentation.slide_layouts[slide_layout])
         if slide_layout == SLIDE_PICTURE_WITH_CAPTION_LAYOUT:
             if image:
-                # created_slide.shapes.add_picture(image, top=50, left=50, height=300, width=300)
-                # created_slide.shapes.add_textbox(left=50, top=350, width=300, height=50).text = text
                 created_slide.placeholders[1].insert_picture(image)
             else:
                 raise ValueError("Image must be provided for picture with caption layout.")

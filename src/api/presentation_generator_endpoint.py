@@ -50,10 +50,12 @@ def presentation_generator_post(data):
     audience_size = data.get('audience_size')
     time = data.get('presentation_length')
     audience_outcome = data.get('expected_outcome')
+    who_is_the_audience = data.get('audience')
 
     # get large language model & exact model name
     # split the string to get the large language model name and the specific model name
     large_language_model, model_name = data.get('llm_model_name').split("_")
 
     return jsonify({"topic": topic, "audience_size": audience_size, "time": time, "audience_outcome": audience_outcome,
-                    "large_language_model": large_language_model, "model_name": model_name}), 200
+                    "large_language_model": large_language_model, "model_name": model_name,
+                    "audience": who_is_the_audience}), 200
