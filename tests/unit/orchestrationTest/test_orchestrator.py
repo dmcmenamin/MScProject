@@ -17,7 +17,7 @@ class TestOrchestrator(unittest.TestCase):
     # Test the constructor
     def test_constructor(self):
         # Test constructor with valid input
-        orchestrator = Orchestrator("ChatGPT", self.api_key, self.model)
+        orchestrator = Orchestrator("ChatGPT", "mock-api-key", "mock-model")
         self.assertEqual(orchestrator.large_language_model, "ChatGPT")
         self.assertEqual(orchestrator.api_key, self.api_key)
         self.assertEqual(orchestrator.model, self.model)
@@ -41,9 +41,11 @@ class TestOrchestrator(unittest.TestCase):
 
         result = orchestrator.call_large_language_model()
 
-        # Check if the result is the mock instance
-        self.assertEqual(result.model, self.model)
-        self.assertEqual(result.client.api_key, self.api_key)
+        # Assert that the mock ChatGPTAPI instance was called
+        mock_chatgptapi.assert_called_once_with(self.api_key, self.model)
+        # Assert that the mock ChatGPTAPI instance was returned
+        self.assertEqual(result, chatgpt_mock)
+
 
     # Test the call_large_language_model method for bard
     # Pass for now as it is not implemented yet
