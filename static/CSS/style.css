@@ -16,6 +16,11 @@ html {
     height: 100%;
 }
 
+table {
+    align-content: center;
+    border-collapse: collapse;
+    width: 100%;
+}
 
 /*****  ID Styles *****/
 
@@ -38,8 +43,8 @@ html {
 
 .font-header-custom {
     font-family: 'Roboto', sans-serif;
-    font-size: 32px;
-    font-weight: 700;
+    font-size: 45px;
+    font-weight: 300;
     line-height: 1.5;
     color: #ECDBBA;
     flex-shrink: 0;
@@ -86,6 +91,13 @@ html {
     place-items: center;
 }
 
+.index-page-table {
+    align-content: center;
+    border-collapse: collapse;
+    margin-left: auto;
+    width: 75%;
+}
+
 .Login-In-Container {
     width: 50%;
     margin: 10px auto auto;
@@ -96,7 +108,7 @@ html {
 }
 
 .navbar {
-    font-size: 32px;
+    font-size: 26px;
 }
 
 .table-container {

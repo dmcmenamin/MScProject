@@ -31,8 +31,9 @@
         <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
           <div class="navbar-nav">
             <a class="nav-link active" aria-current="page" href="/">Home</a>
-            <a class="nav-link" href="/signup_endpoint">Sign-Up</a>
-              {% if 'username' in session %}
+              {% if 'username' not in session %}
+                <a class="nav-link" href="/signup_endpoint">Sign-Up</a>
+              {% elif 'username' in session %}
                 <a class="nav-link" href="/presentation_generator_endpoint">Presentation Generator</a>
                 <a class="nav-link ms-auto" href="/logout_endpoint">Logout</a>
               {% else %}
@@ -52,17 +53,32 @@
             </div>
         </div>
 
-
-        <!-- Image -->
-        <div class="img-container">
-            <div class="row">
-                <div class="col-12">
-                    <img src="../static/Images/Front_Page.jpg" class="img-front-page" alt="Image of a Man sitting at
-                        a computer screen with a Chatbot on the screen" width="512" height="512">
+    <table class="index-page-table">
+        <tr>
+            <td>
+                <div class="img-container">
+                    <div class="row">
+                        <div class="col-12">
+                            <img src="../static/Images/Front_Page.jpg" class="img-front-page" alt="Image of a group of
+                                    people looking at a presentation" width="512" height="512">
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
-        <br> <br>
+            </td>
+            <td>
+                <div class="font-header-custom-2">
+                    <div class="row">
+                        <div class="col-12">
+                            <h1 class="text-center">What is DynaPoint?</h1>
+                            <h2 class="text-center">DynaPoint is a Dynamic Presentation Creator</h2>
+                            <p class="text-center">It allows users to create a Presentation based on input from a Chatbot <br>
+                                Using Generative AI, to create a presentation based on user input</p>
+                        </div>
+                    </div>
+                </div>
+            </td>
+        </tr>
+    </table>
 
         <!-- A centred span that is only displayed when there is an error -->
         {% if response %}
@@ -70,17 +86,6 @@
                 <p> {{ response.json['error'] }} </p>
             </span>
         {% endif %}
-
-        <div class="font-header-custom-2">
-            <div class="row">
-                <div class="col-12">
-                    <h1 class="text-center">What is DynaPoint?</h1>
-                    <h2 class="text-center">DynaPoint is a Dynamic Presentation Creator</h2>
-                    <p class="text-center">It allows users to create a Presentation based on input from a Chatbot <br>
-                    Using Generative AI, to create a presentation based on user input</p>
-                </div>
-            </div>
-        </div>
 
         <div class="Login-In-Container">
             <!-- Login Container, which contains a form, where User can enter a Username & Password
@@ -90,20 +95,30 @@
             <h1 class="text-center font-header-custom">Login</h1>
             <hr class="mb-3">
             <form class="row gy-2 gx-3 align-items-center" action="{{ url_for('login') }}" method="POST">
-                <div class="col-md-6">
-                    <div class="input-group">
-                        <div class="input-group-text">@</div>
-                        <input type="text" class="form-control" id="autoSizingInputGroup" placeholder="username"
-                            name="username">
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <input type="text" class="form-control" id="autoSizingInput" placeholder="password" name="password">
-                </div>
-
-                <div class="col-12">
-                    <button type="submit" class="btn btn-primary btn-login-submit">Submit</button>
-                </div>
+                <table>
+                    <tr>
+                        <td>
+                            <div class="col-md-16">
+                                <div class="input-group">
+                                    <div class="input-group-text">@</div>
+                                    <input type="text" class="form-control" id="autoSizingInputGroup"
+                                               placeholder="username" name="username">
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="col-md-16">
+                                <input type="password" class="form-control" id="autoSizingInput"
+                                       placeholder="password" name="password">
+                            </div>
+                        </td>
+                        <td>
+                            <div class="col-md-6">
+                                <button type="submit" class="btn btn-primary btn-login-submit">Submit</button>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
             </form>
         </div>
     </div>

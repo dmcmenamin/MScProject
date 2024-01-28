@@ -24,13 +24,13 @@ def signup_get():
         return jsonify({"llm_model_names": list(returned_llm_model_names)}), 200
     except ConnectionError as e:
         # can't connect to database for login
-        return jsonify({"error": f"fDatabase error: {str(e)}. Please try again later."}), 500
+        return jsonify({"error": f"fDatabase Connection error. Please try again later."}), 500
     except AttributeError as e:
         # Catching attribute error here
-        return jsonify({"error": f"Database error: {str(e)}. Please try again later."}), 500
+        return jsonify({"error": f"Database error. Please try again later."}), 500
     except Exception as e:
         # Catching any other errors
-        response_value = {"error": f" {str(e)}. "}
+        response_value = {"Connection Error, please try again later. "}
     return jsonify(response_value), 500
 
 
@@ -51,12 +51,10 @@ def signup_post(data):
     last_name = data.get('last_name')
 
     # get api keys for each llm model name and store in dictionary
-    llm = {}
-    if (data.form.get('api_key_{{llm_model_name}})' is not None) or
-            (data.form.get('api_key_{{llm_model_name}})' is not ""))):
-        llm[data.form['llm_model_name']] = data.form['api_key_{{llm_model_name}}']
-    else:
-        return jsonify({"error": "API key cannot be empty."}), 400
+    llm = {key: value for key, value in data.items() if key.startswith('llm_name_') and value != "" and value is
+           not None}
+    if len(llm) == 0:
+        return jsonify({"error": "Please provide API Key for at least 1 large language model."}), 400
 
     # check if user exists
     database_connection = RelDBConnection()
