@@ -82,3 +82,13 @@ def get_specific_llm():
     """
 
     return "SELECT * FROM llm_details WHERE LLM_Name_ID = (SELECT LLM_Name_ID FROM llm_name WHERE llm_name_name = %s)"
+
+
+def store_presentation_in_database():
+    """ Stores the presentation in the database
+    :return: The query to store the presentation in the database
+    """
+
+    return ("INSERT INTO historical_db (historical_db_user_id, historical_db_presentation_name, "
+            "historical_db_presentation) "
+            "VALUES (%d, %s, pickle.loads(%s))")

@@ -1,4 +1,6 @@
+import io
 import json
+import pickle
 import shutil
 from datetime import datetime
 
@@ -6,6 +8,9 @@ import requests
 import os
 
 from flask import session, jsonify, send_file
+
+from src.database import queries
+from src.database.connection import RelDBConnection
 from src.orchestration.orchestrator import Orchestrator
 from src.powerpoint.presentation import PowerPointPresentation
 from io import BytesIO
@@ -124,6 +129,17 @@ def generate_presentation(presentation_topic, audience_size, presentation_length
     # for file in os.listdir(absolute_file_path):
     #     if file.endswith(".jpg"):
     #         os.remove(file)
+
+    # Serialize the PowerPoint presentation for storing in the database
+    binary_presentation_stream = io.BytesIO()
+    powerpoint_presentation.save(binary_presentation_stream)
+
+    binary_presentation_data = binary_presentation_stream.getvalue()
+
+    # save the presentation to the database
+    params = (session['user_id'], presentation_topic, binary_presentation_data)
+    database_connection = RelDBConnection()
+    database_connection.commit_query_with_parameter(queries.store_presentation_in_database(), params)
 
     # download the PowerPoint presentation
     send_file(absolute_file_path + "/" + presentation_topic + ".pptx", download_name=presentation_topic,
