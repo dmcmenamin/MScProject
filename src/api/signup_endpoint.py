@@ -101,3 +101,6 @@ def signup_post(data):
     except Exception as e:
         # Catching any other errors
         return jsonify({"error": f" {str(e)}. "}), 500
+    finally:
+        # close the connection, just in case it is still open
+        database_connection.close_connection()

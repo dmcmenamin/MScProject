@@ -1,4 +1,3 @@
-import flask
 from flask import jsonify, logging
 
 from src.database import queries, database_scripts
@@ -70,3 +69,6 @@ def login_api(data):
         # Catching any other errors
         response_value = {"error": "Database error. Please try again later. "}
         return jsonify(response_value), 500
+    finally:
+        # close the connection, just in case it is still open
+        database_connection.close_connection()

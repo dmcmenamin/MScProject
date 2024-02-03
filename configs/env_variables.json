@@ -3,7 +3,8 @@
     "host": "localhost",
     "user": "root",
     "password": "",
-    "database": "dynamicpowerpoint"
+    "database": "dynamicpowerpoint",
+    "connection_timeout": 10000
   },
 
   "MockChatGPT": {

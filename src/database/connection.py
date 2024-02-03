@@ -160,3 +160,9 @@ class RelDBConnection:
         cursor.execute(passed_query, params)
         connection.commit()
         connection.close()
+
+    def close_connection(self):
+        """ Closes the connection to the database
+        :return: None
+        """
+        self.connect().close()

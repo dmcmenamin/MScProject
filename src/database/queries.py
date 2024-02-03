@@ -91,4 +91,29 @@ def store_presentation_in_database():
 
     return ("INSERT INTO historical_db (historical_db_user_id, historical_db_presentation_name, "
             "historical_db_presentation) "
-            "VALUES (%d, %s, pickle.loads(%s))")
+            "VALUES (%s, %s, %s)")
+
+
+def get_users_historical_presentations():
+    """ Gets the user's historical presentations
+    :return: The query to get the user's historical presentations
+    """
+
+    return "SELECT historical_id, historical_presentation_name, historical_time_stamp FROM historical_db " \
+           "WHERE historical_user_id = (SELECT user_id FROM user WHERE Username = %s)"
+
+
+def get_specific_historical_presentation():
+    """ Gets a specific historical presentation
+    :return: The query to get a specific historical presentation
+    """
+
+    return "SELECT historical_presentation_name, historical_presentation FROM historical_db WHERE historical_id = %s"
+
+
+def delete_specific_historical_presentation():
+    """ Deletes a specific historical presentation
+    :return: The query to delete a specific historical presentation
+    """
+
+    return "DELETE FROM historical_db WHERE historical_id = %s"

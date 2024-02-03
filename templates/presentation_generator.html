@@ -17,7 +17,8 @@
         <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
           <div class="navbar-nav">
             <a class="nav-link active" aria-current="page" href="/">Home</a>
-            <a class="nav-link" href="logout_endpoint">Logout</a>
+            <a class="nav-link" href="/historical_endpoint">Historical</a>
+            <a class="nav-link" href="/logout_endpoint">Logout</a>
           </div>
         </div>
       </div>
@@ -115,11 +116,11 @@
             <table class="table table-dark table-striped">
                 {% for llm_model_name, available_llm_models in llm_names_and_models.items() %}
                     <tr>
-                        <th>{{ llm_model_name }} Text Models</th>
+                        <th>{{ llm_model_name }} Models</th>
                         <td>
                             <table>
                                 <tbody>
-                                    {% for specific_llm_model in available_llm_models %}
+                                    {% for specific_llm_model, specific_llm_description in available_llm_models %}
                                     <tr>
                                         <td>
                                             <div class="form-check">
@@ -127,7 +128,7 @@
                                                        value="{{ llm_model_name }}_{{ specific_llm_model }}"
                                                        id="flexRadioDefault1">
                                                 <label class="form-check-label" for="flexRadioDefault1">
-                                                    {{ specific_llm_model }}
+                                                    {{ specific_llm_description }}
                                                 </label>
                                             </div>
                                         </td>

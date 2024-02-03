@@ -3,6 +3,8 @@ import asyncio
 
 from flask import Flask, render_template, redirect, url_for, request, session, jsonify
 
+from src.api.historical_endpoint import historical_endpoint_get, historical_endpoint_get_specific_presentation, \
+    historical_endpoint_delete_specific_presentation
 from src.api.login_endpoint import login_api
 from src.api.presentation_generating_in_progress_endpoint import presentation_generating_in_progress_post
 from src.api.presentation_generator_endpoint import presentation_generator_get, presentation_generator_post
@@ -46,6 +48,10 @@ def signup():
     :return: If successful, the presentation generator page, otherwise, the signup page with an error message
     """
 
+    # if user is logged in, redirect to presentation generator page
+    if 'username' in session:
+        return redirect(url_for('presentation_generator'))
+
     # if it is a get request
     if request.method == 'GET':
         response, status_code = signup_get()
@@ -69,6 +75,10 @@ def presentation_generator():
     :return: If successful, the presentation generator page, otherwise, the presentation generator page with an error
     message
     """
+
+    # if user is not logged in, redirect to login page
+    if 'username' not in session:
+        return redirect(url_for('index'))
 
     # if it is a get request
     if request.method == 'GET':
@@ -100,6 +110,10 @@ def presentation_generating_in_progress():
     with an error message
     """
 
+    # if user is not logged in, redirect to login page
+    if 'username' not in session:
+        return redirect(url_for('index'))
+
     if request.method == 'POST':
         """ The presentation generating in progress endpoint for the website - for POST requests
         Calls the generate_presentation function from the controller
@@ -109,6 +123,58 @@ def presentation_generating_in_progress():
         response, status_code = presentation_generating_in_progress_post(request.form)
         if status_code == 200:
             return render_template('presentation_success.html', response=response)
+        else:
+            return render_template('index.html', response=response)
+
+
+@app.route('/historical_endpoint', methods=['GET'])
+def historical_endpoint():
+    """ The historical endpoint for the website
+    :return: The historical page
+    """
+
+    if 'username' not in session:
+        return redirect(url_for('index'))
+    else:
+        response, status_code = historical_endpoint_get()
+
+        if status_code == 200:
+            return render_template('historical.html', response=response)
+        else:
+            return render_template('index.html', response=response)
+
+
+@app.route('/historical_endpoint_get_specific_presentation/<presentation_id>', methods=['GET'])
+def get_specific_historical_presentation_endpoint(presentation_id):
+    """ The get specific historical presentation endpoint for the website
+    :return: The historical page
+    """
+
+    if 'username' not in session:
+        return redirect(url_for('index'))
+    else:
+        response, status_code = historical_endpoint_get_specific_presentation(presentation_id)
+
+        if status_code == 200:
+            return render_template('presentation_success.html')
+        else:
+            return render_template('index.html', response=response)
+
+
+@app.route('/delete_presentation_endpoint/<presentation_id>', methods=['POST'])
+def delete_presentation_endpoint(presentation_id):
+    """ The delete presentation endpoint for the website
+    :return: The historical page
+    """
+
+    if 'username' not in session:
+        return redirect(url_for('index'))
+    else:
+        response, status_code = historical_endpoint_delete_specific_presentation(presentation_id)
+        print(response, status_code)
+
+        if status_code == 200:
+            return redirect(url_for('historical_endpoint'))
         else:
             return render_template('index.html', response=response)
 

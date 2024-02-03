@@ -37,7 +37,10 @@ def presentation_generator_get():
             # convert list of tuples to list of strings for each llm model
             for i in range(len(returned_llm_model_information)):
                 if returned_llm_model_information[i][3] == "text":
-                    text_llm_model_information.append(returned_llm_model_information[i][2])
+                    # create a list of tuples containing the model name and description
+                    text_model_name_and_description = (returned_llm_model_information[i][2],
+                                                       returned_llm_model_information[i][4])
+                    text_llm_model_information.append(text_model_name_and_description)
             llm_names_and_models[llm_model] = text_llm_model_information
         # render presentation generator page with list of available llm model names
         return jsonify({"llm_model_names": returned_llm_model_names,
@@ -51,6 +54,7 @@ def presentation_generator_post(data):
     time = data.get('presentation_length')
     audience_outcome = data.get('expected_outcome')
     who_is_the_audience = data.get('audience')
+
 
     # get large language model & exact model name
     # split the string to get the large language model name and the specific model name
