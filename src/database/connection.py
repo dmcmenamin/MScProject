@@ -36,6 +36,7 @@ class RelDBConnection:
         self.user = env_variables["database"]["user"]
         self.password = env_variables["database"]["password"]
         self.database = env_variables["database"]["database"]
+        self.connection_timeout = env_variables["database"]["connection_timeout"]
 
     def __str__(self):
         """ The string representation of the RelDBConnection class
@@ -43,7 +44,7 @@ class RelDBConnection:
         """
 
         return (f"RelDBConnection(host={self.host}, user={self.user}, password={self.password}, "
-                f"database={self.database})")
+                f"database={self.database}, connection_timeout={self.connection_timeout})")
 
     def connect(self):
         """ Connects to the database
@@ -54,7 +55,8 @@ class RelDBConnection:
                 host=self.host,
                 user=self.user,
                 password=self.password,
-                database=self.database
+                database=self.database,
+                connection_timeout=self.connection_timeout
             )
             return connection
         except mysql.connector.Error as error:
