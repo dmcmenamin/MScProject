@@ -8,7 +8,7 @@ import os
 
 from flask import session, jsonify, send_file
 
-from src.controllers.common_scripts import clean_up_string
+from src.controllers.common_scripts import clean_up_string, print_text_file
 from src.database import queries
 from src.database.connection import RelDBConnection
 from src.orchestration.orchestrator import Orchestrator
@@ -61,6 +61,7 @@ def get_ai_image_suggestion(string, folder_name):
                 image_file.write(image.read())
 
             string = string.replace(line, "IMAGE: " + folder_name + "/" + local_path, 1)
+            print(line)
     return string, 200
 
 
@@ -105,8 +106,7 @@ def generate_presentation(presentation_topic, audience_size, presentation_length
     presentation_string = presentation_json['presentation_deck']
 
     # save the presentation string to a file - this is used for debugging purposes
-    with open(file_location + "/presentation.txt", "w") as f:
-        f.write(presentation_string)
+    # print_text_file(presentation_string, "without_image_suggestions")
 
     # extract the image suggestions from the presentation string, and replace them with the image url
     presentation_string, status_code = get_ai_image_suggestion(presentation_string, file_location)
@@ -116,8 +116,7 @@ def generate_presentation(presentation_topic, audience_size, presentation_length
         return presentation_string, status_code
 
     # save the presentation string to a file - this is used for debugging purposes
-    with open(file_location + "/presentation_with_images.txt", "w") as f:
-        f.write(presentation_string)
+    # print_text_file(presentation_string, "with_image_suggestions")
 
     # create the PowerPoint presentation from the presentation string by calling the PowerPoint Class
     powerpoint_presentation = PowerPointPresentation(presentation_string)

@@ -34,19 +34,17 @@ def get_available_llms():
     return "SELECT llm_name_name FROM llm_name"
 
 
-def get_api_key(username, llm_name):
+def get_api_key():
     """ Gets the api key for the user
-    :param username: The username of the user
-    :param llm_name: The Large Language Model name
     :return: The query to get the api key for the user
     """
 
-    query = (
+    return (
         "SELECT api_key_user_key FROM api_key "
         "WHERE api_key_user = (SELECT user_id FROM user WHERE Username = %s) "
         "AND api_key_llm = (SELECT LLM_Name_ID FROM llm_name WHERE llm_name_name = %s)"
     )
-    return query, (username, llm_name)
+
 
 
 def create_user():
@@ -89,8 +87,8 @@ def store_presentation_in_database():
     :return: The query to store the presentation in the database
     """
 
-    return ("INSERT INTO historical_db (historical_db_user_id, historical_db_presentation_name, "
-            "historical_db_presentation) "
+    return ("INSERT INTO historical (historical_user_id, historical_presentation_name, "
+            "historical_presentation) "
             "VALUES (%s, %s, %s)")
 
 
@@ -99,7 +97,7 @@ def get_users_historical_presentations():
     :return: The query to get the user's historical presentations
     """
 
-    return "SELECT historical_id, historical_presentation_name, historical_time_stamp FROM historical_db " \
+    return "SELECT historical_id, historical_presentation_name, historical_time_stamp FROM historical " \
            "WHERE historical_user_id = (SELECT user_id FROM user WHERE Username = %s)"
 
 
@@ -108,7 +106,7 @@ def get_specific_historical_presentation():
     :return: The query to get a specific historical presentation
     """
 
-    return "SELECT historical_presentation_name, historical_presentation FROM historical_db WHERE historical_id = %s"
+    return "SELECT historical_presentation_name, historical_presentation FROM historical WHERE historical_id = %s"
 
 
 def delete_specific_historical_presentation():
@@ -116,4 +114,4 @@ def delete_specific_historical_presentation():
     :return: The query to delete a specific historical presentation
     """
 
-    return "DELETE FROM historical_db WHERE historical_id = %s"
+    return "DELETE FROM historical WHERE historical_id = %s"

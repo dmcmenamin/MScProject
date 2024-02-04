@@ -120,7 +120,7 @@ class ChatGPTAPI(large_language_model_parent.LargeLanguageModel):
             return jsonify({"error": f"OpenAI API request failed"}), 400
         except openai.APIConnectionError as e:
             # Catching connection error here
-            return jsonify({"error": f"OpenAI API request failed, Please retry"}), 400
+            return jsonify({"error": f"OpenAI API request failed - API Connection Error, Please retry"}), 400
         except openai.RateLimitError as e:
             # Catching Error where Token has exceeded rate limit
             return jsonify({"error": f"Insufficient Balance complete. Please top up OpenAI account"}), 400
@@ -132,10 +132,10 @@ class ChatGPTAPI(large_language_model_parent.LargeLanguageModel):
             return jsonify({"error": f"OpenAI API request failed due to invalid token, please check your API key"}), 400
         except openai.OpenAIError as e:
             # Catching Error where OpenAI API fails
-            return jsonify({"error": f"OpenAI API request failed, please contact support"}), 400
+            return jsonify({"error": f"OpenAI API request failed - OpenAIError, please contact support"}), 400
         except Exception as e:
             # Catching any other errors
-            return jsonify({"error": f"OpenAI API request failed, please contact support"}), 400
+            return jsonify({"error": f"OpenAI API request failed - General Exception, please contact support"}), 400
 
     def get_presentation_image(self, image_query, image_size):
         """ Returns an image from OpenAI

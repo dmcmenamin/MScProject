@@ -10,6 +10,7 @@ from src.api.presentation_generating_in_progress_endpoint import presentation_ge
 from src.api.presentation_generator_endpoint import presentation_generator_get, presentation_generator_post
 from src.api.signup_endpoint import signup_get, signup_post
 from src.controllers import controller
+from src.controllers.common_scripts import set_session_values, login_required
 from src.controllers.controller import generate_presentation
 
 app = Flask(__name__)
@@ -32,11 +33,10 @@ def login():
 
     response, status_code = login_api(request.form)
     if status_code == 200:
-        session['username'] = response.json['username']
-        session['user_id'] = response.json['user_id']
-        session['first_name'] = response.json['first_name']
-        session['last_name'] = response.json['last_name']
-        session['api_key'] = response.json['api_key']
+        set_session_values('username', response.json['username'])
+        set_session_values('user_id', response.json['user_id'])
+        set_session_values('first_name', response.json['first_name'])
+        set_session_values('last_name', response.json['last_name'])
         return redirect(url_for('presentation_generator'))
     else:
         return render_template('index.html', response=response)
@@ -47,11 +47,6 @@ def signup():
     """ The signup endpoint for the website
     :return: If successful, the presentation generator page, otherwise, the signup page with an error message
     """
-
-    # if user is logged in, redirect to presentation generator page
-    if 'username' in session:
-        return redirect(url_for('presentation_generator'))
-
     # if it is a get request
     if request.method == 'GET':
         response, status_code = signup_get()
@@ -70,15 +65,12 @@ def signup():
 
 
 @app.route('/presentation_generator_endpoint', methods=['GET', 'POST'])
+@login_required
 def presentation_generator():
     """ The presentation generator endpoint for the website
     :return: If successful, the presentation generator page, otherwise, the presentation generator page with an error
     message
     """
-
-    # if user is not logged in, redirect to login page
-    if 'username' not in session:
-        return redirect(url_for('index'))
 
     # if it is a get request
     if request.method == 'GET':
@@ -104,16 +96,12 @@ def presentation_generator():
 
 
 @app.route('/presentation_generating_in_progress_endpoint', methods=['POST'])
+@login_required
 def presentation_generating_in_progress():
     """ The presentation generating in progress endpoint for the website
     :return: If successful, the presentation generating in progress page, otherwise, the presentation generator page
     with an error message
     """
-
-    # if user is not logged in, redirect to login page
-    if 'username' not in session:
-        return redirect(url_for('index'))
-
     if request.method == 'POST':
         """ The presentation generating in progress endpoint for the website - for POST requests
         Calls the generate_presentation function from the controller
@@ -128,58 +116,53 @@ def presentation_generating_in_progress():
 
 
 @app.route('/historical_endpoint', methods=['GET'])
+@login_required
 def historical_endpoint():
     """ The historical endpoint for the website
     :return: The historical page
     """
+    response, status_code = historical_endpoint_get()
 
-    if 'username' not in session:
-        return redirect(url_for('index'))
+    if status_code == 200:
+        return render_template('historical.html', response=response)
     else:
-        response, status_code = historical_endpoint_get()
-
-        if status_code == 200:
-            return render_template('historical.html', response=response)
-        else:
-            return render_template('index.html', response=response)
+        return render_template('index.html', response=response)
 
 
 @app.route('/historical_endpoint_get_specific_presentation/<presentation_id>', methods=['GET'])
+@login_required
 def get_specific_historical_presentation_endpoint(presentation_id):
     """ The get specific historical presentation endpoint for the website
     :return: The historical page
     """
 
-    if 'username' not in session:
-        return redirect(url_for('index'))
-    else:
-        response, status_code = historical_endpoint_get_specific_presentation(presentation_id)
+    # call the get specific historical presentation endpoint
+    response, status_code = historical_endpoint_get_specific_presentation(presentation_id)
 
-        if status_code == 200:
-            return render_template('presentation_success.html')
-        else:
-            return render_template('index.html', response=response)
+    if status_code == 200:
+        return render_template('presentation_success.html')
+    else:
+        return render_template('index.html', response=response)
 
 
 @app.route('/delete_presentation_endpoint/<presentation_id>', methods=['POST'])
+@login_required
 def delete_presentation_endpoint(presentation_id):
     """ The delete presentation endpoint for the website
     :return: The historical page
     """
 
-    if 'username' not in session:
-        return redirect(url_for('index'))
-    else:
-        response, status_code = historical_endpoint_delete_specific_presentation(presentation_id)
-        print(response, status_code)
+    response, status_code = historical_endpoint_delete_specific_presentation(presentation_id)
+    print(response, status_code)
 
-        if status_code == 200:
-            return redirect(url_for('historical_endpoint'))
-        else:
-            return render_template('index.html', response=response)
+    if status_code == 200:
+        return redirect(url_for('historical_endpoint'))
+    else:
+        return render_template('index.html', response=response)
 
 
 @app.route('/logout_endpoint')
+@login_required
 def logout():
     """ The logout endpoint for the website, clears the session information
     :return: The index page

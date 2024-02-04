@@ -1,5 +1,6 @@
 from flask import jsonify, session
 
+from src.controllers.common_scripts import set_session_values
 from src.database import queries
 from src.database.connection import RelDBConnection
 
@@ -55,10 +56,36 @@ def presentation_generator_post(data):
     audience_outcome = data.get('expected_outcome')
     who_is_the_audience = data.get('audience')
 
-
     # get large language model & exact model name
     # split the string to get the large language model name and the specific model name
     large_language_model, model_name = data.get('llm_model_name').split("_")
+    set_session_values('large_language_model', large_language_model)
+    set_session_values('model_name', model_name)
+
+    # get the api key
+    database_connection = RelDBConnection()
+    try:
+        params = (session['username'], session['large_language_model'])
+        print(params)
+        api_key = (database_connection.
+                   query_return_first_match_with_parameter(queries.get_api_key(), params))
+        print(api_key)
+        if api_key:
+            set_session_values('api_key', api_key[0])
+        else:
+            return jsonify({"error": "API key not found"}), 400
+    except ConnectionError as e:
+        return jsonify({"error": "Database currently not available. Please try again later."}), 500
+    except AttributeError as e:
+        return jsonify({"error": "Database currently not available. Please try again later."}), 500
+    except Exception as e:
+        return jsonify({"error": "An error occurred"}), 500
+    finally:
+        # close the database connection just in case it is still open
+        database_connection.close_connection()
+
+
+
 
     return jsonify({"topic": topic, "audience_size": audience_size, "time": time, "audience_outcome": audience_outcome,
                     "large_language_model": large_language_model, "model_name": model_name,
