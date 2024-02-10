@@ -144,7 +144,6 @@ def generate_presentation(presentation_topic, audience_size, presentation_length
     # save the presentation string to a file - this is used for debugging purposes
     # print_text_file(presentation_string, "with_image_suggestions")
 
-    print(presentation_string_with_images)
     # create the PowerPoint presentation from the presentation string by calling the PowerPoint Class
     powerpoint_presentation = PowerPointPresentation(presentation_string_with_images)
 

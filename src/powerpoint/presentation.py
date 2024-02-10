@@ -1,3 +1,6 @@
+import os
+
+from flask import session
 from pptx import Presentation
 import re
 
@@ -30,8 +33,16 @@ class PowerPointPresentation:
         """ Constructor for PowerPointPresentation class
         :param presentation_string: The presentation string
         """
+        current_working_directory = os.getcwd()
+        print(current_working_directory)
+
         if presentation_string:
-            self.presentation = Presentation()
+            if 'presentation_theme' not in session or session['presentation_theme'] is "":
+                self.presentation = Presentation()
+            else:
+                # get the theme from the session and create a presentation with that theme
+                theme = "static/PresentationThemes/" + session['presentation_theme'] + ".pptx"
+                self.presentation = Presentation(pptx=theme)
             self.populate_presentation(presentation_string)
         else:
             self.presentation = Presentation()
@@ -246,3 +257,19 @@ class PowerPointPresentation:
         """
 
         return self.presentation.slides
+
+
+if __name__ == "__main__":
+    # Example usage
+    # Create a presentation
+    presentation = PowerPointPresentation("Futuristic.pptx")
+    # Add a slide
+    presentation.add_slide(title="Title", subtitle="Subtitle", text="Content", notes="Notes")
+    # Save the presentation
+    presentation.save("example_presentation.pptx")
+    # Get the slide layout
+    slide_layout = presentation.get_slide_layout(0)
+    # Get a slide
+    slide = presentation.get_slide(0)
+    # Get all slides
+    slides = presentation.get_slides()

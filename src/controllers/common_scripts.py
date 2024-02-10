@@ -1,5 +1,7 @@
 # Common Scripts used across the application
 import io
+import json
+import os
 from functools import wraps
 
 from flask import send_file, jsonify, session, redirect, url_for
@@ -98,4 +100,42 @@ def login_required(f):
             return redirect(url_for('index'))
         return f(*args, **kwargs)
     return decorated_function
+
+
+def get_environment_variables():
+    """ Returns the environment variables
+    :return: The environment variables
+    """
+    if os.environ.get("ENVIRONMENT_LIVE"):
+        # for production purposes
+        with open("/etc/secrets/env_variables.json", "r") as env_variables:
+            return json.load(env_variables)
+    elif __name__ == "__main__":
+        # for development purposes
+        with open("./configs/env_variables.json", "r") as env_variables:
+            return json.load(env_variables)
+    else:
+        # for testing purposes
+        rel_abs_path = os.path.abspath(os.path.dirname(__file__))
+        abs_path = os.path.join(rel_abs_path, "..\\..\\configs\\env_variables.json")
+        with open(abs_path, "r") as env_variables:
+            return json.load(env_variables)
+
+
+def set_presentation_themes_available(presentation_theme):
+    """ Returns the presentation theme
+    :param presentation_theme: The presentation theme
+    :return: The underlying presentation template
+    """
+
+    env_variables = get_environment_variables()
+    return env_variables["PRESENTATION_THEMES"][presentation_theme]
+
+
+def get_themes_available():
+    """ Returns the list of themes available
+    :return: The list of themes available
+    """
+    env_variables = get_environment_variables()
+    return env_variables["PRESENTATION_THEMES"]
 

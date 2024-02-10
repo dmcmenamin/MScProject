@@ -1,9 +1,6 @@
-import json
-import os
-
 import mysql.connector
 
-from src.database import queries
+from src.controllers.common_scripts import get_environment_variables
 
 
 class RelDBConnection:
@@ -17,20 +14,7 @@ class RelDBConnection:
         """ The constructor for the RelDBConnection class
         Reads in the host, user, password and database from the env_variables.json file
         """
-        if os.environ.get("ENVIRONMENT_LIVE"):
-            # for production purposes
-            with open("/etc/secrets/env_variables.json", "r") as env_variables:
-                env_variables = json.load(env_variables)
-        elif __name__ == "__main__":
-            # for development purposes
-            with open("./configs/env_variables.json", "r") as env_variables:
-                env_variables = json.load(env_variables)
-        else:
-            # for testing purposes
-            rel_abs_path = os.path.abspath(os.path.dirname(__file__))
-            abs_path = os.path.join(rel_abs_path, "..\\..\\configs\\env_variables.json")
-            with open(abs_path, "r") as env_variables:
-                env_variables = json.load(env_variables)
+        env_variables = get_environment_variables()
 
         self.host = env_variables["database"]["host"]
         self.user = env_variables["database"]["user"]

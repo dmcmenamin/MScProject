@@ -77,7 +77,8 @@ def presentation_generator():
         response, status_code = presentation_generator_get()
         if status_code == 200:
             return render_template('presentation_generator.html', llm_model_names=response.json['llm_model_names'],
-                                   llm_names_and_models=response.json['llm_names_and_models'])
+                                   llm_names_and_models=response.json['llm_names_and_models'],
+                                   presentation_themes=response.json['presentation_themes'])
         else:
             return render_template('presentation_generator.html', response=response)
 
