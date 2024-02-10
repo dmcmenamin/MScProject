@@ -66,10 +66,8 @@ def presentation_generator_post(data):
     database_connection = RelDBConnection()
     try:
         params = (session['username'], session['large_language_model'])
-        print(params)
         api_key = (database_connection.
                    query_return_first_match_with_parameter(queries.get_api_key(), params))
-        print(api_key)
         if api_key:
             set_session_values('api_key', api_key[0])
         else:

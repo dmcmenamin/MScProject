@@ -4,7 +4,7 @@
     "user": "root",
     "password": "",
     "database": "dynamicpowerpoint",
-    "connection_timeout": 100000
+    "connection_timeout": 9000000
   },
 
   "MockChatGPT": {

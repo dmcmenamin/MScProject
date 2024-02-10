@@ -153,7 +153,6 @@ def delete_presentation_endpoint(presentation_id):
     """
 
     response, status_code = historical_endpoint_delete_specific_presentation(presentation_id)
-    print(response, status_code)
 
     if status_code == 200:
         return redirect(url_for('historical_endpoint'))

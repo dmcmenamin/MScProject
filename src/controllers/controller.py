@@ -24,45 +24,71 @@ def get_ai_image_suggestion(string, folder_name):
     :param folder_name: The name of the folder to be downloaded
     :return: The string with the image suggestion replaced with the image url
     """
+    new_string = ""
+    lines = string.splitlines()
+    line_iterator = iter(lines)
 
-    for line in string.splitlines():
-        line = clean_up_string(line)
-        if line.startswith("IMAGE_SUGGESTION"):
-            image_requested = line.split("IMAGE_SUGGESTION:")[1]
-            # if the image requested is empty, get the next line, and use that as the image requested
-            # as sometimes the image requested is put on the next line
-            if len(image_requested) == 0:
-                image_requested = next(string.splitlines())
-            # remove any slashes and colon's from the image requested
-            image_requested = image_requested.replace('/', '').replace(':', '').strip()
-            # remove any full stops from the end of the image requested
-            if image_requested.endswith("."):
-                image_requested = image_requested.rstrip('.')
-            orchestration_service = Orchestrator(session['large_language_model'], session['api_key'],
-                                                 session['image_model_name'])
-            image_url, status_code = (orchestration_service.call_large_language_model().
-                                      get_presentation_image(image_requested.rstrip('.'), "1024x1024"))
+    try:
+        while True:
+            line = next(line_iterator)
+            line = clean_up_string(line)
+            if line.upper().startswith("IMAGE_SUGGESTION") or line.upper().startswith("IMAGE"):
+                image_requested = ""
+                # sometimes the LLM doesn't return the image suggestion in the requested format e.g. Image suggestion:
+                # so we need to check for both
+                # first check if line is Image suggestion
+                if line.upper().startswith("IMAGE_SUGGESTION"):
+                    image_requested = line.upper().split("IMAGE_SUGGESTION")[1]
+                elif line.upper().startswith("IMAGE SUGGESTION"):
+                    image_requested = line.upper().split("IMAGE SUGGESTION")[1]
+                elif line.upper().startswith("IMAGE"):
+                    image_requested = line.upper().split("IMAGE")[1]
 
-            # if there is an image, don't proceed, and instead return the status code and the error message
-            if status_code != 200:
-                return image_url, status_code
+                # finally just incase, we haven't removed the colon at the start of the image requested
+                # we need to check for this and remove it
+                if image_requested.startswith(":"):
+                    image_requested = image_requested.strip().split(":")[1]
+                # if the image requested is empty, get the next line, and use that as the image requested
+                # as sometimes the image requested is put on the next line
 
-            # get the image url from the response
-            response = image_url.json['image_url']
+                if len(image_requested) == 0:
+                    image_requested = next(string.splitlines())
+                # remove any slashes and colon's from the image requested
+                image_requested = image_requested.replace('/', '').replace(':', '').strip()
+                # remove any full stops from the end of the image requested
+                if image_requested.endswith("."):
+                    image_requested = image_requested.rstrip('.')
+                orchestration_service = Orchestrator(session['large_language_model'], session['api_key'],
+                                                     session['image_model_name'])
+                image_url, status_code = (orchestration_service.call_large_language_model().
+                                          get_presentation_image(image_requested.rstrip('.'), "1024x1024"))
 
-            image = BytesIO(requests.get(response).content)
+                # if there is an image, don't proceed, and instead return the status code and the error message
+                if status_code != 200:
+                    return image_url, status_code
 
-            if image_requested.endswith("."):
-                local_path = image_requested + "jpg"
+                # get the image url from the response
+                response = image_url.json['image_url']
+
+                image = BytesIO(requests.get(response).content)
+
+                if image_requested.endswith("."):
+                    local_path = image_requested + "jpg"
+                else:
+                    local_path = image_requested + ".jpg"
+
+                with open(folder_name + "/" + local_path, "wb") as image_file:
+                    image_file.write(image.read())
+
+                # replace the image suggestion with the image url
+                new_line = f"IMAGE: {folder_name}/{local_path}"
+                new_string += new_line + "\n"  # add new line to string
             else:
-                local_path = image_requested + ".jpg"
-
-            with open(folder_name + "/" + local_path, "wb") as image_file:
-                image_file.write(image.read())
-
-            string = string.replace(line, "IMAGE: " + folder_name + "/" + local_path, 1)
-            print(line)
-    return string, 200
+                new_string += line + "\n" # add existing line to string
+    except StopIteration:
+        # if we have reached the end of the string, return the new string
+        pass
+    return new_string, 200
 
 
 def generate_presentation(presentation_topic, audience_size, presentation_length, expected_outcome,
@@ -109,17 +135,18 @@ def generate_presentation(presentation_topic, audience_size, presentation_length
     # print_text_file(presentation_string, "without_image_suggestions")
 
     # extract the image suggestions from the presentation string, and replace them with the image url
-    presentation_string, status_code = get_ai_image_suggestion(presentation_string, file_location)
+    presentation_string_with_images, status_code = get_ai_image_suggestion(presentation_string, file_location)
 
     # if there is an error, don't proceed, and instead return the status code and the error message
     if status_code != 200:
-        return presentation_string, status_code
+        return presentation_string_with_images, status_code
 
     # save the presentation string to a file - this is used for debugging purposes
     # print_text_file(presentation_string, "with_image_suggestions")
 
+    print(presentation_string_with_images)
     # create the PowerPoint presentation from the presentation string by calling the PowerPoint Class
-    powerpoint_presentation = PowerPointPresentation(presentation_string)
+    powerpoint_presentation = PowerPointPresentation(presentation_string_with_images)
 
     # save the PowerPoint presentation
     powerpoint_presentation.save(file_location + "/" + presentation_topic + ".pptx")

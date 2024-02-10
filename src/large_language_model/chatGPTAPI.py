@@ -1,4 +1,4 @@
-from flask import jsonify
+from flask import jsonify, session
 from openai import OpenAI
 import openai
 
@@ -150,7 +150,7 @@ class ChatGPTAPI(large_language_model_parent.LargeLanguageModel):
 
         try:
             response = self.client.images.generate(
-                model="dall-e-3",
+                model=self.model,
                 prompt=image_query,
                 n=1,
                 size=image_size,

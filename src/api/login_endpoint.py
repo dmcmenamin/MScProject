@@ -30,7 +30,6 @@ def login_api(data):
         params = (username,)
         returned_user_information = (database_connection.
                                      query_return_first_match_with_parameter(queries.check_user_exists(), params))
-        print(returned_user_information)
         # if user exists
         if returned_user_information:
             # get user information
