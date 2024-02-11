@@ -2,6 +2,11 @@
 import io
 import json
 import os
+import shutil
+from datetime import datetime
+from pathlib import Path
+
+import platformdirs
 from functools import wraps
 
 from flask import send_file, jsonify, session, redirect, url_for
@@ -20,55 +25,6 @@ def clean_up_string(line_to_clean):
     line_to_clean = line_to_clean.strip()
 
     return line_to_clean
-
-
-def deserialize_presentation(presentation_name, serialized_presentation):
-    """ Deserializes the presentation from the database
-    :param presentation_name: The name of the presentation
-    :param serialized_presentation: The serialized presentation
-    return Message and status code
-    """
-
-    # Convert the presentation from Binary format
-    try:
-        presentation_stream = io.BytesIO(serialized_presentation)
-        restored_presentation = Presentation(presentation_stream)
-
-        restored_presentation.save(presentation_name + ".pptx")
-
-        return jsonify({"message": "Presentation deserialized"}), 200
-    except Exception as e:
-        return jsonify({"message": "Unable to deserialize Presentation"}), 500
-
-
-def download_presentation(presentation_name):
-    """ Downloads the presentation
-    :param presentation_name: The name of the presentation
-    :return: Response and status code
-    """
-    if send_file(presentation_name + ".pptx", download_name=presentation_name, as_attachment=True):
-        return jsonify({"message": "Presentation Downloaded"}), 200
-    else:
-        return jsonify({"message": "Unable to download Presentation"}), 500
-
-
-def deserialize_presentation_and_download(presentation_name, serialized_presentation):
-    """ Deserializes the presentation from the database
-    :param presentation_name: The name of the presentation
-    :param serialized_presentation: The serialized presentation
-    return Message and status code
-    """
-
-    if serialized_presentation is None:
-        return jsonify({"message": "No presentation found"}), 404
-
-    # Convert the presentation from Binary format
-    response, status_code = deserialize_presentation(presentation_name, serialized_presentation)
-    if status_code == 200:
-        return download_presentation(presentation_name)
-    else:
-        return response, status_code
-
 
 def print_text_file(text_file_name, text_file_descriptor):
     """ Prints the text file - used for debugging purposes only
@@ -94,11 +50,13 @@ def login_required(f):
     :param f: The function to be decorated
     :return: The decorated function
     """
+
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if 'username' not in session:
             return redirect(url_for('index'))
         return f(*args, **kwargs)
+
     return decorated_function
 
 
@@ -138,4 +96,56 @@ def get_themes_available():
     """
     env_variables = get_environment_variables()
     return env_variables["PRESENTATION_THEMES"]
+
+
+def create_unique_folder(filename):
+    """ Creates a unique folder for the user to store their presentations
+    :param filename: The name of the folder to be created
+    :return: The full path of the folder and the absolute path of the folder
+    """
+
+    # create a unique filename for the user to store their presentations,
+    # based on their username and the current date and time
+    unique_file_name = ("stored_presentations\\" + session['username'] + "_" +
+                        filename + "_" + datetime.now().strftime("%Y%m%d-%H%M%S"))
+
+    # create a unique folder for the user to store their presentations
+    if not os.path.exists(unique_file_name):
+        os.makedirs(unique_file_name)
+    else:
+        # if the folder already exists, delete it and create a new one
+        shutil.rmtree(unique_file_name)
+        os.makedirs(unique_file_name)
+
+    # return the full path of the folder
+    return unique_file_name, os.path.abspath(unique_file_name)
+
+
+def download_presentation(presentation_source_path):
+    """ Downloads the presentation
+    :param presentation_source_path: The source path of the presentation
+    :return: The response and status code
+    """
+    if os.environ.get("ENVIRONMENT_LIVE"):
+        try:
+            if send_file(presentation_source_path, as_attachment=True):
+                return jsonify({"message": "Presentation downloaded"}), 200
+        except Exception as e:
+            return jsonify({"error": "Unable to download presentation"}), 500
+    else:
+        try:
+            # for development purposes only - get the location of the user's download folder
+            download_location = platformdirs.user_downloads_dir()
+
+            # create the destination path for the presentation
+            destination_path = Path(download_location) / Path(presentation_source_path).name
+
+            # copy the presentation to the user's download folder
+            shutil.copy(presentation_source_path, destination_path)
+
+            return jsonify({"message": "Presentation downloaded"}), 200
+        except Exception as e:
+            return jsonify({"error": "Unable to download presentation"}), 500
+
+
 

@@ -89,14 +89,14 @@ def get_specific_llm():
     return "SELECT * FROM llm_details WHERE LLM_Name_ID = (SELECT LLM_Name_ID FROM llm_name WHERE llm_name_name = %s)"
 
 
-def store_presentation_in_database():
+def store_presentation_location_in_database():
     """ Stores the presentation in the database
-    :return: The query to store the presentation in the database
+    :return: The query to store location of the presentation in the database
     """
 
     return ("INSERT INTO historical (historical_user_id, historical_presentation_name, "
-            "historical_presentation) "
-            "VALUES (%s, %s, %s)")
+            "historical_presentation_location) "
+            "VALUES ((SELECT user_id FROM user WHERE Username = %s), %s, %s)")
 
 
 def get_users_historical_presentations():

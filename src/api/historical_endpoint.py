@@ -56,8 +56,7 @@ def historical_endpoint_get_specific_presentation(presentation_id):
         # if presentation exists
         if returned_historical_presentation:
             # return the historical presentation
-            response_value, status_code = common_scripts.deserialize_presentation(
-                returned_historical_presentation[0][0], returned_historical_presentation[0][1])
+            response_value, status_code = common_scripts.download_presentation(returned_historical_presentation[0][1])
             return response_value, status_code
         elif len(returned_historical_presentation) == 0:
             # No historical information exists

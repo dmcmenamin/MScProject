@@ -1,14 +1,10 @@
-import io
 import json
-import shutil
-from datetime import datetime
-
 import requests
 import os
 
 from flask import session, jsonify, send_file
 
-from src.controllers.common_scripts import clean_up_string, print_text_file
+from src.controllers.common_scripts import clean_up_string, create_unique_folder, download_presentation
 from src.database import queries
 from src.database.connection import RelDBConnection
 from src.orchestration.orchestrator import Orchestrator
@@ -107,6 +103,9 @@ def generate_presentation(presentation_topic, audience_size, presentation_length
     presenter_name = session['first_name'] + " " + session['last_name']
     api_key = session['api_key']
 
+    # create a unique folder for the user to store their presentations
+    file_location, absolute_file_path = create_unique_folder(presentation_topic)
+
     # generate the prompt
     orchestration_service = Orchestrator(session['large_language_model'], api_key, session['text_model_name'])
     populated_prompt = orchestration_service.call_large_language_model().set_question_prompt(presenter_name,
@@ -123,16 +122,10 @@ def generate_presentation(presentation_topic, audience_size, presentation_length
     if status_code != 200:
         return presentation_response, status_code
 
-    # create a unique folder for the user to store their presentations
-    file_location, absolute_file_path = create_unique_folder(presentation_topic)
-
     # dejsonify the presentation string
     presentation_response_value = json.dumps(presentation_response.json)
     presentation_json = json.loads(presentation_response_value)
     presentation_string = presentation_json['presentation_deck']
-
-    # save the presentation string to a file - this is used for debugging purposes
-    # print_text_file(presentation_string, "without_image_suggestions")
 
     # extract the image suggestions from the presentation string, and replace them with the image url
     presentation_string_with_images, status_code = get_ai_image_suggestion(presentation_string, file_location)
@@ -141,35 +134,31 @@ def generate_presentation(presentation_topic, audience_size, presentation_length
     if status_code != 200:
         return presentation_string_with_images, status_code
 
-    # save the presentation string to a file - this is used for debugging purposes
-    # print_text_file(presentation_string, "with_image_suggestions")
-
     # create the PowerPoint presentation from the presentation string by calling the PowerPoint Class
     powerpoint_presentation = PowerPointPresentation(presentation_string_with_images)
 
     # save the PowerPoint presentation
     powerpoint_presentation.save(file_location + "/" + presentation_topic + ".pptx")
 
-    # TODO - sort out how jpg files are deleted
-    # # clean up the jpg files
-    # for file in os.listdir(absolute_file_path):
-    #     if file.endswith(".jpg"):
-    #         os.remove(file)
-
-    # Serialize the PowerPoint presentation for storing in the database
-    binary_presentation_stream = io.BytesIO()
-    powerpoint_presentation.save(binary_presentation_stream)
-
-    binary_presentation_data = binary_presentation_stream.getvalue()
-
-    # save the presentation to the database
-    params = (session['user_id'], presentation_topic, binary_presentation_data)
-    database_connection = RelDBConnection()
-    database_connection.commit_query_with_parameter(queries.store_presentation_in_database(), params)
+    # delete the images from the folder
+    for file in os.listdir(absolute_file_path):
+        if file.endswith(".jpg"):
+            os.remove(absolute_file_path + "/" + file)
 
     # download the PowerPoint presentation
-    send_file(absolute_file_path + "/" + presentation_topic + ".pptx", download_name=presentation_topic,
-              as_attachment=True)
+    response, status_code = download_presentation(absolute_file_path + "/" + presentation_topic + ".pptx")
+    if status_code != 200:
+        return response, status_code
+
+    # store the location of the presentation in the database
+    params = (session['username'], presentation_topic, absolute_file_path + "/" + presentation_topic + ".pptx")
+    database_connection = RelDBConnection()
+    try:
+        database_connection.commit_query_with_parameter(queries.store_presentation_location_in_database(), params)
+    except Exception as e:
+        return jsonify({"error": f"Database error: {str(e)}. Please try again later."}), 500
+    finally:
+        database_connection.close_connection()
 
     if os.path.exists(absolute_file_path + "/" + presentation_topic + ".pptx"):
         return jsonify({"message": "Presentation generated successfully"}), 200
@@ -177,23 +166,4 @@ def generate_presentation(presentation_topic, audience_size, presentation_length
         return jsonify({"message": "Presentation not found"}), 500
 
 
-def create_unique_folder(filename):
-    """ Creates a unique folder for the user to store their presentations
-    :param filename: The name of the folder to be created
-    :return: The full path of the folder and the absolute path of the folder
-    """
 
-    # create a unique filename for the user to store their presentations,
-    # based on their username and the current date and time
-    unique_file_name = session['username'] + "_" + filename + "_" + datetime.now().strftime("%Y%m%d-%H%M%S")
-
-    # create a unique folder for the user to store their presentations
-    if not os.path.exists(unique_file_name):
-        os.makedirs(unique_file_name)
-    else:
-        # if the folder already exists, delete it and create a new one
-        shutil.rmtree(unique_file_name)
-        os.makedirs(unique_file_name)
-
-    # return the full path of the folder
-    return unique_file_name, os.path.abspath(unique_file_name)
