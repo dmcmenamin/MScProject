@@ -10,17 +10,19 @@ def signup_get():
     :return: The response and status code
     """
     # get available llm model names
-    available_llms_query = queries.get_available_llms()
+    available_llms_and_api_link_query = queries.get_available_llms_and_api_links()
     database_connection = RelDBConnection()
     # if the connection is not an exception, get the available llm model names
     # otherwise, return an error message to the user and render the signup page
     try:
         returned_llm_model_names = (database_connection.
-                                    query_return_matches_specified(available_llms_query, 100))
+                                    query_return_matches_specified(available_llms_and_api_link_query, 100))
+        print(returned_llm_model_names)
         # convert list of tuples to list of strings
         for i in range(len(returned_llm_model_names)):
-            returned_llm_model_names[i] = returned_llm_model_names[i][0]
+            returned_llm_model_names[i] = returned_llm_model_names[i][0], returned_llm_model_names[i][1]
         # render signup page with list of available llm model names
+        print(returned_llm_model_names)
         return jsonify({"llm_model_names": list(returned_llm_model_names)}), 200
     except ConnectionError as e:
         # can't connect to database for login

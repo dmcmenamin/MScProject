@@ -34,6 +34,13 @@ def get_available_llms():
     return "SELECT llm_name_name FROM llm_name"
 
 
+def get_available_llms_and_api_links():
+    """ Gets all available Large Language Models and their API links
+    :return: The query to get all available Large Language Models and their API links
+    """
+    return "SELECT llm_name_name, llm_name_api_link FROM llm_name"
+
+
 def get_api_key():
     """ Gets the api key for the user
     :return: The query to get the api key for the user

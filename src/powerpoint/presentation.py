@@ -258,18 +258,3 @@ class PowerPointPresentation:
 
         return self.presentation.slides
 
-
-if __name__ == "__main__":
-    # Example usage
-    # Create a presentation
-    presentation = PowerPointPresentation("Futuristic.pptx")
-    # Add a slide
-    presentation.add_slide(title="Title", subtitle="Subtitle", text="Content", notes="Notes")
-    # Save the presentation
-    presentation.save("example_presentation.pptx")
-    # Get the slide layout
-    slide_layout = presentation.get_slide_layout(0)
-    # Get a slide
-    slide = presentation.get_slide(0)
-    # Get all slides
-    slides = presentation.get_slides()

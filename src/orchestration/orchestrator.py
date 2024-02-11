@@ -23,7 +23,7 @@ class Orchestrator:
         else:
             self.api_key = api_key
 
-        # exclude validation on model - as it is unknown at this point if Bard may use Model
+        # exclude validation on model - as it is unknown at this point if Gemini may use Model
         # it is being done at ChatGPTAPI api level for that model
         self.model = model
 
@@ -34,8 +34,8 @@ class Orchestrator:
 
         if self.large_language_model == "ChatGPT":
             return self._call_chatgpt_api(self.api_key, self.model)
-        elif self.large_language_model == "Bard":
-            return self._call_bard_api()
+        elif self.large_language_model == "Gemini":
+            return self._call_gemini_api()
         else:
             raise ValueError("Large Language Model is not supported.")
 
@@ -50,8 +50,8 @@ class Orchestrator:
         chatgpt = ChatGPTAPI(api_key, model)
         return chatgpt
 
-    def _call_bard_api(self):
-        """ Returns the BardAPI to be used - not implemented yet
-        :return: The BardAPI to be used
+    def _call_gemini_api(self):
+        """ Returns the GeminiAPI to be used - not implemented yet
+        :return: The GeminiAPI to be used
         """
         pass

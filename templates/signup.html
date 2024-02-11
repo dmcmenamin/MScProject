@@ -53,7 +53,7 @@
                                     <input class="form-control" id="password" type="password" name="password" required>
                                 </td>
                             </tr>
-                            {%  for llm_model_name in llm_model_names %}
+                            {%  for llm_model_name, llm_link in llm_model_names %}
                                 <tr>
                                     <td>
                                         <label for="LLM-Name" class="font-header-custom-2">Model Name</label>
@@ -64,8 +64,8 @@
                                         <label for="API-Key" class="font-header-custom-2">API Key</label>
                                         <input class="form-control" id="API-Key" type="text" name="api_key_{{ llm_model_name }}">
                                     </td>
-                                    <td>
-                                        <label for="API-Key-Source" class="font-header-custom-2">Link for API Key</label>
+                                    <td colspan="2">
+                                        <a href="{{ llm_link }}" target="_blank" class="font-header-custom-2">API Provider</a>
                                     </td>
                                 </tr>
                             {% endfor %}
