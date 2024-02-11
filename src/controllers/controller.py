@@ -2,9 +2,10 @@ import json
 import requests
 import os
 
-from flask import session, jsonify, send_file
+from flask import session, jsonify
 
-from src.controllers.common_scripts import clean_up_string, create_unique_folder, download_presentation
+from src.controllers.common_scripts import clean_up_string, create_unique_folder, download_presentation, \
+    delete_file_of_type_specified
 from src.database import queries
 from src.database.connection import RelDBConnection
 from src.orchestration.orchestrator import Orchestrator
@@ -141,9 +142,7 @@ def generate_presentation(presentation_topic, audience_size, presentation_length
     powerpoint_presentation.save(file_location + "/" + presentation_topic + ".pptx")
 
     # delete the images from the folder
-    for file in os.listdir(absolute_file_path):
-        if file.endswith(".jpg"):
-            os.remove(absolute_file_path + "/" + file)
+    delete_file_of_type_specified(file_location, ".jpg")
 
     # download the PowerPoint presentation
     response, status_code = download_presentation(absolute_file_path + "/" + presentation_topic + ".pptx")

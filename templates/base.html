@@ -24,6 +24,7 @@
 <body class="bg-custom">
 
 <!-- Navbar -->
+{% if navbar_included %}
     <nav class="navbar navbar-expand-lg bg-body-tertiary" data-bs-theme="dark">
       <div class="container-fluid">
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
@@ -37,6 +38,7 @@
               {% elif 'username' in session %}
                 <a class="nav-link" href="/presentation_generator_endpoint">Presentation Generator</a>
                 <a class="nav-link" href="/historical_endpoint">Historical</a>
+                <a class="nav-link" href="/account_settings">Account</a>
                 <a class="nav-link" href="/logout_endpoint">Logout</a>
               {% else %}
                 <a class="nav-link disabled" aria-disabled="true">Presentation Generator</a>
@@ -46,6 +48,7 @@
         </div>
       </div>
     </nav>
+{% endif %}
 
     <!-- Main Content -->
     {% block content %}

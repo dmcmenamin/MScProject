@@ -1,6 +1,9 @@
+import os
+
 from flask import jsonify, logging, session
 
 from src.controllers import common_scripts
+from src.controllers.common_scripts import delete_file_of_type_specified
 from src.database import queries, database_scripts
 from src.database.connection import RelDBConnection
 
@@ -82,10 +85,28 @@ def historical_endpoint_delete_specific_presentation(presentation_id):
     # Check if there is a connection to the database, if there is, delete the presentation
     try:
         params = (presentation_id,)
-        # if the presentation is deleted, return a success message
-        database_connection.commit_query_with_parameter(queries.delete_specific_historical_presentation(), params)
-        response_value = {"message": "Presentation deleted successfully"}
-        return jsonify(response_value), 200
+        # first get the location of the presentation
+        returned_historical_location = (database_connection.
+                                        query_return_all_matches_with_parameter
+                                        (queries.get_specific_historical_presentation(), params))
+
+        # if the presentation exists
+        if returned_historical_location:
+            # delete the presentation
+            database_connection.commit_query_with_parameter(queries.delete_specific_historical_presentation(), params)
+
+            # delete the presentation from the file system
+            delete_file_of_type_specified(file_location=returned_historical_location[0][1], file_type=".pptx")
+
+            response_value = {"message": "Presentation deleted successfully"}
+            return jsonify(response_value), 200
+        elif len(returned_historical_location) == 0:
+            # No historical information exists
+            response_value = {"no_historical_presentation": "No historical presentation exists."}
+            return jsonify(response_value), 401
+        else:
+            response_value = {"error": "Error Occurred."}
+            return jsonify(response_value), 401
     except ConnectionError as e:
         response_value = {"error": "Connection to the database failed."}
         return jsonify(response_value), 500

@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+{% set navbar_included = True %}
+{% block title %}Account Settings {% endblock %}
+
+{% block content%}
+
+    <script>
+    <!-- Script to hide and show the change forms -->
+        $(document).ready(function(){
+            $(".PasswordChange-Container").hide();
+            $(".API-Container").hide();
+
+            $(".btn-password").click(function(){
+                $(".PasswordChange-Container").toggle();
+                $(".API-Container").hide();
+            });
+
+            $(".btn-update-api").click(function(){
+                $(".API-Container").toggle();
+                $(".PasswordChange-Container").hide();
+            });
+        });
+    </script>
+
+    <!-- Main Content -->
+    <div class="container-fluid content col-md-6 offset-md-3">">
+        <div class="row font-header-custom">
+            <h1 class="text-center font-header-custom">DynaPoint Account Settings</h1>
+            <p class="text-center font-header-custom-2">
+                Please select your options below</p>
+            <hr class="mb-3">
+        </div>
+
+        <table>
+        <tr>
+            <td>
+                <button class ="btn btn-primary btn-password">Change Password</button>
+            </td>
+            <td>
+                <button class ="btn btn-primary btn-update-api">Update API Key & Models</button>
+            </td>
+            <td>
+                <button class ="btn btn-primary btn-delete-account">Delete Account</button>
+            </td>
+            <td>
+                {% if session['admin'] %}
+                    <button class ="btn btn-primary">Admin</button>
+                {% endif %}
+            </td>
+        </tr>
+        </table>
+
+        <hr class="mb-3">
+
+        <div class="PasswordChange-Container">
+            <form action="/password_change" method="post">
+            <table>
+                <tr>
+                    <td>
+                        <div class="form-group">
+                            <label for="old_password" class="font-header-custom-2">Old Password</label>
+                            <input type="password" class="form-control" id="old_password" name="old_password" required>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="form-group  ">
+                            <label for="new_password" class="font-header-custom-2">New Password</label>
+                            <input type="password" class="form-control" id="new_password" name="new_password" required>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="form-group">
+                            <label for="confirm_password" class="font-header-custom-2">Confirm Password</label>
+                            <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <button type="submit" class="btn btn-primary">Change Password</button>
+                    </td>
+                </tr>
+            </table>
+            </form>
+        </div>
+
+        <div class="API-Container">
+        <form action="/api_update" method="post">
+            <table>
+                <tr>
+                    <td>
+                        <div class="form-group">
+                            <label for="api_key" class="font-header-custom-2">Model Name</label>
+                            <input type="text" class="form-control" id="api_key" name="api_key">
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-group">
+                            <label for="api_key" class="font-header-custom-2">API Key</label>
+                            <input type="text" class="form-control" id="api_key" name="api_key">
+                        </div>
+                    </td>
+                    <td>
+                        <button type="submit" class="btn btn-primary">Update API Key</button>
+                    </td>
+                    <td>
+                        <button type="submit" class="btn btn-danger">Delete API Key</button>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+
+
+    </div>
+
+
+
+{% endblock %}
+
+
+

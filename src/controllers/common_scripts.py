@@ -148,4 +148,17 @@ def download_presentation(presentation_source_path):
             return jsonify({"error": "Unable to download presentation"}), 500
 
 
+def delete_file_of_type_specified(file_location, file_type=None):
+    """ Deletes files from the location specified
+    :param file_location: The location of the file
+    :param file_type: The type of file to be deleted
+    :return: None
+    """
 
+    for file in os.listdir(file_location):
+        if file_type is None:
+            # delete all files in the folder
+            os.remove(file_location + "/" + file)
+        elif file.endswith(file_type):
+            # delete only files of a specific type in the folder
+            os.remove(file_location + "/" + file)

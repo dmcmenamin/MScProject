@@ -7,17 +7,21 @@ def check_user_exists():
     return query
 
 
-def insert_user(username, user_first_name, user_last_name, user_password, user_salt):
+def insert_user():
     """ Inserts a new user into the database
-    :param username: The username of the user
-    :param user_first_name: The first name of the user
-    :param user_last_name: The last name of the user
-    :param user_password: The password of the user
-    :param user_salt: The salt of the user
     :return: The query to insert a new user into the database
     """
     return (f"INSERT INTO user (Username, User_First_Name, User_Last_Name, User_Password, User_Salt) "
-            f"VALUES ('{username}', '{user_first_name}', '{user_last_name}', '{user_password}', '{user_salt}')")
+            f"VALUES %s, %s, %s, %s, %s")
+
+
+def insert_api_key():
+    """ Inserts a new api key into the database
+    :return: The query to insert a new api key into the database
+    """
+    return (f"INSERT INTO api_key (api_key_user, api_key_llm, api_key_user_key) "
+            f"VALUES ((SELECT user_id FROM user WHERE Username = %s), "
+            f"(SELECT LLM_Name_ID FROM llm_name WHERE llm_name_name = %s), %s)")
 
 
 def get_all_from_llm_table():
@@ -51,7 +55,6 @@ def get_api_key():
         "WHERE api_key_user = (SELECT user_id FROM user WHERE Username = %s) "
         "AND api_key_llm = (SELECT LLM_Name_ID FROM llm_name WHERE llm_name_name = %s)"
     )
-
 
 
 def create_user():
@@ -113,7 +116,8 @@ def get_specific_historical_presentation():
     :return: The query to get a specific historical presentation
     """
 
-    return "SELECT historical_presentation_name, historical_presentation FROM historical WHERE historical_id = %s"
+    return ("SELECT historical_presentation_name, historical_presentation_location "
+            "FROM historical WHERE historical_id = %s")
 
 
 def delete_specific_historical_presentation():

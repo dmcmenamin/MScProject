@@ -161,6 +161,13 @@ def delete_presentation_endpoint(presentation_id):
         return render_template('index.html', response=response)
 
 
+@app.route('/account_settings', methods=['GET'])
+@login_required
+def account_settings():
+    """ The account settings endpoint for the website
+    :return: The account settings page
+    """
+    return render_template('account_settings.html', session=session)
 @app.route('/logout_endpoint')
 @login_required
 def logout():
