@@ -1,7 +1,6 @@
 import os
-import asyncio
 
-from flask import Flask, render_template, redirect, url_for, request, session, jsonify
+from flask import Flask, render_template, redirect, url_for, request, session
 
 from src.api.historical_endpoint import historical_endpoint_get, historical_endpoint_get_specific_presentation, \
     historical_endpoint_delete_specific_presentation
@@ -9,9 +8,7 @@ from src.api.login_endpoint import login_api
 from src.api.presentation_generating_in_progress_endpoint import presentation_generating_in_progress_post
 from src.api.presentation_generator_endpoint import presentation_generator_get, presentation_generator_post
 from src.api.signup_endpoint import signup_get, signup_post
-from src.controllers import controller
-from src.controllers.common_scripts import set_session_values, login_required
-from src.controllers.controller import generate_presentation
+from src.controllers.common_scripts import login_required, user_session
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
@@ -33,10 +30,8 @@ def login():
 
     response, status_code = login_api(request.form)
     if status_code == 200:
-        set_session_values('username', response.json['username'])
-        set_session_values('user_id', response.json['user_id'])
-        set_session_values('first_name', response.json['first_name'])
-        set_session_values('last_name', response.json['last_name'])
+        user_session(response.json['username'], response.json['user_id'], response.json['first_name'],
+                     response.json['last_name'], response.json['is_admin'])
         return redirect(url_for('presentation_generator'))
     else:
         return render_template('index.html', response=response)
@@ -59,6 +54,8 @@ def signup():
     elif request.method == 'POST':
         response, status_code = signup_post(request.form)
         if status_code == 200:
+            user_session(response.json['username'], response.json['user_id'], response.json['first_name'],
+                         response.json['last_name'], response.json['is_admin'])
             return redirect(url_for('presentation_generator'))
         else:
             return render_template('signup.html', response=response)
@@ -168,6 +165,8 @@ def account_settings():
     :return: The account settings page
     """
     return render_template('account_settings.html', session=session)
+
+
 @app.route('/logout_endpoint')
 @login_required
 def logout():

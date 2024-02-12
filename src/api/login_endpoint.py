@@ -41,7 +41,8 @@ def login_api(data):
                 response_value = {"user_id": user_id,
                                   "username": username,
                                   "first_name": user_first_name,
-                                  "last_name": user_last_name}
+                                  "last_name": user_last_name,
+                                  "is_admin": user_is_admin}
                 return jsonify(response_value), 200
             else:
                 # if password is incorrect

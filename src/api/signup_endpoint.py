@@ -1,4 +1,4 @@
-from flask import jsonify
+from flask import jsonify, session
 
 from src.database import queries, database_scripts
 from src.database.connection import RelDBConnection

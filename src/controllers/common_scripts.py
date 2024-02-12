@@ -26,6 +26,7 @@ def clean_up_string(line_to_clean):
 
     return line_to_clean
 
+
 def print_text_file(text_file_name, text_file_descriptor):
     """ Prints the text file - used for debugging purposes only
     :param text_file_name: The name of the text file
@@ -162,3 +163,19 @@ def delete_file_of_type_specified(file_location, file_type=None):
         elif file.endswith(file_type):
             # delete only files of a specific type in the folder
             os.remove(file_location + "/" + file)
+
+
+def user_session(username, user_id, first_name, last_name, is_admin):
+    """ Sets the user session
+    :param username: The username
+    :param user_id: The user id
+    :param first_name: The first name
+    :param last_name: The last name
+    :param is_admin: The admin status
+    :return: None
+    """
+    set_session_values('username', username)
+    set_session_values('user_id', user_id)
+    set_session_values('first_name', first_name)
+    set_session_values('last_name', last_name)
+    set_session_values('is_admin', is_admin)
