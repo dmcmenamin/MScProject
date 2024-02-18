@@ -1,9 +1,6 @@
-import json
-import os
-
 import mysql.connector
 
-from src.database import queries
+from src.utils.common_scripts import get_environment_variables
 
 
 class RelDBConnection:
@@ -17,25 +14,13 @@ class RelDBConnection:
         """ The constructor for the RelDBConnection class
         Reads in the host, user, password and database from the env_variables.json file
         """
-        if os.environ.get("ENVIRONMENT_LIVE"):
-            # for production purposes
-            with open("/etc/secrets/env_variables.json", "r") as env_variables:
-                env_variables = json.load(env_variables)
-        elif __name__ == "__main__":
-            # for development purposes
-            with open("./configs/env_variables.json", "r") as env_variables:
-                env_variables = json.load(env_variables)
-        else:
-            # for testing purposes
-            rel_abs_path = os.path.abspath(os.path.dirname(__file__))
-            abs_path = os.path.join(rel_abs_path, "..\\..\\configs\\env_variables.json")
-            with open(abs_path, "r") as env_variables:
-                env_variables = json.load(env_variables)
+        env_variables = get_environment_variables()
 
         self.host = env_variables["database"]["host"]
         self.user = env_variables["database"]["user"]
         self.password = env_variables["database"]["password"]
         self.database = env_variables["database"]["database"]
+        self.connection_timeout = env_variables["database"]["connection_timeout"]
 
     def __str__(self):
         """ The string representation of the RelDBConnection class
@@ -43,7 +28,7 @@ class RelDBConnection:
         """
 
         return (f"RelDBConnection(host={self.host}, user={self.user}, password={self.password}, "
-                f"database={self.database})")
+                f"database={self.database}, connection_timeout={self.connection_timeout})")
 
     def connect(self):
         """ Connects to the database
@@ -54,7 +39,8 @@ class RelDBConnection:
                 host=self.host,
                 user=self.user,
                 password=self.password,
-                database=self.database
+                database=self.database,
+                connection_timeout=self.connection_timeout
             )
             return connection
         except mysql.connector.Error as error:
@@ -160,3 +146,9 @@ class RelDBConnection:
         cursor.execute(passed_query, params)
         connection.commit()
         connection.close()
+
+    def close_connection(self):
+        """ Closes the connection to the database
+        :return: None
+        """
+        self.connect().close()

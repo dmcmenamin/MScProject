@@ -27,9 +27,11 @@ def presentation_generating_in_progress_post(data):
         audience_size = response_dictionary.get('audience_size')
         time = response_dictionary.get('time')
         audience_outcome = response_dictionary.get('audience_outcome')
-        large_language_model = response_dictionary.get('large_language_model')
-        specific_model_name = response_dictionary.get('model_name')
+        session['large_language_model'] = response_dictionary.get('large_language_model')
+        session['text_model_name'] = response_dictionary.get('model_name')
+        # TODO: clean up where image model name is set
+        if session['large_language_model'] == "ChatGPT":
+            session['image_model_name'] = "dall-e-3"
         audience = response_dictionary.get('audience')
 
-        return controller.generate_presentation(topic, audience_size, time, audience_outcome,
-                                                large_language_model, specific_model_name, audience)
+        return controller.generate_presentation(topic, audience_size, time, audience_outcome, audience)

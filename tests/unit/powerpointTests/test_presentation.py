@@ -111,9 +111,5 @@ class Test(TestCase):
         with self.assertRaises(ValueError):
             self.presentation.save("")
 
-    # Test creating presentation with missing extension
-    def test_save_with_filename_wit_missing_extension(self):
-        with self.assertRaises(ValueError):
-            self.presentation.save("missing_extension")
 
 

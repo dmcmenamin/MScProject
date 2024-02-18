@@ -46,11 +46,10 @@ class TestOrchestrator(unittest.TestCase):
         # Assert that the mock ChatGPTAPI instance was returned
         self.assertEqual(result, chatgpt_mock)
 
-
-    # Test the call_large_language_model method for bard
+    # Test the call_large_language_model method for Gemini
     # Pass for now as it is not implemented yet
-    def test_call_large_language_model_bard(self):
-        orchestrator = Orchestrator("Bard", self.api_key, self.model)
+    def test_call_large_language_model_gemini(self):
+        orchestrator = Orchestrator("Gemini", self.api_key, self.model)
         pass
 
     # Test the call_large_language_model method with invalid input#

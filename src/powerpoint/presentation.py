@@ -1,6 +1,10 @@
+import os
+
+from flask import session
 from pptx import Presentation
 import re
 
+from src.utils.common_scripts import clean_up_string
 
 # Define constants for slide layouts
 SLIDE_TITLE_LAYOUT = 0
@@ -19,6 +23,8 @@ SLIDE_PICTURE_WITH_CAPTION_LAYOUT = 8
 # It uses the python-pptx library to create a presentation
 # The class has methods to add slides, save the presentation and get slides
 # The class also has methods to get a slide layout, and get a slide by slide number
+
+
 class PowerPointPresentation:
     """ PowerPointPresentation class to handle all PowerPoint Presentation API calls
     """
@@ -27,8 +33,16 @@ class PowerPointPresentation:
         """ Constructor for PowerPointPresentation class
         :param presentation_string: The presentation string
         """
+        current_working_directory = os.getcwd()
+        print(current_working_directory)
+
         if presentation_string:
-            self.presentation = Presentation()
+            if 'presentation_theme' not in session or session['presentation_theme'] is "":
+                self.presentation = Presentation()
+            else:
+                # get the theme from the session and create a presentation with that theme
+                theme = "static/PresentationThemes/" + session['presentation_theme'] + ".pptx"
+                self.presentation = Presentation(pptx=theme)
             self.populate_presentation(presentation_string)
         else:
             self.presentation = Presentation()
@@ -53,6 +67,9 @@ class PowerPointPresentation:
             sliced_presentation = []
 
             for presentation_line in presliced_presentation.splitlines():
+
+                presentation_line = clean_up_string(presentation_line)
+
                 if presentation_line.lower().startswith("slide"):
                     # If the presentation line starts with Slide, then it is the start of a new slide
                     # Add the line to the sliced presentation as a new slide, including a new line, so it can be
@@ -87,6 +104,9 @@ class PowerPointPresentation:
             slide_image = ""
             last_section = ""
             for section in slide_pages.splitlines():
+                section = clean_up_string(section)
+
+                # parse the reply into the different sections
                 if len(section) >= 1:
                     if section.startswith("TITLE:"):
                         slide_title = section.replace("TITLE:", "").strip()
@@ -96,17 +116,23 @@ class PowerPointPresentation:
                         # If the slide content is "Content:", then set the slide content to the section, without the
                         # "Content:" prefix and the "-" suffix, and strip any whitespace
                         # This is done to ensure that the slide content is not set to "Content:"
-                        slide_content = section.replace("CONTENT:", "").replace("-", "") + "\n"
+                        slide_content = section.replace("CONTENT:", "").replace("-", "").strip() + "\n"
                         # If the slide content is "(No content ", then set the slide content to an empty string
                         # This is done to ensure that the slide content is not set to "(No content required)"
-                        if "(No content" in slide_content.lower():
+                        if "(no content" in slide_content.lower():
                             slide_content = ""
                         last_section = "Content"
-                    elif section.startswith("NOTES"):
+                    elif section.startswith("NOTES:"):
                         slide_notes = section.replace("NOTES:", "").strip() + " \n"
                         last_section = "Notes"
-                    elif section.startswith("Image:"):
-                        slide_image += section.replace("Image:", "").strip()
+                    elif section.startswith("IMAGE:"):
+                        slide_image += section.replace("IMAGE:", "").strip()
+                    elif section.lower().startswith("references"):
+                        # If the section starts with "References", insert this section into the slide content
+                        # This is done to ensure that the slide content is not set to "References"
+                        # removes the references header and adds it to the content
+                        slide_content = section.replace("references", "").strip() + "\n"
+                        last_section = "Content"
                     elif last_section == "Content":
                         slide_content += section.replace("-", "").strip() + "\n"
                     elif last_section == "Notes":
@@ -192,8 +218,6 @@ class PowerPointPresentation:
         """
         if not filename:
             raise ValueError("Filename cannot be empty.")
-        elif not filename.endswith(".pptx"):
-            raise ValueError("Filename must end with .pptx")
         else:
             return self.presentation.save(filename)
 
@@ -231,3 +255,4 @@ class PowerPointPresentation:
         """
 
         return self.presentation.slides
+

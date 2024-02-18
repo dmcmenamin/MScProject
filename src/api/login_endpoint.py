@@ -1,4 +1,3 @@
-import flask
 from flask import jsonify, logging
 
 from src.database import queries, database_scripts
@@ -34,19 +33,16 @@ def login_api(data):
         # if user exists
         if returned_user_information:
             # get user information
-            user_id, username, user_first_name, user_last_name, user_password, user_salt = returned_user_information
+            (user_id, username, user_first_name, user_last_name, user_password, user_salt,
+             user_is_admin, account_confirmed) = returned_user_information
             # check password
             if database_scripts.check_password(password, user_salt, user_password):
                 # successful login user
-                # get api key
-                find_api_key_query, params = queries.get_api_key(username, "ChatGPT")
-                returned_api_information = (
-                    database_connection.query_return_first_match_with_parameter(find_api_key_query, params))
-                response_value = {"api_key": returned_api_information[0],
-                                  "user_id": user_id,
+                response_value = {"user_id": user_id,
                                   "username": username,
                                   "first_name": user_first_name,
-                                  "last_name": user_last_name}
+                                  "last_name": user_last_name,
+                                  "is_admin": user_is_admin}
                 return jsonify(response_value), 200
             else:
                 # if password is incorrect
@@ -70,3 +66,6 @@ def login_api(data):
         # Catching any other errors
         response_value = {"error": "Database error. Please try again later. "}
         return jsonify(response_value), 500
+    finally:
+        # close the connection, just in case it is still open
+        database_connection.close_connection()

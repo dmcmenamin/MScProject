@@ -1,4 +1,4 @@
-from flask import jsonify
+from flask import jsonify, session
 
 from src.database import queries, database_scripts
 from src.database.connection import RelDBConnection
@@ -10,17 +10,18 @@ def signup_get():
     :return: The response and status code
     """
     # get available llm model names
-    available_llms_query = queries.get_available_llms()
+    available_llms_and_api_link_query = queries.get_available_llms_and_api_links()
     database_connection = RelDBConnection()
     # if the connection is not an exception, get the available llm model names
     # otherwise, return an error message to the user and render the signup page
     try:
         returned_llm_model_names = (database_connection.
-                                    query_return_matches_specified(available_llms_query, 100))
+                                    query_return_matches_specified(available_llms_and_api_link_query, 100))
         # convert list of tuples to list of strings
         for i in range(len(returned_llm_model_names)):
-            returned_llm_model_names[i] = returned_llm_model_names[i][0]
+            returned_llm_model_names[i] = returned_llm_model_names[i][0], returned_llm_model_names[i][1]
         # render signup page with list of available llm model names
+        print(returned_llm_model_names)
         return jsonify({"llm_model_names": list(returned_llm_model_names)}), 200
     except ConnectionError as e:
         # can't connect to database for login
@@ -51,10 +52,14 @@ def signup_post(data):
     last_name = data.get('last_name')
 
     # get api keys for each llm model name and store in dictionary
-    llm = {key: value for key, value in data.items() if key.startswith('llm_name_') and value != "" and value is
+    llm = {key: value for key, value in data.items() if key.startswith('api_key_') and value != "" and value is
            not None}
     if len(llm) == 0:
         return jsonify({"error": "Please provide API Key for at least 1 large language model."}), 400
+    else:
+        # remove the "api_key_" prefix
+        updated_llm = {new_key.replace("api_key_", ""): value for new_key, value in llm.items()}
+        llm = updated_llm
 
     # check if user exists
     database_connection = RelDBConnection()
@@ -82,10 +87,10 @@ def signup_post(data):
             params = (username, first_name, last_name, hashed_password, salt)
             database_connection.commit_query_with_parameter(queries.create_user(), params)
 
-            # store api keys in database
-            for key, value in llm.items():
-                params = (username, key, value)
-                database_connection.commit_query_with_parameter(queries.create_api_key(), params)
+            for llm_model, api_key in llm.items():
+                params = (username, llm_model, api_key, )
+                print(params)
+                database_connection.commit_query_with_parameter(queries.insert_api_key(), params)
 
             # successful login, return user information
             return jsonify({"username": username,
@@ -101,3 +106,6 @@ def signup_post(data):
     except Exception as e:
         # Catching any other errors
         return jsonify({"error": f" {str(e)}. "}), 500
+    finally:
+        # close the connection, just in case it is still open
+        database_connection.close_connection()

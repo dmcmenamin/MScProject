@@ -1,0 +1,327 @@
+{% extends "base.html" %}
+{% set navbar_included = True %}
+{% block title %}Account Settings {% endblock %}
+
+{% block content%}
+
+    <script>
+    <!-- Script to hide and show the change forms -->
+        $(document).ready(function(){
+            $(".PasswordChange-Container").hide();
+            $(".API-Container").hide();
+            $(".Delete-Account-Container").hide();
+            $(".Admin-Container").hide();
+
+            $(".btn-password").click(function(){
+                $(".PasswordChange-Container").toggle();
+                $(".API-Container").hide();
+                $(".Delete-Account-Container").hide();
+                $(".Admin-Container").hide();
+            });
+
+            $(".btn-update-api").click(function(){
+                $(".API-Container").toggle();
+                $(".PasswordChange-Container").hide();
+                $(".Delete-Account-Container").hide();
+            });
+
+            $(".btn-delete-account").click(function(){
+                $(".Delete-Account-Container").toggle();
+                $(".PasswordChange-Container").hide();
+                $(".API-Container").hide();
+                $(".Admin-Container").hide();
+            });
+
+            $(".btn-admin").click(function(){
+                $(".Admin-Container").toggle();
+                $(".PasswordChange-Container").hide();
+                $(".API-Container").hide();
+                $(".Delete-Account-Container").hide();
+                $(".Add-LLM").hide();
+                $(".Delete-LLM").hide();
+                $(".Add-Model").hide();
+                $(".Delete-Model").hide();
+                $(".User-Settings").hide();
+            });
+
+            $(".btn-add-llm").click(function(){
+                $(".Add-LLM").toggle();
+                $(".Delete-LLM").hide();
+                $(".Add-Model").hide();
+                $(".Delete-Model").hide();
+                $(".User-Settings").hide();
+            });
+
+            $(".btn-delete-llm").click(function(){
+                $(".Delete-LLM").toggle();
+                $(".Add-LLM").hide();
+                $(".Add-Model").hide();
+                $(".Delete-Model").hide();
+                $(".User-Settings").hide();
+            });
+
+            $(".btn-add-model").click(function(){
+                $(".Add-Model").toggle();
+                $(".Add-LLM").hide();
+                $(".Delete-LLM").hide();
+                $(".Delete-Model").hide();
+                $(".User-Settings").hide();
+            });
+
+            $(".btn-delete-model").click(function(){
+                $(".Delete-Model").toggle();
+                $(".Add-LLM").hide();
+                $(".Delete-LLM").hide();
+                $(".Add-Model").hide();
+                $(".User-Settings").hide();
+            });
+
+            $(".btn-user-settings").click(function(){
+                $(".User-Settings").toggle();
+                $(".Add-LLM").hide();
+                $(".Delete-LLM").hide();
+                $(".Add-Model").hide();
+                $(".Delete-Model").hide();
+            });
+
+        });
+    </script>
+
+    <!-- Main Content -->
+    <div class="container-fluid content col-md-6 offset-md-3">">
+        <div class="row font-header-custom">
+            <h1 class="text-center font-header-custom">DynaPoint Account Settings</h1>
+            <p class="text-center font-header-custom-2">
+                Please select your options below</p>
+            <hr class="mb-3">
+        </div>
+
+        <table>
+        <tr>
+            <td>
+                <button class ="btn btn-primary btn-password">Change Password</button>
+            </td>
+            <td>
+                <button class ="btn btn-primary btn-update-api">Update API Key & Models</button>
+            </td>
+            <td>
+                <button class ="btn btn-primary btn-delete-account">Delete Account</button>
+            </td>
+            <td>
+                {% if session['is_admin'] %}
+                    <button class ="btn btn-primary btn-admin">Admin</button>
+                {% endif %}
+            </td>
+        </tr>
+        </table>
+
+        <hr class="mb-3">
+
+        <div class="PasswordChange-Container">
+            <form action="/password_change" method="post">
+            <table>
+                <tr>
+                    <td>
+                        <div class="form-group">
+                            <label for="old_password" class="font-header-custom-2">Old Password</label>
+                            <input type="password" class="form-control" id="old_password" name="old_password" required>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="form-group  ">
+                            <label for="new_password" class="font-header-custom-2">New Password</label>
+                            <input type="password" class="form-control" id="new_password" name="new_password" required>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="form-group">
+                            <label for="confirm_password" class="font-header-custom-2">Confirm Password</label>
+                            <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <button type="submit" class="btn btn-primary">Change Password</button>
+                    </td>
+                </tr>
+            </table>
+            </form>
+        </div>
+
+        <div class="API-Container">
+            <form action="/api_update" method="post">
+                <table>
+                    <tr>
+                        <td>
+                            <div class="form-group">
+                                <label for="api_key" class="font-header-custom-2">Model Name</label>
+                                <input type="text" class="form-control" id="api_key" name="api_key">
+                            </div>
+                        </td>
+                        <td>
+                            <div class="form-group">
+                                <label for="api_key" class="font-header-custom-2">API Key</label>
+                                <input type="text" class="form-control" id="api_key" name="api_key">
+                            </div>
+                        </td>
+                        <td>
+                            <button type="submit" class="btn btn-primary">Update API Key</button>
+                        </td>
+                        <td>
+                            <button type="submit" class="btn btn-danger">Delete API Key</button>
+                        </td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+
+        <div class="Delete-Account-Container">
+            <form action="/delete_account/<id>" method="post">
+                <p class="font-header-custom-2">Are you sure you want to delete your account?</p>
+                <p class="font-header-custom-2">This action cannot be undone</p>
+                <button class="btn btn-danger">Confirm DELETE ACCOUNT</button>
+            </form>
+        </div>
+
+    <div class="Admin-Container">
+        <table>
+            <tr>
+                <td>
+                    <button class="btn btn-info btn-add-llm">Add LLM</button>
+                </td>
+                <td>
+                    <button class="btn btn-info btn-delete-llm">Delete LLM</button>
+                </td>
+                <td>
+                    <button class="btn btn-info btn-add-model">Add Model to LLM</button>
+                </td>
+                <td>
+                    <button class="btn btn-info btn-delete-model">Delete Model</button>
+                </td>
+                <td>
+                    <button class="btn btn-info btn-user-settings">User Settings</button>
+                </td>
+            </tr>
+        </table>
+
+            <form class= "Add-LLM" action="/add_llm" method="post">
+            <hr class="mb-3">
+            <!-- Add Model to existing LLM -->
+                <h1 class="font-header-custom align-right">Add Large Language Model</h1>
+                <table>
+                    <tr>
+                        <td>
+                            <label for="LLM-Name" class="font-header-custom-2">Model Name</label>
+                            <input class="form-control" id="LLM-Name" type="text" name="llm_name_"
+                                   value="" readonly>
+                        </td>
+                        <td colspan="2">
+                            <label for="API-Key" class="font-header-custom-2">Model Name</label>
+                            <input class="form-control" id="API-Key" type="text" name="api_key_">
+                        </td>
+                        <td>
+                            <button type="submit" class="btn btn-primary">Add LLM & Model</button>
+                        </td>
+                    </tr>
+                </table>
+            </form>
+
+            <form class="Delete-LLM" action="/delete_llm" method="post">
+                <hr class="mb-3">
+                <!-- Add Model to existing LLM -->
+                <h1 class="font-header-custom-2">Delete Large Language Model</h1>
+                <table>
+                    <tr>
+                        <td>
+                            <label for="LLM-Name" class="font-header-custom-2">Model Name</label>
+                            <input class="form-control" id="LLM-Name" type="text" name="llm_name_"
+                                   value="" readonly>
+                        </td>
+                        <td colspan="2">
+                            <label for="API-Key" class="font-header-custom-2">Model Name</label>
+                            <input class="form-control" id="API-Key" type="text" name="api_key_">
+                        </td>
+                        <td>
+                            <button type="submit" class="btn btn-primary btn-danger">Delete Model</button>
+                        </td>
+                    </tr>
+                </table>
+            </form>
+
+            <form class ="Add-Model" action="/add_model" method="post">
+                <hr class="mb-3">
+                <!-- Add Model to existing LLM -->
+                <h1 class="font-header-custom-2">Add Model to LLM</h1>
+                <table>
+                    <tr>
+                        <td>
+                            <label for="LLM-Name" class="font-header-custom-2">Model Name</label>
+                            <input class="form-control" id="LLM-Name" type="text" name="llm_name_"
+                                   value="" readonly>
+                        </td>
+                        <td colspan="2">
+                            <label for="API-Key" class="font-header-custom-2">Model Name</label>
+                            <input class="form-control" id="API-Key" type="text" name="api_key_">
+                        </td>
+                        <td>
+                            <button type="submit" class="btn btn-primary">Add Model</button>
+                        </td>
+                    </tr>
+                </table>
+            </form>
+
+            <form class="Delete-Model" action="/delete_model" method="post">
+                <hr class="mb-3">
+                <!-- Add Model to existing LLM -->
+                <h1 class="font-header-custom-2">Delete Model</h1>
+                <table>
+                    <tr>
+                        <td>
+                            <label for="LLM-Name" class="font-header-custom-2">Model Name</label>
+                            <input class="form-control" id="LLM-Name" type="text" name="llm_name_"
+                                   value="" readonly>
+                        </td>
+                        <td colspan="2">
+                            <label for="API-Key" class="font-header-custom-2">Model Name</label>
+                            <input class="form-control" id="API-Key" type="text" name="api_key_">
+                        </td>
+                        <td>
+                            <button type="submit" class="btn btn-primary btn-danger">Delete Model</button>
+                        </td>
+                    </tr>
+                </table>
+            </form>
+
+        <hr class="mb-3">
+            <table class="User-Settings">
+                <tr>
+                    <th class="text-center font-header-custom-2">Username</th>
+                    <th class="text-center font-header-custom-2">Change Password</th>
+                    <th class="text-center font-header-custom-2">Delete User</th>
+                    <th class="text-center font-header-custom-2">Make Admin</th>
+                </tr>
+                <tr>
+                    <td>
+                        <input class="form-control" id="Username" type="text" name="username_"
+                               value="" readonly>
+                    </td>
+                    <td>
+                        <button class="btn btn-primary">Change Password</button>
+                    </td>
+                    <td>
+                        <button class="btn btn-primary btn-danger">Delete User</button>
+                    </td>
+                    <td>
+                        <button class="btn btn-primary">Make Admin</button>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+{% endblock %}

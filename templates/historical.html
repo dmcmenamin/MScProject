@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% set navbar_included = True %}
+
+{% block title %}DynaPoint Historical {% endblock %}
+
+{% block content %}
+    {% if response.json['historical_data'] %}
+    <!-- Main Content -->
+    <div class="container-fluid content col-md-6 offset-md-3">">
+        <div class="row font-header-custom">
+            <h1 class="text-center font-header-custom">Welcome to DynaPoint Historical Details</h1>
+            <p class="text-center font-header-custom-2">
+                Here you can retrieve historical presentations.<br>
+                Please select from the below on which presentation you
+                would like</p>
+            <hr class="mb-3">
+        </div>
+
+        <table class="table table-dark table-striped table-hover historical-table">
+            <tr>
+                <th>
+                    <h2 class="text-center font-header-custom-2">Presentation Name</h2>
+                </th>
+                <th>
+                    <h2 class="text-center font-header-custom-2">Presentation Created Date</h2>
+                </th>
+                <th>
+                    <h2 class="text-center font-header-custom-2">Presentation Download</h2>
+                </th>
+                <th>
+                    <h2 class="text-center font-header-custom-2">Presentation Delete</h2>
+                </th>
+                {% for historical_data in response.json['historical_data'] %}
+                    <tr>
+                        <td>
+                            <h2 class="text-center font-standard-custom">{{ historical_data[1] }}</h2>
+                        </td>
+                        <td>
+                            <h2 class="text-center font-standard-custom">{{ historical_data[2] }}</h2>
+                        </td>
+                        <td>
+                            <h2 class="text-center font-standard-custom">
+                                <a href="/historical_endpoint_get_specific_presentation/{{ historical_data[0] }}">
+                                    <button class="btn btn-primary">Download</button>
+                                </a>
+                            </h2>
+                        </td>
+                        <td>
+                            <h2 class="text-center font-standard-custom">
+                                <form action="{{ url_for('delete_presentation_endpoint',
+                                presentation_id=historical_data[0]) }}" method="post">
+                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                </form>
+                            </h2>
+                        </td>
+                    </tr>
+                {% endfor %}
+        </table>
+    {% else %}
+        <div class="container-fluid content">
+            <div class="row">
+                <div class="col-12">
+                    <h1 class="text-center font-header-custom">Welcome to DynaPoint Historical Details</h1>
+                    <h2 class="test-center font-header-custom-2">There are no historical presentations to display</h2>
+                </div>
+            </div>
+    {% endif %}
+    </div>
+
+{% endblock %}
