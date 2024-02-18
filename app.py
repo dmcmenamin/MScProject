@@ -13,7 +13,7 @@ from src.api.signup_endpoint import signup_get, signup_post
 from src.utils.common_scripts import user_session
 from src.utils.send_confirmation_email import send_confirmation_email
 from src.utils.sign_up_token import generate_sign_up_token, verify_sign_up_token
-from src.utils.decorators import login_required
+from src.utils.decorators import confirmed_login_required
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
@@ -89,7 +89,7 @@ def confirm_signup(token):
 
 
 @app.route('/presentation_generator_endpoint', methods=['GET', 'POST'])
-@login_required
+@confirmed_login_required
 def presentation_generator():
     """ The presentation generator endpoint for the website
     :return: If successful, the presentation generator page, otherwise, the presentation generator page with an error
@@ -121,7 +121,7 @@ def presentation_generator():
 
 
 @app.route('/presentation_generating_in_progress_endpoint', methods=['POST'])
-@login_required
+@confirmed_login_required
 def presentation_generating_in_progress():
     """ The presentation generating in progress endpoint for the website
     :return: If successful, the presentation generating in progress page, otherwise, the presentation generator page
@@ -141,7 +141,7 @@ def presentation_generating_in_progress():
 
 
 @app.route('/historical_endpoint', methods=['GET'])
-@login_required
+@confirmed_login_required
 def historical_endpoint():
     """ The historical endpoint for the website
     :return: The historical page
@@ -155,7 +155,7 @@ def historical_endpoint():
 
 
 @app.route('/historical_endpoint_get_specific_presentation/<presentation_id>', methods=['GET'])
-@login_required
+@confirmed_login_required
 def get_specific_historical_presentation_endpoint(presentation_id):
     """ The get specific historical presentation endpoint for the website
     :return: The historical page
@@ -171,7 +171,7 @@ def get_specific_historical_presentation_endpoint(presentation_id):
 
 
 @app.route('/delete_presentation_endpoint/<presentation_id>', methods=['POST'])
-@login_required
+@confirmed_login_required
 def delete_presentation_endpoint(presentation_id):
     """ The delete presentation endpoint for the website
     :return: The historical page
@@ -186,7 +186,7 @@ def delete_presentation_endpoint(presentation_id):
 
 
 @app.route('/account_settings', methods=['GET'])
-@login_required
+@confirmed_login_required
 def account_settings():
     """ The account settings endpoint for the website
     :return: The account settings page
@@ -195,7 +195,7 @@ def account_settings():
 
 
 @app.route('/logout_endpoint')
-@login_required
+@confirmed_login_required
 def logout():
     """ The logout endpoint for the website, clears the session information
     :return: The index page

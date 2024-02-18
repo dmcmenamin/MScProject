@@ -2,6 +2,7 @@ import unittest
 from unittest.mock import MagicMock, patch
 from src.large_language_model.chatGPTAPI import ChatGPTAPI
 from src.large_language_model.prompt import prompt_for_llm
+from flask import current_app as app
 
 
 # Unit tests for ChatGPTAPI class

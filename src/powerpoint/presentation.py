@@ -218,8 +218,6 @@ class PowerPointPresentation:
         """
         if not filename:
             raise ValueError("Filename cannot be empty.")
-        # elif not filename.endswith(".pptx"):
-        #     raise ValueError("Filename must end with .pptx")
         else:
             return self.presentation.save(filename)
 

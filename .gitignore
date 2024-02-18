@@ -446,3 +446,4 @@ cython_debug/
 ### Flask template
 instance/*
 !instance/.gitignore
+!/configs/email_config.py
