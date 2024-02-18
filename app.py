@@ -1,17 +1,27 @@
 import os
 
-from flask import Flask, render_template, redirect, url_for, request, session
+from flask import Flask, render_template, redirect, url_for, request, session, jsonify
+from flask_mail import Mail
 
 from src.api.historical_endpoint import historical_endpoint_get, historical_endpoint_get_specific_presentation, \
     historical_endpoint_delete_specific_presentation
 from src.api.login_endpoint import login_api
 from src.api.presentation_generating_in_progress_endpoint import presentation_generating_in_progress_post
 from src.api.presentation_generator_endpoint import presentation_generator_get, presentation_generator_post
+from src.api.signup_confirmation_endpoint import confirm_signup_get
 from src.api.signup_endpoint import signup_get, signup_post
-from src.controllers.common_scripts import login_required, user_session
+from src.utils.common_scripts import user_session
+from src.utils.send_confirmation_email import send_confirmation_email
+from src.utils.sign_up_token import generate_sign_up_token, verify_sign_up_token
+from src.utils.decorators import login_required
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
+
+# set_app_config_values()
+app.config.from_pyfile('/Users/mcmen/PycharmProjects/MScProject/configs/email_config.py')
+
+mail = Mail(app)
 
 
 @app.route('/')
@@ -54,11 +64,28 @@ def signup():
     elif request.method == 'POST':
         response, status_code = signup_post(request.form)
         if status_code == 200:
-            user_session(response.json['username'], response.json['user_id'], response.json['first_name'],
-                         response.json['last_name'], response.json['is_admin'])
+            token = generate_sign_up_token(response.json['username'])
+            confirmation_url = url_for('confirm_signup', token=token, _external=True)
+            html = render_template('email.html', confirmation_url=confirmation_url)
+            subject = "Please confirm your email"
+            send_confirmation_email(response.json['username'], subject, html)
             return redirect(url_for('presentation_generator'))
         else:
             return render_template('signup.html', response=response)
+
+
+@app.route('/confirm_signup/<token>', methods=['GET'])
+def confirm_signup(token):
+    """ The confirm signup endpoint for the website
+    :return: If successful, the index page, otherwise, the index page with an error message
+    """
+
+    if request.method == 'GET':
+        response, status_code = confirm_signup_get(token)
+        if status_code == 200:
+            return redirect(url_for('index'))
+        else:
+            return render_template('index.html', response=response)
 
 
 @app.route('/presentation_generator_endpoint', methods=['GET', 'POST'])

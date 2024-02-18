@@ -1,6 +1,6 @@
 import mysql.connector
 
-from src.controllers.common_scripts import get_environment_variables
+from src.utils.common_scripts import get_environment_variables
 
 
 class RelDBConnection:

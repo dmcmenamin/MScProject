@@ -4,7 +4,7 @@ import os
 
 from flask import session, jsonify
 
-from src.controllers.common_scripts import clean_up_string, create_unique_folder, download_presentation, \
+from src.utils.common_scripts import clean_up_string, create_unique_folder, download_presentation, \
     delete_file_of_type_specified
 from src.database import queries
 from src.database.connection import RelDBConnection

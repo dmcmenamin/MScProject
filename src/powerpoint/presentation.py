@@ -4,7 +4,7 @@ from flask import session
 from pptx import Presentation
 import re
 
-from src.controllers.common_scripts import clean_up_string
+from src.utils.common_scripts import clean_up_string
 
 # Define constants for slide layouts
 SLIDE_TITLE_LAYOUT = 0

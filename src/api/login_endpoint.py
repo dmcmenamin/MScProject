@@ -34,7 +34,7 @@ def login_api(data):
         if returned_user_information:
             # get user information
             (user_id, username, user_first_name, user_last_name, user_password, user_salt,
-             user_is_admin) = returned_user_information
+             user_is_admin, account_confirmed) = returned_user_information
             # check password
             if database_scripts.check_password(password, user_salt, user_password):
                 # successful login user

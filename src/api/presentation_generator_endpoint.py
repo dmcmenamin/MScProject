@@ -1,6 +1,6 @@
 from flask import jsonify, session
 
-from src.controllers.common_scripts import set_session_values, get_themes_available, set_presentation_themes_available
+from src.utils.common_scripts import set_session_values, get_themes_available, set_presentation_themes_available
 from src.database import queries
 from src.database.connection import RelDBConnection
 

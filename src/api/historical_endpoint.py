@@ -1,10 +1,8 @@
-import os
+from flask import jsonify, session
 
-from flask import jsonify, logging, session
-
-from src.controllers import common_scripts
-from src.controllers.common_scripts import delete_file_of_type_specified
-from src.database import queries, database_scripts
+from src.utils import common_scripts
+from src.utils.common_scripts import delete_file_of_type_specified
+from src.database import queries
 from src.database.connection import RelDBConnection
 
 

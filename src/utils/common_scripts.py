@@ -1,5 +1,4 @@
 # Common Scripts used across the application
-import io
 import json
 import os
 import shutil
@@ -10,7 +9,9 @@ import platformdirs
 from functools import wraps
 
 from flask import send_file, jsonify, session, redirect, url_for
-from pptx import Presentation
+
+# from src.database import queries
+# from src.database.connection import RelDBConnection
 
 
 def clean_up_string(line_to_clean):
@@ -25,6 +26,14 @@ def clean_up_string(line_to_clean):
     line_to_clean = line_to_clean.strip()
 
     return line_to_clean
+
+
+def get_email_secret_key():
+    """ Returns the email secret key
+    :return: The email secret key
+    """
+    env_variables = get_environment_variables()
+    return env_variables['EMAIL']['EMAIL_SECRET_KEY']
 
 
 def print_text_file(text_file_name, text_file_descriptor):
@@ -46,27 +55,12 @@ def set_session_values(session_variable_name, session_value_name):
     session[session_variable_name] = session_value_name
 
 
-def login_required(f):
-    """ Decorator to check if the user is logged in
-    :param f: The function to be decorated
-    :return: The decorated function
-    """
-
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if 'username' not in session:
-            return redirect(url_for('index'))
-        return f(*args, **kwargs)
-
-    return decorated_function
-
-
 def get_environment_variables():
     """ Returns the environment variables
     :return: The environment variables
     """
     if os.environ.get("ENVIRONMENT_LIVE"):
-        # for production purposes
+        # for production purposes - both public and private environment variables are stored in the same file
         with open("/etc/secrets/env_variables.json", "r") as env_variables:
             return json.load(env_variables)
     elif __name__ == "__main__":

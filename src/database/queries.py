@@ -126,3 +126,19 @@ def delete_specific_historical_presentation():
     """
 
     return "DELETE FROM historical WHERE historical_id = %s"
+
+
+def check_user_confirmed():
+    """ Gets the user's confirmed status
+    :return: The query to get the user's confirmed status
+    """
+
+    return "SELECT Account_Confirmed FROM user WHERE Username = %s"
+
+
+def confirm_user():
+    """ Confirms the user
+    :return: The query to confirm the user
+    """
+
+    return "UPDATE user SET Account_Confirmed = 1 WHERE Username = %s"
