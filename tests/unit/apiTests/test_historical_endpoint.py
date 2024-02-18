@@ -1,6 +1,6 @@
 import unittest
 from flask import session
-import app  # Import a function to create your Flask app
+from app import create_app as app
 from src.database.connection import RelDBConnection
 from unittest.mock import patch, MagicMock
 

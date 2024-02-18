@@ -15,13 +15,45 @@ from src.utils.send_confirmation_email import send_confirmation_email
 from src.utils.sign_up_token import generate_sign_up_token, verify_sign_up_token
 from src.utils.decorators import confirmed_login_required
 
-app = Flask(__name__)
-app.secret_key = os.urandom(24)
 
-# set_app_config_values()
-app.config.from_pyfile('/Users/mcmen/PycharmProjects/MScProject/configs/email_config.py')
+def create_app(test_config=None):
+    """ Create the app
+    :param test_config: The test config to use if passed in (default is None)
+    :return: The app
+    """
 
-mail = Mail(app)
+    # create and configure the app
+    created_app = Flask(__name__, instance_relative_config=True)
+    created_app.secret_key = os.urandom(24)
+
+    if test_config is None:
+        # load the instance config, if it exists, when not testing
+        created_app.config.from_pyfile('config.py', silent=True)
+    else:
+        # load the test config if passed in
+        created_app.config.from_mapping(test_config)
+
+    # ensure the instance folder exists
+    try:
+        os.makedirs(created_app.instance_path)
+    except OSError:
+        pass
+
+    mail = Mail(created_app)
+
+    return created_app
+
+
+app = create_app()
+
+
+# app = Flask(__name__)
+# app.secret_key = os.urandom(24)
+#
+# # set_app_config_values()
+# app.config.from_pyfile('/Users/mcmen/PycharmProjects/MScProject/configs/email_config.py')
+#
+# mail = Mail(app)
 
 
 @app.route('/')
