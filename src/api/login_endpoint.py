@@ -1,6 +1,6 @@
 from flask import jsonify, logging
 
-from src.database import queries, database_scripts
+from src.database import queries
 from src.database.connection import RelDBConnection
 
 

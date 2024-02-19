@@ -1,6 +1,54 @@
 {% extends "base.html" %}
 {% set navbar_included = True %}
 
+{% block scripts %}
+<script>
+console.log('scripts');
+// This code will be executed when the DOM is fully loaded
+document.addEventListener("DOMContentLoaded", async function() {
+    // Assuming your form has an ID of 'loginForm'
+    console.log('DOM content loaded');
+    const loginForm = document.getElementById('loginForm');
+    loginForm.addEventListener('submit', async function(e) {
+        e.preventDefault(); // Prevent the default form submission
+
+        try {
+            const response = await fetch('/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    username: document.getElementById('username').value,
+                    password: document.getElementById('password').value
+                })
+            });
+            console.log('Login response:', response)
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const data = await response.json();
+            console.error('Login response:', data);
+            if (data.access_token) {
+                localStorage.setItem('access_token', data.access_token);
+                window.location.href = '/presentation_generator.html'; // Adjust the redirection URL as needed
+            } else {
+                console.error('Login failed:', data.message || 'Unknown error');
+                // Optionally, display the error to the user
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            const errorMessageDiv = document.getElementById('errorMessage');
+            errorMessageDiv.textContent = 'Failed to login. Please check your credentials and try again.';
+            errorMessageDiv.style.display = 'block'; // Show the error message
+        }
+    });
+});
+
+</script>
+{% endblock %}
+
+
 {% block title %}DynaPoint{% endblock %}
 
 {% block content %}
@@ -39,47 +87,44 @@
         </tr>
     </table>
 
-        <!-- A centred span that is only displayed when there is an error -->
-        {% if response %}
-            <span class="error font-header-error text-center">
-                <p> {{ response.json['error'] }} </p>
-            </span>
-        {% endif %}
+    <!-- Place this somewhere in your form or a strategic location in your template -->
+    <div id="errorMessage" class="font-header-error-2 align-center"></div>
 
-        <div class="Login-In-Container">
-            <!-- Login Container, which contains a form, where User can enter a Username & Password
-                 This then calls the Login-Endpoint for Verification. If successful the user is taken to the moods page
-                 Otherwise they are returned and a hidden Error message is displayed -->
-            <hr class="mb-3">
-            <h1 class="text-center font-header-custom">Login</h1>
-            <hr class="mb-3">
-            <form class="row gy-2 gx-3 align-items-center" action="{{ url_for('login') }}" method="POST">
-                <table>
-                    <tr>
-                        <td>
-                            <div class="col-md-16">
-                                <div class="input-group">
-                                    <div class="input-group-text">@</div>
-                                    <input type="text" class="form-control" id="autoSizingInputGroup"
-                                               placeholder="username" name="username">
-                                </div>
+
+    <div class="Login-In-Container">
+        <!-- Login Container, which contains a form, where User can enter a Username & Password
+             This then calls the Login-Endpoint for Verification. If successful the user is taken to the moods page
+             Otherwise they are returned and a hidden Error message is displayed -->
+        <hr class="mb-3">
+        <h1 class="text-center font-header-custom">Login</h1>
+        <hr class="mb-3">
+        <form id="loginForm" class="row gy-2 gx-3 align-items-center" action="{{ url_for('login') }}" method="POST">
+            <table>
+                <tr>
+                    <td>
+                        <div class="col-md-16">
+                            <div class="input-group">
+                                <div class="input-group-text">@</div>
+                                <input type="text" class="form-control" id="username"
+                                           placeholder="username" name="username">
                             </div>
-                        </td>
-                        <td>
-                            <div class="col-md-16">
-                                <input type="password" class="form-control" id="autoSizingInput"
-                                       placeholder="password" name="password">
-                            </div>
-                        </td>
-                        <td>
-                            <div class="col-md-6">
-                                <button type="submit" class="btn btn-primary btn-login-submit">Submit</button>
-                            </div>
-                        </td>
-                    </tr>
-                </table>
-            </form>
-        </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="col-md-16">
+                            <input type="password" class="form-control" id="password"
+                                   placeholder="password" name="password">
+                        </div>
+                    </td>
+                    <td>
+                        <div class="col-md-6">
+                            <button type="submit" class="btn btn-primary btn-login-submit">Submit</button>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </form>
     </div>
+</div>
 
 {% endblock %}

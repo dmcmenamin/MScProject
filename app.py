@@ -1,11 +1,15 @@
 import os
 
 from flask import Flask, render_template, redirect, url_for, request, session, jsonify
+from flask_jwt_extended import JWTManager
 from flask_mail import Mail
+from flask_restful import Api
+from flask_sqlalchemy import SQLAlchemy
 
 from src.api.historical_endpoint import historical_endpoint_get, historical_endpoint_get_specific_presentation, \
     historical_endpoint_delete_specific_presentation
 from src.api.login_endpoint import login_api
+
 from src.api.presentation_generating_in_progress_endpoint import presentation_generating_in_progress_post
 from src.api.presentation_generator_endpoint import presentation_generator_get, presentation_generator_post
 from src.api.signup_confirmation_endpoint import confirm_signup_get
@@ -28,7 +32,7 @@ def create_app(test_config=None):
 
     if test_config is None:
         # load the instance config, if it exists, when not testing
-        created_app.config.from_pyfile('config.py', silent=True)
+        created_app.config.from_pyfile('/Users/mcmen/PycharmProjects/MScProject/configs/config.py', silent=True)
     else:
         # load the test config if passed in
         created_app.config.from_mapping(test_config)
@@ -39,21 +43,25 @@ def create_app(test_config=None):
     except OSError:
         pass
 
-    mail = Mail(created_app)
-
     return created_app
 
 
 app = create_app()
 
+jwt = JWTManager(app)
+api = Api(app)
+mail = Mail(app)
+db = SQLAlchemy(app)
 
 # app = Flask(__name__)
 # app.secret_key = os.urandom(24)
 #
 # # set_app_config_values()
-# app.config.from_pyfile('/Users/mcmen/PycharmProjects/MScProject/configs/email_config.py')
+# app.config.from_pyfile('/Users/mcmen/PycharmProjects/MScProject/configs/config.py')
 #
 # mail = Mail(app)
+
+from src.api.login_service import Login
 
 
 @app.route('/')
@@ -61,22 +69,22 @@ def index():
     """ The index page for the website
     :return: The index page
     """
-    return render_template('index.html', session=session)
+    return render_template('index.html')
 
 
-@app.route('/login', methods=['POST'])
-def login():
-    """ The login endpoint for the website
-    :return: If successful, the presentation generator page, otherwise, the index page with an error message
-    """
-
-    response, status_code = login_api(request.form)
-    if status_code == 200:
-        user_session(response.json['username'], response.json['user_id'], response.json['first_name'],
-                     response.json['last_name'], response.json['is_admin'])
-        return redirect(url_for('presentation_generator'))
-    else:
-        return render_template('index.html', response=response)
+# @app.route('/login', methods=['POST'])
+# def login():
+#     """ The login endpoint for the website
+#     :return: If successful, the presentation generator page, otherwise, the index page with an error message
+#     """
+#
+#     response, status_code = login_api(request.form)
+#     if status_code == 200:
+#         user_session(response.json['username'], response.json['user_id'], response.json['first_name'],
+#                      response.json['last_name'], response.json['is_admin'])
+#         return redirect(url_for('presentation_generator'))
+#     else:
+#         return render_template('index.html', response=response)
 
 
 @app.route('/signup_endpoint', methods=['GET', 'POST'])
@@ -236,6 +244,17 @@ def logout():
     session.clear()
     return redirect(url_for('index'))
 
+
+api.add_resource(Login, '/login')
+# api.add_resource(Signup, '/signup')
+# api.add_resource(ConfirmSignup, '/confirm_signup/<token>')
+# api.add_resource(PresentationGenerator, '/presentation_generator')
+# api.add_resource(PresentationGeneratingInProgress, '/presentation_generating_in_progress')
+# api.add_resource(Historical, '/historical')
+# api.add_resource(GetSpecificHistoricalPresentation, '/historical/<presentation_id>')
+# api.add_resource(DeletePresentation, '/delete_presentation/<presentation_id>')
+# api.add_resource(AccountSettings, '/account_settings')
+# api.add_resource(Logout, '/logout')
 
 if __name__ == '__main__':
     app.run(debug=True)
