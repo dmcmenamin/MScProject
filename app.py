@@ -62,6 +62,7 @@ db = SQLAlchemy(app)
 # mail = Mail(app)
 
 from src.api.login_service import Login
+from src.api.presentations import PresentationGeneratorGet
 
 
 @app.route('/')
@@ -128,36 +129,36 @@ def confirm_signup(token):
             return render_template('index.html', response=response)
 
 
-@app.route('/presentation_generator_endpoint', methods=['GET', 'POST'])
-@confirmed_login_required
-def presentation_generator():
-    """ The presentation generator endpoint for the website
-    :return: If successful, the presentation generator page, otherwise, the presentation generator page with an error
-    message
-    """
-
-    # if it is a get request
-    if request.method == 'GET':
-        response, status_code = presentation_generator_get()
-        if status_code == 200:
-            return render_template('presentation_generator.html', llm_model_names=response.json['llm_model_names'],
-                                   llm_names_and_models=response.json['llm_names_and_models'],
-                                   presentation_themes=response.json['presentation_themes'])
-        else:
-            return render_template('presentation_generator.html', response=response)
-
-    elif request.method == 'POST':
-        """ The presentation generator endpoint for the website - for POST requests
-        Calls the presentation generating in progress function from the controller
-        :return: If successful, the presentation generator page, otherwise, 
-        the presentation generator page with an error
-        """
-        response, status_code = presentation_generator_post(request.form)
-
-        if status_code == 200:
-            return render_template('presentation_generating.html', response=response.json)
-        else:
-            return render_template('index.html', response=response)
+# @app.route('/presentation_generator_endpoint', methods=['GET', 'POST'])
+# @confirmed_login_required
+# def presentation_generator():
+#     """ The presentation generator endpoint for the website
+#     :return: If successful, the presentation generator page, otherwise, the presentation generator page with an error
+#     message
+#     """
+#
+#     # if it is a get request
+#     if request.method == 'GET':
+#         response, status_code = presentation_generator_get()
+#         if status_code == 200:
+#             return render_template('presentation_generator.html', llm_model_names=response.json['llm_model_names'],
+#                                    llm_names_and_models=response.json['llm_names_and_models'],
+#                                    presentation_themes=response.json['presentation_themes'])
+#         else:
+#             return render_template('presentation_generator.html', response=response)
+#
+#     elif request.method == 'POST':
+#         """ The presentation generator endpoint for the website - for POST requests
+#         Calls the presentation generating in progress function from the controller
+#         :return: If successful, the presentation generator page, otherwise,
+#         the presentation generator page with an error
+#         """
+#         response, status_code = presentation_generator_post(request.form)
+#
+#         if status_code == 200:
+#             return render_template('presentation_generating.html', response=response.json)
+#         else:
+#             return render_template('index.html', response=response)
 
 
 @app.route('/presentation_generating_in_progress_endpoint', methods=['POST'])
@@ -248,7 +249,8 @@ def logout():
 api.add_resource(Login, '/login')
 # api.add_resource(Signup, '/signup')
 # api.add_resource(ConfirmSignup, '/confirm_signup/<token>')
-# api.add_resource(PresentationGenerator, '/presentation_generator')
+api.add_resource(PresentationGeneratorGet, '/presentation_generator')
+# api.add_resource(PresentationGeneratorPost, '/presentation_generator')
 # api.add_resource(PresentationGeneratingInProgress, '/presentation_generating_in_progress')
 # api.add_resource(Historical, '/historical')
 # api.add_resource(GetSpecificHistoricalPresentation, '/historical/<presentation_id>')

@@ -28,10 +28,9 @@ document.addEventListener("DOMContentLoaded", async function() {
                 throw new Error('Network response was not ok');
             }
             const data = await response.json();
-            console.error('Login response:', data);
             if (data.access_token) {
                 localStorage.setItem('access_token', data.access_token);
-                window.location.href = '/presentation_generator.html'; // Adjust the redirection URL as needed
+                window.location.href = '/presentation_generator'; // Adjust the redirection URL as needed
             } else {
                 console.error('Login failed:', data.message || 'Unknown error');
                 // Optionally, display the error to the user

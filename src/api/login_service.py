@@ -20,7 +20,7 @@ class Login(Resource):
 
         user = User.query.filter_by(username=username).first()
         if user and user.check_password(password, user.user_salt, user.user_password):
-            access_token = create_access_token(identity=username)
+            access_token = create_access_token(identity=username, expires_delta=False)
             return {
                 'username': user.username,
                 'user_id': user.user_id,
