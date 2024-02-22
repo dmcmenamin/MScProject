@@ -6,14 +6,17 @@ from flask_mail import Mail
 from flask_restful import Api
 from flask_sqlalchemy import SQLAlchemy
 
+
 from src.api.historical_endpoint import historical_endpoint_get, historical_endpoint_get_specific_presentation, \
     historical_endpoint_delete_specific_presentation
 from src.api.login_endpoint import login_api
 
 from src.api.presentation_generating_in_progress_endpoint import presentation_generating_in_progress_post
 from src.api.presentation_generator_endpoint import presentation_generator_get, presentation_generator_post
+
 from src.api.signup_confirmation_endpoint import confirm_signup_get
 from src.api.signup_endpoint import signup_get, signup_post
+
 from src.utils.common_scripts import user_session
 from src.utils.send_confirmation_email import send_confirmation_email
 from src.utils.sign_up_token import generate_sign_up_token, verify_sign_up_token
@@ -53,16 +56,11 @@ api = Api(app)
 mail = Mail(app)
 db = SQLAlchemy(app)
 
-# app = Flask(__name__)
-# app.secret_key = os.urandom(24)
-#
-# # set_app_config_values()
-# app.config.from_pyfile('/Users/mcmen/PycharmProjects/MScProject/configs/config.py')
-#
-# mail = Mail(app)
-
-from src.api.login_service import Login
-from src.api.presentations import PresentationGeneratorGet
+from src.api.login_service import LoginGet
+from src.api.available_llms_get import AvailableLlmsGet
+from src.api.signup_post import SignupPost
+from src.api.presentation_generator_get import PresentationGeneratorGet
+from src.api.presentation_generator_post import PresentationGeneratorPost
 
 
 @app.route('/')
@@ -73,46 +71,34 @@ def index():
     return render_template('index.html')
 
 
-# @app.route('/login', methods=['POST'])
-# def login():
-#     """ The login endpoint for the website
-#     :return: If successful, the presentation generator page, otherwise, the index page with an error message
-#     """
-#
-#     response, status_code = login_api(request.form)
-#     if status_code == 200:
-#         user_session(response.json['username'], response.json['user_id'], response.json['first_name'],
-#                      response.json['last_name'], response.json['is_admin'])
-#         return redirect(url_for('presentation_generator'))
-#     else:
-#         return render_template('index.html', response=response)
-
-
 @app.route('/signup_endpoint', methods=['GET', 'POST'])
 def signup():
     """ The signup endpoint for the website
     :return: If successful, the presentation generator page, otherwise, the signup page with an error message
     """
-    # if it is a get request
-    if request.method == 'GET':
-        response, status_code = signup_get()
-        if status_code == 200:
-            return render_template('signup.html', llm_model_names=response.json['llm_model_names'])
-        else:
-            return render_template('signup.html', response=response)
+    api.add_resource(AvailableLlmsGet, '/available_llms')
 
-    # if it is a post request
-    elif request.method == 'POST':
-        response, status_code = signup_post(request.form)
-        if status_code == 200:
-            token = generate_sign_up_token(response.json['username'])
-            confirmation_url = url_for('confirm_signup', token=token, _external=True)
-            html = render_template('email.html', confirmation_url=confirmation_url)
-            subject = "Please confirm your email"
-            send_confirmation_email(response.json['username'], subject, html)
-            return redirect(url_for('presentation_generator'))
-        else:
-            return render_template('signup.html', response=response)
+
+    # # if it is a get request
+    # if request.method == 'GET':
+    #     response, status_code = signup_get()
+    #     if status_code == 200:
+    #         return render_template('signup.html', llm_model_names=response.json['llm_model_names'])
+    #     else:
+    #         return render_template('signup.html', response=response)
+    #
+    # # if it is a post request
+    # elif request.method == 'POST':
+    #     response, status_code = signup_post(request.form)
+    #     if status_code == 200:
+    #         token = generate_sign_up_token(response.json['username'])
+    #         confirmation_url = url_for('confirm_signup', token=token, _external=True)
+    #         html = render_template('email.html', confirmation_url=confirmation_url)
+    #         subject = "Please confirm your email"
+    #         send_confirmation_email(response.json['username'], subject, html)
+    #         return redirect(url_for('presentation_generator'))
+    #     else:
+    #         return render_template('signup.html', response=response)
 
 
 @app.route('/confirm_signup/<token>', methods=['GET'])
@@ -246,11 +232,13 @@ def logout():
     return redirect(url_for('index'))
 
 
-api.add_resource(Login, '/login')
+api.add_resource(LoginGet, '/loginget')
+api.add_resource(SignupPost, '/signup')
+api.add_resource(AvailableLlmsGet, '/available_llms')
 # api.add_resource(Signup, '/signup')
 # api.add_resource(ConfirmSignup, '/confirm_signup/<token>')
 api.add_resource(PresentationGeneratorGet, '/presentation_generator')
-# api.add_resource(PresentationGeneratorPost, '/presentation_generator')
+api.add_resource(PresentationGeneratorPost, '/presentation_generator')
 # api.add_resource(PresentationGeneratingInProgress, '/presentation_generating_in_progress')
 # api.add_resource(Historical, '/historical')
 # api.add_resource(GetSpecificHistoricalPresentation, '/historical/<presentation_id>')

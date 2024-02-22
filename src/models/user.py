@@ -1,4 +1,5 @@
 import hashlib
+import os
 import secrets
 from app import db
 
@@ -20,22 +21,18 @@ class User(db.Model):
     def __repr__(self):
         return '<User %r>' % self.username
 
-    def __init__(self, username, user_first_name, user_last_name, user_password, user_salt, user_is_admin,
-                 account_confirmed):
+    def __init__(self, username, user_first_name, user_last_name, user_is_admin=False,
+                 account_confirmed=False):
         """ The constructor for the User class
         :param username: The username
         :param user_first_name: The user's first name
         :param user_last_name: The user's last name
-        :param user_password: The user's password
-        :param user_salt: The user's salt
         :param user_is_admin: The user's admin status
         :param account_confirmed: The user's account confirmation status
         """
         self.username = username
         self.user_first_name = user_first_name
         self.user_last_name = user_last_name
-        self.user_password = user_password
-        self.user_salt = user_salt
         self.user_is_admin = user_is_admin
         self.account_confirmed = account_confirmed
 
@@ -104,7 +101,7 @@ class User(db.Model):
         :param username: The username
         :return: The user User_id
         """
-        return cls.query.filter_by(username=username).first().User_id
+        return cls.query.filter_by(username=username).first().user_id
 
     @classmethod
     def get_user_is_admin(cls, username):
@@ -119,7 +116,7 @@ class User(db.Model):
         """ Creates a salt for the password by generating a random url safe string
         :return: The salt
         """
-        return secrets.token_urlsafe(32)
+        return os.urandom(32)
 
     @classmethod
     def hash_password(cls, password, salt):
@@ -128,7 +125,7 @@ class User(db.Model):
         :param salt: The salt to be used
         :return: The hashed password
         """
-        return hashlib.sha512((password + salt).encode('utf-8')).hexdigest()
+        return hashlib.sha512(password.encode('utf-8') + salt).digest()
 
     @classmethod
     def check_password(cls, password, salt, hashed_password):
@@ -138,7 +135,7 @@ class User(db.Model):
         :param hashed_password: The hashed password to be compared to
         :return: True if the password is correct, False otherwise
         """
-        return cls.hash_password(password, salt).encode() == hashed_password
+        return cls.hash_password(password, salt) == hashed_password
 
     @classmethod
     def create_salted_user_password(cls, password):
@@ -147,6 +144,6 @@ class User(db.Model):
         :return: The salt and hashed password
         """
 
-        salt = password.create_salt()
-        hashed_password = password.hash_password(password, salt)
+        salt = cls.create_salt()
+        hashed_password = cls.hash_password(password, salt)
         return salt, hashed_password

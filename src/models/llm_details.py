@@ -187,3 +187,11 @@ class LlmDetails(db.Model):
         :return: The LLM details
         """
         return cls.query.filter_by(LLM_Model_Name=LLM_Model_Name).all()
+
+    @classmethod
+    def get_all_llms_and_descriptions_llm_by_llm_id(cls, LLM_Name_ID):
+        """ The get all llms and descriptions llm by llm_id method
+        :param LLM_Name_ID: The LLM_Name_ID
+        :return: The LLM details
+        """
+        return cls.query.filter_by(LLM_Name_ID=LLM_Name_ID).all()

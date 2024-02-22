@@ -5,7 +5,7 @@ from src.models.user import User
 from app import jwt
 
 
-class Login(Resource):
+class LoginGet(Resource):
     def post(self):
         """ The login page for the website
         :return: The login page

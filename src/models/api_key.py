@@ -207,3 +207,11 @@ class ApiKey(db.Model):
         """
         return cls.query.filter_by(api_key_llm=api_key_llm, api_key_user=api_key_user,
                                    api_key_user_key=api_key_user_key).first()
+
+    @classmethod
+    def get_all_available_api_keys_by_user_id(cls, user_id):
+        """ The get all available api keys by user_id method
+        :param user_id: The user_id
+        :return: The api_key
+        """
+        return cls.query.filter_by(api_key_user=user_id).all()

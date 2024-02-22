@@ -118,4 +118,10 @@ class Llm(db.Model):
         """
         return cls.query.filter_by(LLM_Name_ID=LLM_Name_ID).first().LLM_Name_Name
 
-
+    @classmethod
+    def get_all_available_llms_by_user_id(cls, user_id):
+        """ The get all available LLMs by user_id method
+        :param user_id: The user_id
+        :return: The LLMs
+        """
+        return cls.query.filter_by(LLM_Name_ID=user_id).all()

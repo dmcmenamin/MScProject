@@ -5,20 +5,40 @@
 
 {% block scripts %}
     <script>
-        fetch('/presentation_generator', {
+        async function fetchData() {
+        // Retrieve access token from localStorage
+        const accessToken = localStorage.getItem('access_token');
+
+        // Check if access token exists
+        if (!accessToken) {
+            console.error('Missing access token. Please login first.');
+            return; // Exit the function if no token
+        }
+
+        try {
+            const response = await fetch('/presentation_generator', {
             method: 'GET',
-            headers:
-                {
-                    'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
-                    'Content-Type': 'application/json'},
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log(data);
-            })
-            .catch((error) => {
-                console.error('Error:', error);
+            headers: {
+                'Authorization': `Bearer ${accessToken}` // Use template literal for cleaner string concatenation
+                }
             });
+
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+                }
+
+            const data = await response.json();
+            console.log(data);
+            }
+        catch (error) {
+        console.error('Error:', error);
+        }
+    }
+
+// Call the function to initiate the fetch request
+fetchData();
+
+
     </script>
 {% endblock %}
 
