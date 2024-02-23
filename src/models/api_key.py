@@ -8,8 +8,8 @@ class ApiKey(db.Model):
 
     __tablename__ = 'api_key'
     api_key_id = db.Column(db.Integer, primary_key=True)
-    api_key_llm = db.Column(db.Integer, db.ForeignKey('llm_name.LLM_Name_ID'), nullable=False)
-    api_key_user = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
+    api_key_llm = db.Column(db.Integer, db.ForeignKey('llm.llm_id'), nullable=False)
+    api_key_user = db.Column(db.Integer, db.ForeignKey('user_information.user_id'), nullable=False)
     api_key_user_key = db.Column(db.String(256), nullable=False)
 
     def __repr__(self):
@@ -63,6 +63,56 @@ class ApiKey(db.Model):
         """
         cls.query.filter_by(api_key_user_key=api_key_user_key).delete()
         db.session.commit()
+
+    @classmethod
+    def delete_api_key_by_llm_id(cls, api_key_llm):
+        """ The delete api_key by llm_id method
+        :param api_key_llm: The api_key_llm
+        :return: None
+        """
+        cls.query.filter_by(api_key_llm=api_key_llm).delete()
+        db.session.commit()
+
+    @classmethod
+    def delete_api_key_by_user_id(cls, api_key_user):
+        """ The delete api_key by user_id method
+        :param api_key_user: The api_key_user
+        :return: None
+        """
+        cls.query.filter_by(api_key_user=api_key_user).delete()
+        db.session.commit()
+
+    @classmethod
+    def get_api_key_by_user_id_and_llm_id(cls, api_key_user, api_key_llm):
+        """ The get api_key by user_id and llm_id method
+        :param api_key_user: The api_key_user
+        :param api_key_llm: The api_key_llm
+        :return: The api_key
+        """
+        return cls.query.filter_by(api_key_user=api_key_user, api_key_llm=api_key_llm).first()
+
+    @classmethod
+    def update_api_key_by_user_id_and_llm_id(cls, api_key_user, api_key_llm, api_key_user_key):
+        """ The update api_key by user_id and llm_name method
+        :param api_key_user: The api_key_user
+        :param api_key_llm: The api_key_llm
+        :param api_key_user_key: The api_key_user_key
+        :return: None
+        """
+        (cls.query.filter_by(api_key_user=api_key_user, api_key_llm=api_key_llm).
+         update(dict(api_key_user_key=api_key_user_key)))
+        db.session.commit()
+
+    @classmethod
+    def add_api_key(cls, api_key_llm, api_key_user, api_key_user_key):
+        """ The add api_key method
+        :param api_key_llm: The api_key_llm
+        :param api_key_user: The api_key_user
+        :param api_key_user_key: The api_key_user_key
+        :return: None
+        """
+        api_key = cls(api_key_llm=api_key_llm, api_key_user=api_key_user, api_key_user_key=api_key_user_key)
+        db.session.add(api_key)
 
     @classmethod
     def find_by_user_id(cls, api_key_user):

@@ -4,7 +4,7 @@ from flask_restful import Resource
 
 from app import db
 from src.models.api_key import ApiKey
-from src.models.user import User
+from src.models.user_information import User
 
 
 class PresentationGeneratorPost(Resource):
@@ -19,8 +19,8 @@ class PresentationGeneratorPost(Resource):
         The post method for the presentation generator
         :return:
         """
-        username = get_jwt_identity()
-        if not username:
+        user_id = get_jwt_identity()
+        if not user_id:
             return {'message': 'User not logged in'}, 401
         else:
             # get user input
@@ -33,7 +33,8 @@ class PresentationGeneratorPost(Resource):
             presentation_theme = data.get('presentation_theme')  # The presentation theme
 
             large_language_model, model_name = data.get('llm_model_name').split("_")  # The large language model and
-            # model name
+
+            username = User.find_username_by_id(user_id)
 
             api_key = db.session.query(ApiKey.api_key_user_key).join(User, User.user_id == ApiKey.api_key_user).filter(
                 User.username == username).first()

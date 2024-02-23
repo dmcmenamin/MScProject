@@ -56,11 +56,18 @@ api = Api(app)
 mail = Mail(app)
 db = SQLAlchemy(app)
 
-from src.api.login_service import LoginGet
+from src.api.login_service import Login
 from src.api.available_llms_get import AvailableLlmsGet
-from src.api.signup_post import SignupPost
+from src.api.add_user import AddUser
 from src.api.presentation_generator_get import PresentationGeneratorGet
 from src.api.presentation_generator_post import PresentationGeneratorPost
+from src.api.update_password import UpdatePassword
+from src.api.add_llm_and_model import AddLlmAndModel
+from src.api.add_model import AddModel
+from src.api.delete_llm_model import DeleteLlmModel
+from src.api.delete_llm_model_and_api_keys import DeleteLlmAndModelAndApiKeys
+from src.api.add_or_update_api_key import AddOrUpdateApiKey
+from src.api.delete_user import DeleteUser
 
 
 @app.route('/')
@@ -232,8 +239,8 @@ def logout():
     return redirect(url_for('index'))
 
 
-api.add_resource(LoginGet, '/loginget')
-api.add_resource(SignupPost, '/signup')
+api.add_resource(Login, '/login')
+api.add_resource(AddUser, '/add_user')
 api.add_resource(AvailableLlmsGet, '/available_llms')
 # api.add_resource(Signup, '/signup')
 # api.add_resource(ConfirmSignup, '/confirm_signup/<token>')
@@ -244,6 +251,13 @@ api.add_resource(PresentationGeneratorPost, '/presentation_generator')
 # api.add_resource(GetSpecificHistoricalPresentation, '/historical/<presentation_id>')
 # api.add_resource(DeletePresentation, '/delete_presentation/<presentation_id>')
 # api.add_resource(AccountSettings, '/account_settings')
+api.add_resource(AddLlmAndModel, '/add_llm_and_model')
+api.add_resource(AddModel, '/add_model')
+api.add_resource(DeleteLlmModel, '/delete_llm_model/<llm_model_id>')
+api.add_resource(DeleteLlmAndModelAndApiKeys, '/delete_llm_and_model_and_api_keys/<llm_id>')
+api.add_resource(UpdatePassword, '/update_password/<user_id_for_password_update>')
+api.add_resource(AddOrUpdateApiKey, '/add_or_update_api_key')
+api.add_resource(DeleteUser, '/delete_user/<user_id_to_delete>')
 # api.add_resource(Logout, '/logout')
 
 if __name__ == '__main__':

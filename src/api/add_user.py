@@ -4,10 +4,10 @@ from flask_restful import Resource
 from app import db
 from src.models.api_key import ApiKey
 from src.models.llm_name import Llm
-from src.models.user import User
+from src.models.user_information import User
 
 
-class SignupPost(Resource):
+class AddUser(Resource):
     """
     The post method for the signup
     :return: The response and status code
@@ -30,7 +30,7 @@ class SignupPost(Resource):
             # create the user
             user = User(username=username, user_first_name=first_name, user_last_name=last_name)
             # create the salt and hashed password
-            user.user_salt, user.user_password = User.create_salted_user_password(password)
+            user.user_salt, user.user_hashed_password = User.create_salted_user_password(password)
             try:
                 db.session.add(user)
                 db.session.commit()
@@ -40,6 +40,7 @@ class SignupPost(Resource):
             try:
                 # now add the api keys
                 user_id = User.get_user_id(username)
+                print("user_id: ", user_id)
                 for llm_model, api_key in data.get("llm").items():
                     if llm_model.startswith('api_key_') and api_key != "" and api_key is not None:
                         llm_model_id = Llm.get_llm_id(llm_model.replace('api_key_', ''))

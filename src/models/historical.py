@@ -9,7 +9,7 @@ class Historical(db.Model):
 
     __tablename__ = 'historical'
     historical_id = db.Column(db.Integer, primary_key=True)
-    historical_user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
+    historical_user_id = db.Column(db.Integer, db.ForeignKey('user_information.user_id'), nullable=False)
     historical_presentation_name = db.Column(db.String(255), nullable=False)
     historical_time_stamp = db.Column(db.DateTime, nullable=False)
     historical_presentation_location = db.Column(db.String(255), nullable=False)
@@ -218,3 +218,11 @@ class Historical(db.Model):
         """
         cls.query.filter_by(historical_id=historical_id).delete()
         db.session.commit()
+
+    @classmethod
+    def get_all_historical_presentation_locations_by_user_id(cls, historical_user_id):
+        """ The get all historical presentation locations by user_id method
+        :param historical_user_id: The historical_user_id
+        :return: The historical_presentation_locations
+        """
+        return cls.query.filter_by(historical_user_id=historical_user_id).all()

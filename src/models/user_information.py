@@ -8,12 +8,12 @@ class User(db.Model):
     """ The User class
     :param db.Model: The database model
     """
-    __tablename__ = 'user'
+    __tablename__ = 'user_information'
     user_id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(255), unique=True, nullable=False)
+    username = db.Column(db.String(256), unique=True, nullable=False)
     user_first_name = db.Column(db.String(32), nullable=False)
     user_last_name = db.Column(db.String(64), nullable=False)
-    user_password = db.Column(db.VARBINARY, nullable=False)
+    user_hashed_password = db.Column(db.VARBINARY, nullable=False)
     user_salt = db.Column(db.VARBINARY, nullable=False)
     user_is_admin = db.Column(db.Boolean, nullable=False, default=False)
     account_confirmed = db.Column(db.Boolean, nullable=False, default=False)
@@ -54,10 +54,18 @@ class User(db.Model):
     @classmethod
     def find_by_id(cls, _id):
         """ The find by User_id method
-        :param _id: The User_id
+        :param _id: The user_id
         :return: The user
         """
         return cls.query.filter_by(user_id=_id).first()
+
+    @classmethod
+    def find_username_by_id(cls, _id):
+        """ The find username by User_id method
+        :param _id: The user_id
+        :return: The username
+        """
+        return cls.query.filter_by(user_id=_id).first().username
 
     @classmethod
     def find_all(cls):
@@ -81,9 +89,9 @@ class User(db.Model):
         :param user: The user
         :return: None
         """
-        cls.query.filter_by(id=user.User_id).update(dict(username=user.username, user_first_name=user.user_first_name,
+        cls.query.filter_by(id=user.user_id).update(dict(username=user.username, user_first_name=user.user_first_name,
                                                          user_last_name=user.user_last_name,
-                                                         user_password=user.user_password, user_salt=user.user_salt,
+                                                         user_password=user.user_hashed_password, user_salt=user.user_salt,
                                                          is_admin=user.is_admin,
                                                          account_confirmed=user.account_confirmed))
         db.session.commit()
@@ -112,6 +120,14 @@ class User(db.Model):
         return cls.query.filter_by(username=username).first().is_admin
 
     @classmethod
+    def get_user_is_admin_by_id(cls, user_id):
+        """ The get user is admin by id method
+        :param user_id: The user_id
+        :return: The is admin
+        """
+        return cls.query.filter_by(user_id=user_id).first().user_is_admin
+
+    @classmethod
     def create_salt(cls):
         """ Creates a salt for the password by generating a random url safe string
         :return: The salt
@@ -125,6 +141,7 @@ class User(db.Model):
         :param salt: The salt to be used
         :return: The hashed password
         """
+
         return hashlib.sha512(password.encode('utf-8') + salt).digest()
 
     @classmethod
@@ -135,6 +152,7 @@ class User(db.Model):
         :param hashed_password: The hashed password to be compared to
         :return: True if the password is correct, False otherwise
         """
+
         return cls.hash_password(password, salt) == hashed_password
 
     @classmethod
@@ -145,5 +163,4 @@ class User(db.Model):
         """
 
         salt = cls.create_salt()
-        hashed_password = cls.hash_password(password, salt)
-        return salt, hashed_password
+        return salt, cls.hash_password(password, salt)

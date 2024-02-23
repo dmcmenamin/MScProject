@@ -7,24 +7,21 @@ class Llm(db.Model):
     :param db.Model: The database model
     """
 
-    __tablename__ = 'llm_name'
-    LLM_Name_ID = db.Column(db.Integer, primary_key=True)
-    LLM_Name_Name = db.Column(db.String(30), unique=True, nullable=False)
-    LLM_Name_Token_Size = db.Column(db.Integer, nullable=False)
-    LLM_Name_Api_Link = db.Column(db.String(255), nullable=False)
+    __tablename__ = 'llm'
+    llm_id = db.Column(db.Integer, primary_key=True)
+    llm_name = db.Column(db.String(30), unique=True, nullable=False)
+    llm_api_link = db.Column(db.String(256), nullable=False)
 
     def __repr__(self):
-        return '<Llm %r>' % self.LLM_Name_Name
+        return '<Llm %r>' % self.llm_name
 
-    def __init__(self, LLM_Name_Name, LLM_Name_Token_Size, LLM_Name_Api_Link):
+    def __init__(self, llm_name, llm_api_link):
         """ The constructor for the Llm class
-        :param LLM_Name_Name: The LLM_Name
-        :param LLM_Name_Token_Size: The LLM_Name_Toke_Size
-        :param LLM_Name_Api_Link: The LLM_Name_Api_Link
+        :param llm_name: The Llm_Name
+        :param llm_api_link: The Llm_Api_Link
         """
-        self.LLM_Name_Name = LLM_Name_Name
-        self.LLM_Name_Toke_Size = LLM_Name_Token_Size
-        self.LLM_Name_Api_Link = LLM_Name_Api_Link
+        self.llm_name = llm_name
+        self.llm_api_link = llm_api_link
 
     def save_to_db(self):
         """ The save to db method
@@ -34,20 +31,20 @@ class Llm(db.Model):
         db.session.commit()
 
     @classmethod
-    def find_by_name(cls, LLM_Name_Name):
-        """ The find by LLM_Name_Name method
-        :param LLM_Name_Name: The LLM_Name_Name
+    def find_by_name(cls, llm_name):
+        """ The find by LLM_Name method
+        :param llm_name: The LLM_Name
         :return: The LLM
         """
-        return cls.query.filter_by(LLM_Name_Name=LLM_Name_Name).first()
+        return cls.query.filter_by(llm_name=llm_name).first()
 
     @classmethod
-    def find_by_id(cls, _id):
-        """ The find by LLM_Name_ID method
-        :param _id: The LLM_Name_ID
+    def get_llm_by_id(cls, _id):
+        """ The get_llm_by_id method
+        :param _id: The llm_id
         :return: The LLM
         """
-        return cls.query.filter_by(LLM_Name_ID=_id).first()
+        return cls.query.filter_by(llm_id=_id).first()
 
     @classmethod
     def return_all(cls):
@@ -57,33 +54,30 @@ class Llm(db.Model):
         return cls.query.all()
 
     @classmethod
-    def delete_llm(cls, LLM_Name_Name):
+    def delete_llm(cls, llm_name):
         """ The delete LLM method
-        :param LLM_Name_Name: The LLM_Name_Name
+        :param llm_name: The LLM_Name
         :return: None
         """
-        cls.query.filter_by(LLM_Name_Name=LLM_Name_Name).delete()
+        cls.query.filter_by(llm_name=llm_name).delete()
         db.session.commit()
 
     @classmethod
-    def update_llm(cls, LLM_Name_Name, LLM_Name_Token_Size, LLM_Name_Api_Link):
-        """ The update LLM method
-        :param LLM_Name_Name: The LLM_Name_Name
-        :param LLM_Name_Toke_Size: The LLM_Name_Toke_Size
-        :param LLM_Name_Api_Link: The LLM_Name_Api_Link
+    def delete_llm_by_id(cls, llm_id):
+        """ The delete LLM method
+        :param llm_id: The LLM_ID
         :return: None
         """
-        cls.query.filter_by(LLM_Name_Name=LLM_Name_Name).update(dict(LLM_Name_Toke_Size=LLM_Name_Token_Size,
-                                                                     LLM_Name_Api_Link=LLM_Name_Api_Link))
+        cls.query.filter_by(llm_id=llm_id).delete()
         db.session.commit()
 
     @classmethod
-    def delete_all(cls):
-        """ The delete all method
-        :return: None
+    def get_llm_by_name(cls, llm_name):
+        """ The get llm by name method
+        :param llm_name: The llm_name
+        :return: The LLM id
         """
-        cls.query.delete()
-        db.session.commit()
+        return cls.query.filter_by(llm_name=llm_name).first()
 
     @classmethod
     def return_all_names(cls):
@@ -92,7 +86,7 @@ class Llm(db.Model):
         """
         llm_names = []
         for llm in cls.query.all():
-            llm_names.append(llm.LLM_Name_Name)
+            llm_names.append(llm.llm_name)
         return llm_names
 
     @classmethod
@@ -103,25 +97,17 @@ class Llm(db.Model):
         return cls.query.count()
 
     @classmethod
-    def get_llm_id(cls, LLM_Name_Name):
-        """ The get LLM_Name_ID method
-        :param LLM_Name_Name: The LLM_Name_Name
+    def get_llm_id(cls, llm_name):
+        """ The get llm by name method
+        :param llm_name: The llm_name
         :return: The LLM_Name_ID
         """
-        return cls.query.filter_by(LLM_Name_Name=LLM_Name_Name).first().LLM_Name_ID
+        return cls.query.filter_by(llm_name=llm_name).first().llm_id
 
     @classmethod
-    def get_llm_name(cls, LLM_Name_ID):
-        """ The get LLM_Name_Name method
-        :param LLM_Name_ID: The LLM_Name_ID
-        :return: The LLM_Name_Name
+    def get_llm_name(cls, llm_id):
+        """ The get LLM_Name_Name method by llm_id
+        :param llm_id: The llm_id
+        :return: The LLM_Name
         """
-        return cls.query.filter_by(LLM_Name_ID=LLM_Name_ID).first().LLM_Name_Name
-
-    @classmethod
-    def get_all_available_llms_by_user_id(cls, user_id):
-        """ The get all available LLMs by user_id method
-        :param user_id: The user_id
-        :return: The LLMs
-        """
-        return cls.query.filter_by(LLM_Name_ID=user_id).all()
+        return cls.query.filter_by(llm_id=llm_id).first().llm_name
