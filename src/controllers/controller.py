@@ -13,12 +13,15 @@ from src.powerpoint.presentation import PowerPointPresentation
 from io import BytesIO
 
 
-def get_ai_image_suggestion(string, folder_name):
+def get_ai_image_suggestion(string, folder_name, large_language_model, image_model_name, api_key):
     """ Gets the image suggestion from the large language model and replaces it with the image url
     it takes in the string, and searches for the keyword IMAGE_SUGGESTION, if it finds this, it will take the
     following line and use it to search for an image, it will then return the image url
     :param string: The string to be searched for the image suggestion
     :param folder_name: The name of the folder to be downloaded
+    :param large_language_model: The large language model to be used
+    :param image_model_name: The image model name to be used
+    :param api_key: The API key to be used
     :return: The string with the image suggestion replaced with the image url
     """
     new_string = ""
@@ -55,8 +58,8 @@ def get_ai_image_suggestion(string, folder_name):
                 # remove any full stops from the end of the image requested
                 if image_requested.endswith("."):
                     image_requested = image_requested.rstrip('.')
-                orchestration_service = Orchestrator(session['large_language_model'], session['api_key'],
-                                                     session['image_model_name'])
+                orchestration_service = Orchestrator(large_language_model, api_key,
+                                                     image_model_name)
                 image_url, status_code = (orchestration_service.call_large_language_model().
                                           get_presentation_image(image_requested.rstrip('.'), "1024x1024"))
 
@@ -89,7 +92,7 @@ def get_ai_image_suggestion(string, folder_name):
 
 
 def generate_presentation(presentation_topic, audience_size, presentation_length, expected_outcome,
-                          who_is_the_audience):
+                          who_is_the_audience, large_language_model, specific_model_name, api_key):
     """ Generates a presentation based on the user's input
     :param presentation_topic: A short description of the presentation topic, this will be used as the filename
     :param audience_size: The number of people the presentation will be given to
@@ -97,18 +100,20 @@ def generate_presentation(presentation_topic, audience_size, presentation_length
     :param expected_outcome: A description of what you expect the audience to
                              know or be able to do after the presentation
     :param who_is_the_audience: Who is the audience, this is used to determine the presentation style
+    :param large_language_model: The large language model to be used
+    :param specific_model_name: The specific model name to be used
+    :param api_key: The API key to be used
     :return: None
     """
 
     # get user first and last name and api key from session
     presenter_name = session['first_name'] + " " + session['last_name']
-    api_key = session['api_key']
 
     # create a unique folder for the user to store their presentations
     file_location, absolute_file_path = create_unique_folder(presentation_topic)
 
     # generate the prompt
-    orchestration_service = Orchestrator(session['large_language_model'], api_key, session['text_model_name'])
+    orchestration_service = Orchestrator(large_language_model, api_key, specific_model_name)
     populated_prompt = orchestration_service.call_large_language_model().set_question_prompt(presenter_name,
                                                                                              presentation_topic,
                                                                                              audience_size,
@@ -129,7 +134,9 @@ def generate_presentation(presentation_topic, audience_size, presentation_length
     presentation_string = presentation_json['presentation_deck']
 
     # extract the image suggestions from the presentation string, and replace them with the image url
-    presentation_string_with_images, status_code = get_ai_image_suggestion(presentation_string, file_location)
+    presentation_string_with_images, status_code = get_ai_image_suggestion(presentation_string, file_location,
+                                                                           large_language_model, specific_model_name,
+                                                                           api_key)
 
     # if there is an error, don't proceed, and instead return the status code and the error message
     if status_code != 200:

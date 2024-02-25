@@ -26,13 +26,19 @@ class PresentationGeneratorGet(Resource):
             return {'message': 'User not logged in'}, 401
         else:
             # get user's available llm model names
-            api_keys_subquery = (db.session.query(ApiKey.api_key_llm).join(User, User.user_id == ApiKey.api_key_user).
-                                 filter(User.user_id == user_id).subquery())
+            api_keys_subquery = (db.session.query(ApiKey.api_key_llm)
+                                 .join(User, User.user_id == ApiKey.api_key_user)
+                                 .filter(User.user_id == user_id)
+                                 .subquery())
+
+            # filter the subquery to get distinct values using select and .c column command
+            api_keys_select = select(api_keys_subquery.c.api_key_llm)
 
             # Now, query the LLMName table using the subquery above
-            llm_model_names = db.session.query(Llm.llm_name).filter(Llm.llm_id.in_(api_keys_subquery)).all()
+            llm_model_names = (db.session.query(Llm.llm_name)
+                               .filter(Llm.llm_id.in_(api_keys_select))
+                               .all())
 
-            llm_names_and_models = {}
             llm_names_and_models = {}
             for llm_model_tuple in llm_model_names:
                 llm_model = llm_model_tuple[0]  # Extract the string from the tuple

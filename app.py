@@ -1,11 +1,11 @@
 import os
 
+import requests
 from flask import Flask, render_template, redirect, url_for, request, session, jsonify
-from flask_jwt_extended import JWTManager
+from flask_jwt_extended import JWTManager, get_jwt_identity, jwt_required
 from flask_mail import Mail
 from flask_restful import Api
 from flask_sqlalchemy import SQLAlchemy
-
 
 from src.api.historical_endpoint import historical_endpoint_get, historical_endpoint_get_specific_presentation, \
     historical_endpoint_delete_specific_presentation
@@ -20,7 +20,7 @@ from src.api.signup_endpoint import signup_get, signup_post
 from src.utils.common_scripts import user_session
 from src.utils.send_confirmation_email import send_confirmation_email
 from src.utils.sign_up_token import generate_sign_up_token, verify_sign_up_token
-from src.utils.decorators import confirmed_login_required
+from src.utils.decorators import confirmed_login_required, user_authenticated
 
 
 def create_app(test_config=None):
@@ -56,7 +56,7 @@ api = Api(app)
 mail = Mail(app)
 db = SQLAlchemy(app)
 
-from src.api.login_service import Login
+from src.api.login_service import UserLogin
 from src.api.available_llms_get import AvailableLlmsGet
 from src.api.add_user import AddUser
 from src.api.presentation_generator_get import PresentationGeneratorGet
@@ -70,6 +70,8 @@ from src.api.add_or_update_api_key import AddOrUpdateApiKey
 from src.api.delete_user import DeleteUser
 
 
+
+
 @app.route('/')
 def index():
     """ The index page for the website
@@ -78,13 +80,32 @@ def index():
     return render_template('index.html')
 
 
-@app.route('/signup_endpoint', methods=['GET', 'POST'])
-def signup():
-    """ The signup endpoint for the website
-    :return: If successful, the presentation generator page, otherwise, the signup page with an error message
+@app.route('/login', methods=['POST'])
+def login():
+    """ The login endpoint for the website
+    :return: If successful, the presentation generator page, otherwise, the login page with an error message
     """
-    api.add_resource(AvailableLlmsGet, '/available_llms')
+    if request.method == 'POST':
+        data = {'username': request.form['username'],
+                'password': request.form['password']}
 
+        headers = {'Content-Type': 'application/json'}
+        response = requests.post('http://localhost:5000/user_login', json=data, headers=headers)
+        if response.status_code == 200:
+            data = response.json()
+            user_session(data['username'], data['first_name'], data['last_name'], data['is_admin'],
+                         data['access_token'])
+            print("session: ", session)
+            return redirect(url_for('presentation_creator'))
+        else:
+            return render_template('index.html', response=response)
+
+
+# @app.route('/signup_endpoint', methods=['GET', 'POST'])
+# def signup():
+#     """ The signup endpoint for the website
+#     :return: If successful, the presentation generator page, otherwise, the signup page with an error message
+#     """
 
     # # if it is a get request
     # if request.method == 'GET':
@@ -122,6 +143,48 @@ def confirm_signup(token):
             return render_template('index.html', response=response)
 
 
+@app.route('/presentation_creator', methods=['GET', 'POST'])
+@user_authenticated
+def presentation_creator():
+    """ The presentation creator endpoint for the website
+    :return: If successful, the presentation creator page, otherwise, the index page with an error message
+    """
+    jwt_token = session['jwt_token']
+    if request.method == 'GET':
+        headers = {'Authorization': 'Bearer ' + jwt_token,
+                   'Content-Type': 'application/json'}
+        response = requests.get('http://localhost:5000/presentation_generator', headers=headers)
+        if response.status_code == 200:
+            response_data = response.json()  # Corrected to call the method
+            return render_template('presentation_creator.html',
+                                   llm_model_names=response_data['data']['llm_model_names'],
+                                   llm_names_and_models=response_data['data']['llm_names_and_models'],
+                                   presentation_themes=response_data['data']['presentation_themes'])
+        else:
+            return render_template('index.html',
+                                   response=response.text)
+    elif request.method == 'POST':
+        headers = {'Authorization': 'Bearer ' + jwt_token,
+                   'Content-Type': 'application/json'}
+
+        data = {'presentation_topic': request.form['presentation_topic'],
+                'audience_size': request.form['audience_size'],
+                'presentation_length': request.form['presentation_length'],
+                'expected_outcome': request.form['expected_outcome'],
+                'audience': request.form['audience'],
+                'presentation_theme': request.form['presentation_theme'],
+                'llm_model_name': request.form['llm_model_name'],
+                }
+
+        response = requests.post('http://localhost:5000/presentation_generator', headers=headers, json=data)
+        if response.status_code == 200:
+            return render_template('presentation_generating.html', response=response.text)
+        else:
+            return render_template('index.html', response=response.text)
+    else:
+        return render_template('index.html', json={'message': 'Invalid request method'})
+
+
 # @app.route('/presentation_generator_endpoint', methods=['GET', 'POST'])
 # @confirmed_login_required
 # def presentation_generator():
@@ -134,11 +197,11 @@ def confirm_signup(token):
 #     if request.method == 'GET':
 #         response, status_code = presentation_generator_get()
 #         if status_code == 200:
-#             return render_template('presentation_generator.html', llm_model_names=response.json['llm_model_names'],
+#             return render_template('presentation_creator.html', llm_model_names=response.json['llm_model_names'],
 #                                    llm_names_and_models=response.json['llm_names_and_models'],
 #                                    presentation_themes=response.json['presentation_themes'])
 #         else:
-#             return render_template('presentation_generator.html', response=response)
+#             return render_template('presentation_creator.html', response=response)
 #
 #     elif request.method == 'POST':
 #         """ The presentation generator endpoint for the website - for POST requests
@@ -155,7 +218,7 @@ def confirm_signup(token):
 
 
 @app.route('/presentation_generating_in_progress_endpoint', methods=['POST'])
-@confirmed_login_required
+@user_authenticated
 def presentation_generating_in_progress():
     """ The presentation generating in progress endpoint for the website
     :return: If successful, the presentation generating in progress page, otherwise, the presentation generator page
@@ -167,6 +230,7 @@ def presentation_generating_in_progress():
         :return: If successful, the presentation generating in progress page, otherwise, 
         the presentation generator page with an error
         """
+        print("request.form: ", request.form)
         response, status_code = presentation_generating_in_progress_post(request.form)
         if status_code == 200:
             return render_template('presentation_success.html', response=response)
@@ -239,7 +303,7 @@ def logout():
     return redirect(url_for('index'))
 
 
-api.add_resource(Login, '/login')
+api.add_resource(UserLogin, '/user_login')
 api.add_resource(AddUser, '/add_user')
 api.add_resource(AvailableLlmsGet, '/available_llms')
 # api.add_resource(Signup, '/signup')

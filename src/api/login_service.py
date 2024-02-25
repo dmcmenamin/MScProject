@@ -5,15 +5,11 @@ from src.models.user_information import User
 from app import jwt
 
 
-class Login(Resource):
+class UserLogin(Resource):
     def post(self):
         """ The login page for the website
         :return: The login page
         """
-        parser = reqparse.RequestParser()
-        # parser.add_argument('username', help='This field cannot be blank', required=True)
-        # parser.add_argument('password', help='This field cannot be blank', required=True)
-        # data = parser.parse_args()
         data = request.get_json()
         username = data.get('username')
         password = data.get('password')

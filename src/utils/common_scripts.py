@@ -98,7 +98,6 @@ def create_unique_folder(filename):
     :param filename: The name of the folder to be created
     :return: The full path of the folder and the absolute path of the folder
     """
-
     # create a unique filename for the user to store their presentations,
     # based on their username and the current date and time
     unique_file_name = ("stored_presentations\\" + session['username'] + "_" +
@@ -159,17 +158,17 @@ def delete_file_of_type_specified(file_location, file_type=None):
             os.remove(file_location + "/" + file)
 
 
-def user_session(username, user_id, first_name, last_name, is_admin):
+def user_session(username, first_name, last_name, is_admin, access_token):
     """ Sets the user session
     :param username: The username
-    :param user_id: The user id
     :param first_name: The first name
     :param last_name: The last name
     :param is_admin: The admin status
+    :param access_token: The access
     :return: None
     """
     set_session_values('username', username)
-    set_session_values('user_id', user_id)
     set_session_values('first_name', first_name)
     set_session_values('last_name', last_name)
     set_session_values('is_admin', is_admin)
+    set_session_values('jwt_token', access_token)

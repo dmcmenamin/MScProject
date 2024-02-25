@@ -6,6 +6,22 @@ from src.database import queries
 from src.database.connection import RelDBConnection
 
 
+def user_authenticated(f):
+    """ Decorator to check if the user is logged in
+    :param f: The function to be decorated
+    :return: The decorated function
+    """
+
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'jwt_token' not in session:
+            return redirect(url_for('index'))
+
+        return f(*args, **kwargs)
+
+    return decorated_function
+
+
 def confirmed_login_required(f):
     """ Decorator to check if the user is logged in, and if they are confirmed
     :param f: The function to be decorated

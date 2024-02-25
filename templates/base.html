@@ -33,9 +33,9 @@
         <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
           <div class="navbar-nav">
             <a class="nav-link active" aria-current="page" href="/">Home</a>
-              {% if 'username' not in session %}
+              {% if 'jwt_token' not in session %}
                 <a class="nav-link" href="/signup_endpoint">Sign-Up</a>
-              {% elif 'username' in session %}
+              {% elif 'jwt_token' in session %}
                 <a class="nav-link" href="/presentation_generator_endpoint">Presentation Generator</a>
                 <a class="nav-link" href="/historical_endpoint">Historical</a>
                 <a class="nav-link" href="/account_settings">Account</a>

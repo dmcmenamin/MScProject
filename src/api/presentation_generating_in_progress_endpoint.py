@@ -14,24 +14,33 @@ def presentation_generating_in_progress_post(data):
 
     if not data:
         return jsonify({"error": "No data was provided."}), 400
-    elif 'username' not in session:
-        return jsonify({"error": "User not logged in"}), 401
     else:
         response_string = data.get('response')
+
+        print("response_string: ", response_string)
 
         # convert string to dictionary
         # if response string is empty, set response dictionary to empty dictionary
         response_dictionary = ast.literal_eval(response_string) if response_string else {}
 
-        topic = response_dictionary.get('topic')
-        audience_size = response_dictionary.get('audience_size')
-        time = response_dictionary.get('time')
-        audience_outcome = response_dictionary.get('audience_outcome')
-        session['large_language_model'] = response_dictionary.get('large_language_model')
-        session['text_model_name'] = response_dictionary.get('model_name')
-        # TODO: clean up where image model name is set
-        if session['large_language_model'] == "ChatGPT":
-            session['image_model_name'] = "dall-e-3"
-        audience = response_dictionary.get('audience')
+        # The response dictionary contains a message and a data dictionary. The data dictionary contains the
+        # presentation topic, audience size, time, audience outcome, large language model, specific model name,
+        # and API key
+        data_dictionary = response_dictionary.get('data')
 
-        return controller.generate_presentation(topic, audience_size, time, audience_outcome, audience)
+        topic = data_dictionary.get('presentation_topic')
+        audience_size = data_dictionary.get('audience_size')
+        time = data_dictionary.get('presentation_length')
+        audience_outcome = data_dictionary.get('expected_outcome')
+        large_language_model = data_dictionary.get('llm')
+        model_name = data_dictionary.get('llm_model_name')
+        api_key = data_dictionary.get('api_key')
+        # TODO: clean up where image model name is set
+        # if session['large_language_model'] == "ChatGPT":
+        #     session['image_model_name'] = "dall-e-3"
+        audience = data_dictionary.get('audience')
+
+        print("topic: ", topic)
+
+        return controller.generate_presentation(topic, audience_size, time, audience_outcome, audience,
+                                                large_language_model, model_name, api_key)
