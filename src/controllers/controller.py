@@ -165,18 +165,3 @@ def generate_presentation(presenter_username, presenter_first_name, presenter_la
         return response, status_code
 
     return {"message": "Presentation generated successfully"}, 200
-
-    # # store the location of the presentation in the database
-    # params = (session['username'], presentation_topic, absolute_file_path + "/" + presentation_topic + ".pptx")
-    # database_connection = RelDBConnection()
-    # try:
-    #     database_connection.commit_query_with_parameter(queries.store_presentation_location_in_database(), params)
-    # except Exception as e:
-    #     return jsonify({"error": f"Database error: {str(e)}. Please try again later."}), 500
-    # finally:
-    #     database_connection.close_connection()
-    #
-    # if os.path.exists(absolute_file_path + "/" + presentation_topic + ".pptx"):
-    #     return jsonify({"message": "Presentation generated successfully"}), 200
-    # else:
-    #     return jsonify({"message": "Presentation not found"}), 500

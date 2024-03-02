@@ -42,8 +42,8 @@ class PresentationGeneratorPost(Resource):
                 return {'message': 'User not authorized to use the large language model'}, 401
             else:
                 # set the API Key in the session
-                data = {"llm": large_language_model, "llm_model_name": model_name, "presentation_topic": topic,
-                        "audience_size": audience_size, "presentation_length": time,
+                data = {"large_language_model": large_language_model, "specific_model_name": model_name,
+                        "presentation_topic": topic, "audience_size": audience_size, "presentation_length": time,
                         "expected_outcome": audience_outcome, "audience": who_is_the_audience,
                         "presentation_theme": presentation_theme, "api_key": api_key[0]}
 

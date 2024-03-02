@@ -1,3 +1,5 @@
+import datetime
+
 from app import db
 
 
@@ -17,18 +19,18 @@ class Historical(db.Model):
     def __repr__(self):
         return '<Historical %r>' % self.historical_presentation_name
 
-    def __init__(self, historical_user_id, historical_presentation_name, historical_time_stamp,
-                 historical_presentation_location):
+    def __init__(self, historical_user_id, historical_presentation_name, historical_presentation_location,
+                 historical_time_stamp=datetime.datetime.now()):
         """ The constructor for the Historical class
         :param historical_user_id: The historical_user_id
         :param historical_presentation_name: The historical_presentation_name
-        :param historical_time_stamp: The historical_time_stamp
         :param historical_presentation_location: The historical_presentation_location
+        :param historical_time_stamp: The historical_time_stamp
         """
         self.historical_user_id = historical_user_id
         self.historical_presentation_name = historical_presentation_name
-        self.historical_time_stamp = historical_time_stamp
         self.historical_presentation_location = historical_presentation_location
+        self.historical_time_stamp = historical_time_stamp
 
     def save_to_db(self):
         """ The save to db method
@@ -36,6 +38,55 @@ class Historical(db.Model):
         """
         db.session.add(self)
         db.session.commit()
+
+    def convert_time_stamp_to_string(self):
+        """ The convert time stamp to string method, since the time_stamp is a datetime object and isn't serializablable
+        :return: The time_stamp as a string
+        """
+        return self.historical_time_stamp.strftime("%Y-%m-%d %H:%M:%S")
+
+    @classmethod
+    def find_all_presentations_by_user_id(cls, historical_user_id):
+        """ The find all presentations by user_id method
+        :param historical_user_id: The historical_user_id
+        :return: The historical
+        """
+        print("historical_user_id: ", historical_user_id)
+        return cls.query.filter_by(historical_user_id=historical_user_id).all()
+
+    @classmethod
+    def delete_historical_by_presentation_id(cls, historical_id):
+        """ The delete historical by presentation_id method
+        :param historical_id: The historical_id
+        :return: None
+        """
+        cls.query.filter_by(historical_id=historical_id).delete()
+        db.session.commit()
+
+    @classmethod
+    def find_historical_location_by_historical_id(cls, historical_id):
+        """ The find historical location by historical_id method
+        :param historical_id: The historical_id
+        :return: The historical_presentation_location
+        """
+        historical = cls.query.filter_by(historical_id=historical_id).first()
+        return historical.historical_presentation_location
+
+    @classmethod
+    def find_all_historical_locations_by_user_id(cls, historical_user_id):
+        """ The find all historical locations by user_id method
+        :param historical_user_id: The historical_user_id
+        :return: The historical_presentation_locations
+        """
+        return cls.query.filter_by(historical_user_id=historical_user_id).all()
+
+    @classmethod
+    def find_first_presentation_name_by_user_id(cls, historical_user_id):
+        """ The find first presentation name by user_id method
+        :param historical_user_id: The historical_user_id
+        :return: The historical
+        """
+        return cls.query.filter_by(historical_user_id=historical_user_id).first()
 
     @classmethod
     def find_by_presentation_name(cls, historical_presentation_name):
@@ -210,19 +261,3 @@ class Historical(db.Model):
         cls.query.filter_by(historical_user_id=historical_user_id).delete()
         db.session.commit()
 
-    @classmethod
-    def delete_presentation_by_id(cls, historical_id):
-        """ The delete presentation by id method
-        :param historical_id: The historical_id
-        :return: None
-        """
-        cls.query.filter_by(historical_id=historical_id).delete()
-        db.session.commit()
-
-    @classmethod
-    def get_all_historical_presentation_locations_by_user_id(cls, historical_user_id):
-        """ The get all historical presentation locations by user_id method
-        :param historical_user_id: The historical_user_id
-        :return: The historical_presentation_locations
-        """
-        return cls.query.filter_by(historical_user_id=historical_user_id).all()

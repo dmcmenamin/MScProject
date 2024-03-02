@@ -158,13 +158,14 @@ def delete_file_of_type_specified(file_location, file_type=None):
             os.remove(file_location + "/" + file)
 
 
-def user_session(username, first_name, last_name, is_admin, access_token):
+def user_session(username, first_name, last_name, is_admin, access_token, user_id):
     """ Sets the user session
     :param username: The username
     :param first_name: The first name
     :param last_name: The last name
     :param is_admin: The admin status
     :param access_token: The access
+    :param user_id: The user ID
     :return: None
     """
     set_session_values('username', username)
@@ -172,3 +173,4 @@ def user_session(username, first_name, last_name, is_admin, access_token):
     set_session_values('last_name', last_name)
     set_session_values('is_admin', is_admin)
     set_session_values('jwt_token', access_token)
+    set_session_values('user_id', user_id)

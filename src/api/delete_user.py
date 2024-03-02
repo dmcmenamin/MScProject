@@ -1,3 +1,5 @@
+import os
+
 from flask import request
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask_restful import Resource
@@ -52,13 +54,20 @@ class DeleteUser(Resource):
                 ApiKey.delete_api_key_by_user_id(user_id_to_delete)
                 app.logger.info('API keys deleted successfully')
                 # delete the user's presentations
-                historical_presentation_locations = Historical.get_all_historical_presentation_locations_by_user_id(
-                    user_id_to_delete)
+
+                historical_presentation_locations = (
+                    Historical.find_all_historical_locations_by_user_id(user_id_to_delete))
                 app.logger.info('Historical presentation locations: %s', historical_presentation_locations)
                 # delete the files
+
                 for location in historical_presentation_locations:
-                    delete_file_of_type_specified(location)
-                app.logger.info('Presentations deleted successfully')
+                    # check if the file exists
+                    if os.path.exists(location):
+                        delete_file_of_type_specified(location)
+                        app.logger.info('Historical presentation deleted successfully')
+                    else:
+                        app.logger.info('Historical presentation not found')
+
                 # delete the presentations from the database
                 Historical.delete_all_presentations_by_user_id(user_id_to_delete)
                 app.logger.info('Presentations deleted from the database successfully')

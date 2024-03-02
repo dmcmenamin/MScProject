@@ -36,8 +36,8 @@
               {% if 'jwt_token' not in session %}
                 <a class="nav-link" href="/signup">Sign-Up</a>
               {% elif 'jwt_token' in session %}
-                <a class="nav-link" href="/presentation_generator_endpoint">Presentation Generator</a>
-                <a class="nav-link" href="/historical_endpoint">Historical</a>
+                <a class="nav-link" href="/presentation_creator">Presentation Generator</a>
+                <a class="nav-link" href="/historical">Historical</a>
                 <a class="nav-link" href="/account_settings">Account</a>
                 <a class="nav-link" href="/logout_endpoint">Logout</a>
               {% else %}

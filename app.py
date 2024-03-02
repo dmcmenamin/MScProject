@@ -1,21 +1,14 @@
+import json
 import os
 
 import requests
-from flask import Flask, render_template, redirect, url_for, request, session, jsonify
-from flask_jwt_extended import JWTManager, get_jwt_identity, jwt_required
+from flask import Flask, render_template, redirect, url_for, request, session
+from flask_jwt_extended import JWTManager
 from flask_mail import Mail
 from flask_restful import Api
 from flask_sqlalchemy import SQLAlchemy
 
-from src.api.historical_endpoint import historical_endpoint_get, historical_endpoint_get_specific_presentation, \
-    historical_endpoint_delete_specific_presentation
-from src.api.login_endpoint import login_api
-
-from src.api.presentation_generating_in_progress_endpoint import presentation_generating_in_progress_post
-from src.api.presentation_generator_endpoint import presentation_generator_get, presentation_generator_post
-
 from src.api.signup_confirmation_endpoint import confirm_signup_get
-from src.api.signup_endpoint import signup_get, signup_post
 
 from src.utils.common_scripts import user_session
 from src.utils.send_confirmation_email import send_confirmation_email
@@ -77,19 +70,22 @@ db = SQLAlchemy(app)
 # set the server and port for the app
 server_and_port = 'http://' + app.config['SERVER_NAME']
 
-from src.api.login_service import UserLogin
+from src.api.get_login import UserLogin
 from src.api.get_available_llms import GetAvailableLlms
 from src.api.add_user import AddUser
-from src.api.presentation_generator_get import PresentationGeneratorGet
-from src.api.presentation_generator_post import PresentationGeneratorPost
-from src.api.presentation_controller import PresentationController
-from src.api.update_password import UpdatePassword
+from src.api.get_presentation_generator import PresentationGeneratorGet
+from src.api.post_presentation_generator import PresentationGeneratorPost
+from src.api.post_presentation_controller import PresentationController
+from src.api.put_update_password import UpdatePassword
 from src.api.add_llm_and_model import AddLlmAndModel
 from src.api.add_model import AddModel
 from src.api.delete_llm_model import DeleteLlmModel
 from src.api.delete_llm_model_and_api_keys import DeleteLlmAndModelAndApiKeys
 from src.api.add_or_update_api_key import AddOrUpdateApiKey
 from src.api.delete_user import DeleteUser
+from src.api.get_historical import GetAllHistoricalForUser
+from src.api.add_historical import AddHistoricalPresentation
+from src.api.delete_historical import DeleteHistoricalPresentation
 
 
 @app.route('/')
@@ -117,7 +113,7 @@ def login():
             data = response.json()
             # set the session information
             user_session(data['username'], data['first_name'], data['last_name'], data['is_admin'],
-                         data['access_token'])
+                         data['access_token'], data['user_id'])
             return redirect(url_for('presentation_creator'))
         else:
             app.logger.info('Login failed for user: ' + request.form['username'] + ' with error: ' + response.text)
@@ -229,73 +225,58 @@ def presentation_creator():
         return render_template('index.html', json={'message': 'Invalid request method'})
 
 
-@app.route('/presentation_generating_in_progress_endpoint', methods=['POST'])
+@app.route('/presentation_generating_in_progress', methods=['POST'])
 @user_authenticated
 def presentation_generating_in_progress():
     """ The presentation generating in progress endpoint for the website
     :return: If successful, the presentation generating in progress page, otherwise, the presentation generator page
     with an error message
     """
-    if request.method == 'POST':
-        """ The presentation generating in progress endpoint for the website - for POST requests
-        Calls the generate_presentation function from the controller
-        :return: If successful, the presentation generating in progress page, otherwise, 
-        the presentation generator page with an error
-        """
-        app.logger.info('Presentation generating in progress endpoint called with POST request')
-        response, status_code = presentation_generating_in_progress_post(request.form)
-        if status_code == 200:
-            app.logger.info('Presentation generating in progress endpoint called successfully with POST request')
-            return render_template('presentation_success.html', response=response)
-        else:
-            app.logger.info('Presentation generating in progress endpoint failed with POST request with '
-                            'error: ' + response)
-            return render_template('index.html', response=response)
+    try:
+        if request.method == 'POST':
+            jwt_token = session['jwt_token']
+            app.logger.info('Presentation generating in progress called with POST request')
+            headers = {'Authorization': 'Bearer ' + jwt_token,
+                       'Content-Type': 'application/json'}
+            # get the form data, and convert it to a dictionary
+            data_string = request.form['response']
+            data = json.loads(data_string)['data']
+
+            # call the presentation generating in progress endpoint
+            response = requests.post(server_and_port + '/presentation_controller', json=data,
+                                     headers=headers)
+            if response.status_code == 200:
+                app.logger.info('Presentation generating in progress called successfully with POST request')
+                return render_template('presentation_success.html', response=response.text)
+            else:
+                app.logger.info('Presentation generating in progress failed with POST request with error: ' +
+                                response.text)
+                return render_template('index.html', response=response.text)
+    except Exception as e:
+        app.logger.error('An error occurred' + str(e))
+        return render_template('index.html',
+                               response={'message': 'An error occurred, please check database'})
 
 
-@app.route('/historical_endpoint', methods=['GET'])
-@confirmed_login_required
-def historical_endpoint():
+@app.route('/historical', methods=['GET'])
+@user_authenticated
+def historical():
     """ The historical endpoint for the website
-    :return: The historical page
+    :return: If successful, the historical page, otherwise, the index page with an error message
     """
-    response, status_code = historical_endpoint_get()
-
-    if status_code == 200:
-        return render_template('historical.html', response=response)
+    jwt_token = session['jwt_token']
+    app.logger.info('Historical endpoint called')
+    headers = {'Authorization': 'Bearer ' + jwt_token,
+               'Content-Type': 'application/json'}
+    response = requests.get(server_and_port + '/historical/' + str(session['user_id']), headers=headers)
+    if response.status_code == 200:
+        app.logger.info('Historical endpoint called successfully')
+        response_data = response.json()
+        print(response_data['historical_data'])
+        return render_template('historical.html', historical=response_data['historical_data'])
     else:
-        return render_template('index.html', response=response)
-
-
-@app.route('/historical_endpoint_get_specific_presentation/<presentation_id>', methods=['GET'])
-@confirmed_login_required
-def get_specific_historical_presentation_endpoint(presentation_id):
-    """ The get specific historical presentation endpoint for the website
-    :return: The historical page
-    """
-
-    # call the get specific historical presentation endpoint
-    response, status_code = historical_endpoint_get_specific_presentation(presentation_id)
-
-    if status_code == 200:
-        return render_template('presentation_success.html')
-    else:
-        return render_template('index.html', response=response)
-
-
-@app.route('/delete_presentation_endpoint/<presentation_id>', methods=['POST'])
-@confirmed_login_required
-def delete_presentation_endpoint(presentation_id):
-    """ The delete presentation endpoint for the website
-    :return: The historical page
-    """
-
-    response, status_code = historical_endpoint_delete_specific_presentation(presentation_id)
-
-    if status_code == 200:
-        return redirect(url_for('historical_endpoint'))
-    else:
-        return render_template('index.html', response=response)
+        app.logger.info('Historical endpoint failed with error: ' + response.text)
+        return render_template('index.html', response=response.text)
 
 
 @app.route('/account_settings', methods=['GET'])
@@ -326,6 +307,9 @@ api.add_resource(PresentationGeneratorPost, '/presentation_generator')
 api.add_resource(PresentationController, '/presentation_controller')
 # api.add_resource(PresentationGeneratingInProgress, '/presentation_generating_in_progress')
 # api.add_resource(Historical, '/historical')
+api.add_resource(GetAllHistoricalForUser, '/historical/<user_id>')
+api.add_resource(AddHistoricalPresentation, '/add_historical_presentation')
+api.add_resource(DeleteHistoricalPresentation, '/delete_historical_presentation/<historical_id>')
 # api.add_resource(GetSpecificHistoricalPresentation, '/historical/<presentation_id>')
 # api.add_resource(DeletePresentation, '/delete_presentation/<presentation_id>')
 # api.add_resource(AccountSettings, '/account_settings')

@@ -8,7 +8,6 @@
     <input type="hidden" id="response-data" value="{{ response }}">
 
     <script>
-
         // When the page is loaded
         $(document).ready(function() {
 
@@ -18,7 +17,7 @@
             // Send a POST request when the page is loaded
             $.ajax({
                 type: 'POST',
-                url: '/presentation_generating_in_progress_endpoint',
+                url: '/presentation_generating_in_progress',
                 data: {
                     'response': responseData
                 },
@@ -33,7 +32,6 @@
             });
         });
     </script>
-
 
     <div class="container-fluid content">
             <div class="row">
