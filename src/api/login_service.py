@@ -10,21 +10,26 @@ class UserLogin(Resource):
         """ The login page for the website
         :return: The login page
         """
-        data = request.get_json()
-        username = data.get('username')
-        password = data.get('password')
 
-        user = User.query.filter_by(username=username).first()
-        if user and user.check_password(password, user.user_salt, user.user_hashed_password):
-            access_token = create_access_token(identity=user.user_id, expires_delta=False)
-            return {
-                'username': user.username,
-                'user_id': user.user_id,
-                'first_name': user.user_first_name,
-                'last_name': user.user_last_name,
-                'is_admin': user.user_is_admin,
-                'account_confirmed': user.account_confirmed,
-                'access_token': access_token
-            }, 200
-        else:
-            return {'message': 'Invalid credentials'}, 401
+        try:
+            data = request.get_json()
+            username = data.get('username')
+            password = data.get('password')
+
+            user = User.query.filter_by(username=username).first()
+            if user and user.check_password(password, user.user_salt, user.user_hashed_password):
+                access_token = create_access_token(identity=user.user_id, expires_delta=False)
+                return {
+                    'username': user.username,
+                    'user_id': user.user_id,
+                    'first_name': user.user_first_name,
+                    'last_name': user.user_last_name,
+                    'is_admin': user.user_is_admin,
+                    'account_confirmed': user.account_confirmed,
+                    'access_token': access_token
+                }, 200
+            else:
+                return {'message': 'Invalid credentials'}, 401
+        except Exception as e:
+            print(e)
+            return {'message': 'An error occurred, please check database'}, 500

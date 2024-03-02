@@ -93,14 +93,14 @@ def get_themes_available():
     return env_variables["PRESENTATION_THEMES"]
 
 
-def create_unique_folder(filename):
+def create_unique_folder(filename, presenter_username):
     """ Creates a unique folder for the user to store their presentations
     :param filename: The name of the folder to be created
     :return: The full path of the folder and the absolute path of the folder
     """
     # create a unique filename for the user to store their presentations,
     # based on their username and the current date and time
-    unique_file_name = ("stored_presentations\\" + session['username'] + "_" +
+    unique_file_name = ("stored_presentations\\" + presenter_username + "_" +
                         filename + "_" + datetime.now().strftime("%Y%m%d-%H%M%S"))
 
     # create a unique folder for the user to store their presentations

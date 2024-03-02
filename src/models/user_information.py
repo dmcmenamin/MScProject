@@ -128,6 +128,15 @@ class User(db.Model):
         return cls.query.filter_by(user_id=user_id).first().user_is_admin
 
     @classmethod
+    def get_user_information(cls, user_id):
+        """ The get user information method
+        :param user_id: The user_id
+        :return: The user information
+        """
+        user = cls.query.filter_by(user_id=user_id).first()
+        return user.username, user.user_first_name, user.user_last_name, user.user_is_admin
+
+    @classmethod
     def create_salt(cls):
         """ Creates a salt for the password by generating a random url safe string
         :return: The salt

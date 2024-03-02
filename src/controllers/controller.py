@@ -2,7 +2,7 @@ import json
 import requests
 import os
 
-from flask import session, jsonify
+from flask import session, jsonify, send_file
 
 from src.utils.common_scripts import clean_up_string, create_unique_folder, download_presentation, \
     delete_file_of_type_specified
@@ -13,7 +13,7 @@ from src.powerpoint.presentation import PowerPointPresentation
 from io import BytesIO
 
 
-def get_ai_image_suggestion(string, folder_name, large_language_model, image_model_name, api_key):
+def get_ai_image_suggestion(string, folder_name, large_language_model, image_model_name="dall-e-3", api_key=""):
     """ Gets the image suggestion from the large language model and replaces it with the image url
     it takes in the string, and searches for the keyword IMAGE_SUGGESTION, if it finds this, it will take the
     following line and use it to search for an image, it will then return the image url
@@ -84,16 +84,20 @@ def get_ai_image_suggestion(string, folder_name, large_language_model, image_mod
                 new_line = f"IMAGE: {folder_name}/{local_path}"
                 new_string += new_line + "\n"  # add new line to string
             else:
-                new_string += line + "\n" # add existing line to string
+                new_string += line + "\n"  # add existing line to string
     except StopIteration:
         # if we have reached the end of the string, return the new string
         pass
     return new_string, 200
 
 
-def generate_presentation(presentation_topic, audience_size, presentation_length, expected_outcome,
-                          who_is_the_audience, large_language_model, specific_model_name, api_key):
+def generate_presentation(presenter_username, presenter_first_name, presenter_last_name, presentation_topic,
+                          audience_size, presentation_length, expected_outcome, who_is_the_audience,
+                          large_language_model, specific_model_name, api_key, presentation_theme):
     """ Generates a presentation based on the user's input
+    :param presenter_username: The username of the presenter
+    :param presenter_first_name: The first name of the presenter
+    :param presenter_last_name: The last name of the presenter
     :param presentation_topic: A short description of the presentation topic, this will be used as the filename
     :param audience_size: The number of people the presentation will be given to
     :param presentation_length: The length of the presentation in minutes
@@ -103,23 +107,26 @@ def generate_presentation(presentation_topic, audience_size, presentation_length
     :param large_language_model: The large language model to be used
     :param specific_model_name: The specific model name to be used
     :param api_key: The API key to be used
+    :param presentation_theme: The theme of the presentation
     :return: None
     """
 
     # get user first and last name and api key from session
-    presenter_name = session['first_name'] + " " + session['last_name']
+    presenter_name = presenter_first_name + " " + presenter_last_name
 
     # create a unique folder for the user to store their presentations
-    file_location, absolute_file_path = create_unique_folder(presentation_topic)
+    file_location, absolute_file_path = create_unique_folder(presentation_topic, presenter_username)
 
     # generate the prompt
     orchestration_service = Orchestrator(large_language_model, api_key, specific_model_name)
+
     populated_prompt = orchestration_service.call_large_language_model().set_question_prompt(presenter_name,
                                                                                              presentation_topic,
                                                                                              audience_size,
                                                                                              presentation_length,
                                                                                              expected_outcome,
                                                                                              who_is_the_audience)
+
     # get the presentation slides
     presentation_response, status_code = (orchestration_service.
                                           call_large_language_model().get_presentation_slides(populated_prompt))
@@ -135,15 +142,16 @@ def generate_presentation(presentation_topic, audience_size, presentation_length
 
     # extract the image suggestions from the presentation string, and replace them with the image url
     presentation_string_with_images, status_code = get_ai_image_suggestion(presentation_string, file_location,
-                                                                           large_language_model, specific_model_name,
-                                                                           api_key)
+                                                                           large_language_model,
+                                                                           api_key=api_key)
 
     # if there is an error, don't proceed, and instead return the status code and the error message
     if status_code != 200:
         return presentation_string_with_images, status_code
 
+    print("presentation_string_with_images: ", presentation_string_with_images)
     # create the PowerPoint presentation from the presentation string by calling the PowerPoint Class
-    powerpoint_presentation = PowerPointPresentation(presentation_string_with_images)
+    powerpoint_presentation = PowerPointPresentation(presentation_string_with_images, presentation_theme)
 
     # save the PowerPoint presentation
     powerpoint_presentation.save(file_location + "/" + presentation_topic + ".pptx")
@@ -156,20 +164,19 @@ def generate_presentation(presentation_topic, audience_size, presentation_length
     if status_code != 200:
         return response, status_code
 
-    # store the location of the presentation in the database
-    params = (session['username'], presentation_topic, absolute_file_path + "/" + presentation_topic + ".pptx")
-    database_connection = RelDBConnection()
-    try:
-        database_connection.commit_query_with_parameter(queries.store_presentation_location_in_database(), params)
-    except Exception as e:
-        return jsonify({"error": f"Database error: {str(e)}. Please try again later."}), 500
-    finally:
-        database_connection.close_connection()
+    return {"message": "Presentation generated successfully"}, 200
 
-    if os.path.exists(absolute_file_path + "/" + presentation_topic + ".pptx"):
-        return jsonify({"message": "Presentation generated successfully"}), 200
-    else:
-        return jsonify({"message": "Presentation not found"}), 500
-
-
-
+    # # store the location of the presentation in the database
+    # params = (session['username'], presentation_topic, absolute_file_path + "/" + presentation_topic + ".pptx")
+    # database_connection = RelDBConnection()
+    # try:
+    #     database_connection.commit_query_with_parameter(queries.store_presentation_location_in_database(), params)
+    # except Exception as e:
+    #     return jsonify({"error": f"Database error: {str(e)}. Please try again later."}), 500
+    # finally:
+    #     database_connection.close_connection()
+    #
+    # if os.path.exists(absolute_file_path + "/" + presentation_topic + ".pptx"):
+    #     return jsonify({"message": "Presentation generated successfully"}), 200
+    # else:
+    #     return jsonify({"message": "Presentation not found"}), 500
