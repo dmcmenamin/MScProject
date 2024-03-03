@@ -395,6 +395,34 @@ def change_user_password(user_id_for_password_update):
         else:
             app.logger.info('Change user password endpoint failed with error: ' + response.text)
             return render_template('account_settings.html', error_or_warning=data)
+    else:
+        app.logger.info('Invalid request method')
+        return render_template('index.html', json={'message': 'Invalid request method'})
+
+
+@app.route('/delete_user_endpoint/<user_id_to_delete>', methods=['POST'])
+@user_authenticated
+def delete_user_endpoint(user_id_to_delete):
+    """ The delete user endpoint for the website
+    :return: If successful, the index page, otherwise, the account settings page with an error message
+    """
+    if request.method == 'POST' and request.form.get('_method') == 'DELETE':
+        jwt_token = session['jwt_token']
+        app.logger.info('Delete user endpoint called')
+        headers = {'Authorization': 'Bearer ' + jwt_token,
+                   'Content-Type': 'application/json'}
+        response = requests.delete(server_and_port + '/delete_user/' + user_id_to_delete, headers=headers)
+        data = {key: value for key, value in response.json().items() if key == 'message'}
+        if response.status_code == 200:
+            session.clear()
+            app.logger.info('Delete user endpoint called successfully')
+            return render_template('index.html', error_or_warning=data)
+        else:
+            app.logger.info('Delete user endpoint failed with error: ' + response.text)
+            return render_template('account_settings.html', error_or_warning=data)
+    else:
+        app.logger.info('Invalid request method')
+        return render_template('index.html', json={'message': 'Invalid request method'})
 
 
 @app.route('/logout_endpoint')

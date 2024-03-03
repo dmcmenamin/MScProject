@@ -33,7 +33,9 @@ class DeleteUser(Resource):
 
         try:
             # check if the user is an admin, if not, they can only delete their own account
-            if logged_in_user_id != user_id_to_delete:
+            app.logger.info('Checking if user is an admin')
+
+            if str(logged_in_user_id) != user_id_to_delete:
                 app.logger.info('User is not an admin and is trying to delete another user')
                 check_admin = User.get_user_is_admin_by_id(logged_in_user_id)
                 if not check_admin:

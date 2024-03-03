@@ -208,7 +208,8 @@
         </div>
 
         <div class="Delete-Account-Container">
-            <form action="/delete_account/<id>" method="post">
+            <form action="/delete_user_endpoint/{{ session['user_id'] }}" method="post">
+                <input type="hidden" name="_method" value="DELETE">
                 <p class="font-header-custom-2">Are you sure you want to delete your account?</p>
                 <p class="font-header-custom-2">This action cannot be undone</p>
                 <button class="btn btn-danger">Confirm DELETE ACCOUNT</button>
