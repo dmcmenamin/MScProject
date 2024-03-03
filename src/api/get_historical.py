@@ -26,7 +26,7 @@ class GetAllHistoricalForUser(Resource):
                     return {'message': 'No historical data found'}, 404
                 else:
                     app.logger.info('Historical data found')
-                    return {'historical_data': [{'presentation_id': historical.historical_id,
+                    return {'historical_data': [{'historical_id': historical.historical_id,
                                                  'presentation_name': historical.historical_presentation_name,
                                                  'presentation_location': historical.historical_presentation_location,
                                                  'presentation_time_stamp': historical.convert_time_stamp_to_string(),

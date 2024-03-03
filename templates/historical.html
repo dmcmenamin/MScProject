@@ -8,7 +8,7 @@
     <!-- Check if there are any historical presentations to display -->
     {% if historical %}
     <!-- Main Content -->
-    <div class="container-fluid content col-md-6 offset-md-3">">
+    <div class="container-fluid content col-md-6 offset-md-3">
         <div class="row font-header-custom">
             <h1 class="text-center font-header-custom">Welcome to DynaPoint Historical Details</h1>
             <p class="text-center font-header-custom-2">
@@ -17,6 +17,19 @@
                 would like</p>
             <hr class="mb-3">
         </div>
+
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    {% if error_or_warning %}
+                    <div class="font-header-error" role="alert">
+                        <h1 class="text-center"> {{ error_or_warning['message'] }}</h1>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
 
         <table class="table table-dark table-striped table-hover historical-table">
             <tr>
@@ -35,24 +48,23 @@
                 {% for historical_data in historical %}
                     <tr>
                         <td>
-                            <h2 class="text-center">{{ historical_data['presentation_name'] }}</h2>
+                            <p class="text-center">{{ historical_data['presentation_name'] }}</p>
                         </td>
                         <td>
-                            <h2 class="text-center">{{ historical_data['presentation_time_stamp'] }}</h2>
+                            <p class="text-center">{{ historical_data['presentation_time_stamp'] }}</p>
                         </td>
                         <td>
                             <h2 class="text-center">
-                                <a href="/historical_endpoint_get_specific_presentation/{{ historical_data[0] }}">
+                                <a href="/historical_endpoint_get_specific_presentation/{{ historical_data['historical_id'] }}">
                                     <button class="btn btn-primary">Download</button>
                                 </a>
                             </h2>
                         </td>
                         <td>
                             <h2 class="text-center">
-                                <form action="{{ url_for('delete_presentation_endpoint',
-                                presentation_id=historical_data[0]) }}" method="post">
-                                    <button type="submit" class="btn btn-danger">Delete</button>
-                                </form>
+                                <a href="/historical_endpoint_delete_presentation/{{ historical_data['historical_id'] }}">
+                                    <button class="btn btn-danger">Delete</button>
+                                </a>
                             </h2>
                         </td>
                     </tr>

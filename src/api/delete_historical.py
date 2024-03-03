@@ -35,7 +35,7 @@ class DeleteHistoricalPresentation(Resource):
                         app.logger.info('Historical presentation not found')
 
                     # delete the historical presentation from the database
-                    Historical.delete_historical_by_presentation_id(historical_id)
+                    Historical.delete_historical_by_historical_id(historical_id)
                     app.logger.info('Historical presentation deleted successfully')
                     return {'message': 'Historical presentation deleted successfully'}, 200
                 else:

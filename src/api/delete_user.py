@@ -47,14 +47,11 @@ class DeleteUser(Resource):
             app.logger.info('User input: user_id_to_delete: %s', user_id_to_delete)
             user = User.query.filter_by(user_id=user_id_to_delete).first()
             if user:
-                # delete the user
-                User.delete_user(user)
-                app.logger.info('User deleted successfully')
                 # delete the user's API keys
                 ApiKey.delete_api_key_by_user_id(user_id_to_delete)
                 app.logger.info('API keys deleted successfully')
-                # delete the user's presentations
 
+                # delete the user's presentations
                 historical_presentation_locations = (
                     Historical.find_all_historical_locations_by_user_id(user_id_to_delete))
                 app.logger.info('Historical presentation locations: %s', historical_presentation_locations)
@@ -71,6 +68,11 @@ class DeleteUser(Resource):
                 # delete the presentations from the database
                 Historical.delete_all_presentations_by_user_id(user_id_to_delete)
                 app.logger.info('Presentations deleted from the database successfully')
+
+                # delete the user
+                User.delete_user(user)
+                app.logger.info('User deleted successfully')
+
                 return {'message': 'User deleted successfully'}, 200
             else:
                 app.logger.info('User does not exist')

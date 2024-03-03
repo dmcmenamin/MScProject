@@ -51,12 +51,11 @@ class Historical(db.Model):
         :param historical_user_id: The historical_user_id
         :return: The historical
         """
-        print("historical_user_id: ", historical_user_id)
         return cls.query.filter_by(historical_user_id=historical_user_id).all()
 
     @classmethod
-    def delete_historical_by_presentation_id(cls, historical_id):
-        """ The delete historical by presentation_id method
+    def delete_historical_by_historical_id(cls, historical_id):
+        """ The delete historical by historical_id method
         :param historical_id: The historical_id
         :return: None
         """
@@ -79,6 +78,14 @@ class Historical(db.Model):
         :return: The historical_presentation_locations
         """
         return cls.query.filter_by(historical_user_id=historical_user_id).all()
+
+    @classmethod
+    def find_historical_by_historical_id(cls, historical_id):
+        """ The find historical by historical_id method
+        :param historical_id: The historical_id
+        :return: The historical
+        """
+        return cls.query.filter_by(historical_id=historical_id).first()
 
     @classmethod
     def find_first_presentation_name_by_user_id(cls, historical_user_id):

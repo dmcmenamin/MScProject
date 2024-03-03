@@ -5,11 +5,6 @@
 
 {% block content %}
 
-    {% if response %}
-        <div class="font-header-error" role="alert">
-            <h1 class="text-center"> {{ response['message'] }}</h1>
-        </div>
-    {% endif %}
     <!-- Sign Up Form -->
     <form action="/signup" method="post">
         <div class="container">
@@ -20,65 +15,72 @@
                         An API is required, and is available from the below provider(s)</p>
                     <hr class="mb-3">
 
-                    <table>
-                        <tr>
-                            <td colspan="4">
-                                <!-- Input Text Box for Username -->
-                                <label for="username" class="font-header-custom-2">Username</label>
-                                <input class="form-control" id="username" type="text" name="username" required>
-                                <!-- Validation message to check if username is already taken -->
-                                {% if username_taken_error %}
-                                <div class="font-header-error-2">
-                                    <h1 class="text-center"> {{ username_taken_error }}</h1>
-                                </div>
-                                {% endif %}
-                            </td>
-                        </tr>
-                        <tr>
-                            <td colspan="2">
-                                <div class="col-md-16 mb-3">
-                                    <label for="firstName" class="font-header-custom-2">First Name</label>
-                                    <input class="form-control" id="firstName" type="text" name="first_name" required>
-                                </div>
-                            </td>
-                            <td colspan="2">
-                                <div class="col-md-16 mb-3">
-                                    <label for="lastName" class="font-header-custom-2">Last Name</label>
-                                    <input class="form-control" id="lastName" type="text" name="last_name" required>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td colspan="4">
-                                <label for="password" class="font-header-custom-2">Password</label>
-                                <input class="form-control" id="password" type="password" name="password" required>
-                            </td>
-                        </tr>
-                        {% for llm_value in llm_names %}
-                            {% set llm_name = llm_value.llm_name %}
-                            {% set llm_link = llm_value.llm_link %}
+                    {% if error_or_warning %}
+                        <div class="font-header-error" role="alert">
+                            <h1 class="text-center"> {{ error_or_warning['message'] }}</h1>
+                        </div>
+                    {% else %}
+                        <!-- Table for Sign Up Form -->
+                        <table>
                             <tr>
-                                <td>
-                                    <label for="LLM-Name" class="font-header-custom-2">Model Name</label>
-                                    <input class="form-control" id="LLM-Name" type="text" name="llm_name_{{ llm_name }}"
-                                           value="{{llm_name}}" readonly>
-                                </td>
-                                <td colspan="2">
-                                    <label for="API-Key" class="font-header-custom-2">API Key</label>
-                                    <input class="form-control" id="API-Key" type="text" name="api_key_{{ llm_name }}">
-                                </td>
-                                <td colspan="2">
-                                    <a href="{{ llm_link }}" target="_blank" class="font-header-custom-2">API Provider</a>
+                                <td colspan="4">
+                                    <!-- Input Text Box for Username -->
+                                    <label for="username" class="font-header-custom-2">Username</label>
+                                    <input class="form-control" id="username" type="text" name="username" required>
+                                    <!-- Validation message to check if username is already taken -->
+                                    {% if username_taken_error %}
+                                    <div class="font-header-error-2">
+                                        <h1 class="text-center"> {{ username_taken_error }}</h1>
+                                    </div>
+                                    {% endif %}
                                 </td>
                             </tr>
-                        {% endfor %}
-                    </table>
+                            <tr>
+                                <td colspan="2">
+                                    <div class="col-md-16 mb-3">
+                                        <label for="firstName" class="font-header-custom-2">First Name</label>
+                                        <input class="form-control" id="firstName" type="text" name="first_name" required>
+                                    </div>
+                                </td>
+                                <td colspan="2">
+                                    <div class="col-md-16 mb-3">
+                                        <label for="lastName" class="font-header-custom-2">Last Name</label>
+                                        <input class="form-control" id="lastName" type="text" name="last_name" required>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="4">
+                                    <label for="password" class="font-header-custom-2">Password</label>
+                                    <input class="form-control" id="password" type="password" name="password" required>
+                                </td>
+                            </tr>
+                            {% for llm_value in llm_names %}
+                                {% set llm_name = llm_value.llm_name %}
+                                {% set llm_link = llm_value.llm_link %}
+                                <tr>
+                                    <td>
+                                        <label for="LLM-Name" class="font-header-custom-2">Model Name</label>
+                                        <input class="form-control" id="LLM-Name" type="text" name="llm_name_{{ llm_name }}"
+                                               value="{{llm_name}}" readonly>
+                                    </td>
+                                    <td colspan="2">
+                                        <label for="API-Key" class="font-header-custom-2">API Key</label>
+                                        <input class="form-control" id="API-Key" type="text" name="api_key_{{ llm_name }}">
+                                    </td>
+                                    <td colspan="2">
+                                        <a href="{{ llm_link }}" target="_blank" class="font-header-custom-2">API Provider</a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </table>
 
-                    <hr class="mb-3">
-                    <!-- Clear Text Box Button -->
-                    <input class="btn btn-primary" type="reset" id="clear" name="clear" value="Reset">
-                    <!-- Submit Button -->
-                    <input class="btn btn-primary" type="submit" id="register" name="create" value="Sign Up">
+                        <hr class="mb-3">
+                        <!-- Clear Text Box Button -->
+                        <input class="btn btn-primary" type="reset" id="clear" name="clear" value="Reset">
+                        <!-- Submit Button -->
+                        <input class="btn btn-primary" type="submit" id="register" name="create" value="Sign Up">
+                    {% endif %}
                 </div>
         </div>
     </form>

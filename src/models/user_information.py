@@ -137,6 +137,24 @@ class User(db.Model):
         return user.username, user.user_first_name, user.user_last_name, user.user_is_admin
 
     @classmethod
+    def get_if_user_is_confirmed_by_username(cls, username):
+        """ The get if user is confirmed by username method
+        :param username: The username
+        :return: The account confirmed
+        """
+        return cls.query.filter_by(username=username).first().account_confirmed
+
+    @classmethod
+    def confirm_user(cls, username):
+        """ The confirm user method - updates the account_confirmed field to True
+        :param username: The username
+        :return: None
+        """
+        cls.query.filter_by(username=username).update(dict(account_confirmed=True))
+        db.session.commit()
+
+
+    @classmethod
     def create_salt(cls):
         """ Creates a salt for the password by generating a random url safe string
         :return: The salt

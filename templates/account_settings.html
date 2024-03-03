@@ -85,15 +85,49 @@
             });
 
         });
+
+        function validatePasswords() {
+          // Store the password field, confirm password field
+          const password = document.getElementById("new_password").value;
+          const confirmPassword = document.getElementById("confirm_password").value;
+
+          // Compare the values in the password field and then confirm password field
+          if (password !== confirmPassword) {
+            // If they don't match, display an error message
+            alert("Passwords do not match!");
+            // Stop the form from submitting
+            return false;
+          }
+
+          // If passwords match, allow the form to submit
+          return true;
+        }
+
+        // Add an event listener to the form's submit event
+        const form = document.getElementById("password_changer");
+        form.addEventListener("submit", validatePasswords);
+
     </script>
 
     <!-- Main Content -->
-    <div class="container-fluid content col-md-6 offset-md-3">">
+    <div class="container-fluid content col-md-6 offset-md-3">
         <div class="row font-header-custom">
             <h1 class="text-center font-header-custom">DynaPoint Account Settings</h1>
             <p class="text-center font-header-custom-2">
                 Please select your options below</p>
             <hr class="mb-3">
+        </div>
+
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    {% if error_or_warning %}
+                    <div class="font-header-error" role="alert">
+                        <h1 class="text-center"> {{ error_or_warning['message'] }}</h1>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
         </div>
 
         <table>
@@ -118,16 +152,9 @@
         <hr class="mb-3">
 
         <div class="PasswordChange-Container">
-            <form action="/password_change" method="post">
+            <form id="password_changer" action="/change_password/{{ session['user_id'] }}" method="post">
+            <input type="hidden" name="_method" value="PUT">
             <table>
-                <tr>
-                    <td>
-                        <div class="form-group">
-                            <label for="old_password" class="font-header-custom-2">Old Password</label>
-                            <input type="password" class="form-control" id="old_password" name="old_password" required>
-                        </div>
-                    </td>
-                </tr>
                 <tr>
                     <td>
                         <div class="form-group  ">

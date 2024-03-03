@@ -8,11 +8,7 @@ from flask_mail import Mail
 from flask_restful import Api
 from flask_sqlalchemy import SQLAlchemy
 
-from src.api.signup_confirmation_endpoint import confirm_signup_get
-
 from src.utils.common_scripts import user_session
-from src.utils.send_confirmation_email import send_confirmation_email
-from src.utils.sign_up_token import generate_sign_up_token, verify_sign_up_token
 from src.utils.decorators import confirmed_login_required, user_authenticated
 
 
@@ -73,6 +69,7 @@ server_and_port = 'http://' + app.config['SERVER_NAME']
 from src.api.get_login import UserLogin
 from src.api.get_available_llms import GetAvailableLlms
 from src.api.add_user import AddUser
+from src.api.get_signup_confirmation import GetSignupConfirmation
 from src.api.get_presentation_generator import PresentationGeneratorGet
 from src.api.post_presentation_generator import PresentationGeneratorPost
 from src.api.post_presentation_controller import PresentationController
@@ -85,6 +82,7 @@ from src.api.add_or_update_api_key import AddOrUpdateApiKey
 from src.api.delete_user import DeleteUser
 from src.api.get_historical import GetAllHistoricalForUser
 from src.api.add_historical import AddHistoricalPresentation
+from src.api.get_specific_historical_presentation import GetSpecificHistoricalPresentation
 from src.api.delete_historical import DeleteHistoricalPresentation
 
 
@@ -117,7 +115,8 @@ def login():
             return redirect(url_for('presentation_creator'))
         else:
             app.logger.info('Login failed for user: ' + request.form['username'] + ' with error: ' + response.text)
-            return render_template('index.html', response=response)
+            data = {'message': 'Login failed: ' + value for key, value in response.json().items() if key == 'message'}
+            return render_template('index.html', error_or_warning=data)
 
 
 @app.route('/signup', methods=['GET', 'POST'])
@@ -125,23 +124,33 @@ def signup():
     if request.method == 'GET':
         app.logger.info('Signup endpoint called')
         response = requests.get(server_and_port + '/available_llms')
+
+        # Successful response, render the signup page with the available LLMs
         if response.status_code == 200:
             app.logger.info('Available LLMs retrieved successfully')
             data_list = {key: value for key, value in response.json().items() if key == 'data'}
             return render_template('signup.html', llm_names=data_list['data'])
         else:
+            # Unsuccessful response, render the signup page with an error message
             app.logger.info('Available LLMs could not be retrieved with error: ' + response.text)
-            data = {key: value for key, value in response.json()}
-            return render_template('signup.html', response=data)
-    elif request.method == 'POST':
+            data = {key: value for key, value in response.json().items() if key == 'message'}
+            return render_template('signup.html', error_or_warning=data)
 
+    elif request.method == 'POST':
         app.logger.info('Signup endpoint called')
 
         # get the llm names and api keys, and convert them to a list of dictionaries; each dictionary contains the llm
         # name and the api key, and the list is then added to the data dictionary
-        llm = [{'llm_name': request.form['llm_name'], 'api_key': request.form['api_key']} for key, value in
-               request.form.items() if key == 'llm_name' or key == 'api_key']
+        llm = []
+        llm_data = {}
+        for key, value in request.form.items():
+            if key.startswith('api_key_') and value != '':
+                llm_data['llm_model_name'] = key.replace('api_key_', '')
+                llm_data[key] = value
+                llm.append(llm_data)
+                llm_data = {}
 
+        print(llm)
         # create the data dictionary, and add the username, password, first name, last name, and llm to it
         data = {'username': request.form['username'],
                 'password': request.form['password'],
@@ -152,18 +161,17 @@ def signup():
         headers = {'Content-Type': 'application/json'}
         response = requests.post(server_and_port + '/add_user', json=data, headers=headers)
         if response.status_code == 200:
+            # Successful response, render the index page with a success message
             app.logger.info('User created successfully' + request.form['username'])
-            token = generate_sign_up_token(request.form['username'])
-            confirmation_url = url_for('confirm_signup', token=token, _external=True)
-            html = render_template('email.html', confirmation_url=confirmation_url)
-            subject = "Please confirm your email"
-            send_confirmation_email(request.form['username'], subject, html)
+
             response = {'message': 'User created successfully, please check your email to confirm your account'}
-            return render_template('index.html', response=response)
+            return render_template('index.html', error_or_warning=response)
         else:
+            # Unsuccessful response, render the signup page with an error message
             app.logger.info('User could not be created with error: ' + response.text)
-            response = {'message': 'User could not be created: ' + value for key, value in response.json().items()}
-            return render_template('signup.html', response=response)
+            response = {'message': 'User could not be created: ' + value
+                        for key, value in response.json().items() if key == 'message'}
+            return render_template('signup.html', error_or_warning=response)
 
 
 @app.route('/confirm_signup/<token>', methods=['GET'])
@@ -174,12 +182,13 @@ def confirm_signup(token):
     app.logger.info('Confirm signup endpoint called')
     if request.method == 'GET':
         app.logger.info('Confirm signup endpoint called')
-        response, status_code = confirm_signup_get(token)
+        response, status_code = GetSignupConfirmation.get(token)
         if status_code == 200:
-            return redirect(url_for('index'))
+            app.logger.info('Confirm signup successful')
+            return render_template('index.html', error_or_warning=response)
         else:
-            app.logger.info('Confirm signup failed with error: ' + response)
-            return render_template('index.html', response=response)
+            app.logger.info('Confirm signup failed with error: ' + response['message'])
+            return render_template('index.html', error_or_warning=response)
 
 
 @app.route('/presentation_creator', methods=['GET', 'POST'])
@@ -268,19 +277,87 @@ def historical():
     app.logger.info('Historical endpoint called')
     headers = {'Authorization': 'Bearer ' + jwt_token,
                'Content-Type': 'application/json'}
-    response = requests.get(server_and_port + '/historical/' + str(session['user_id']), headers=headers)
+    response = requests.get(server_and_port + '/available_historical/' + str(session['user_id']), headers=headers)
     if response.status_code == 200:
         app.logger.info('Historical endpoint called successfully')
         response_data = response.json()
-        print(response_data['historical_data'])
         return render_template('historical.html', historical=response_data['historical_data'])
     else:
         app.logger.info('Historical endpoint failed with error: ' + response.text)
-        return render_template('index.html', response=response.text)
+        return render_template('index.html', error_or_warning=response.text)
+
+
+@app.route('/historical_endpoint_get_specific_presentation/<historical_id>', methods=['GET'])
+@user_authenticated
+def historical_endpoint_get_specific_presentation(historical_id):
+    """ The historical endpoint get specific presentation for the website
+    :return: If successful, download the presentation, otherwise, display the historical page with an error message
+    """
+    jwt_token = session['jwt_token']
+    app.logger.info('Historical endpoint get specific presentation called')
+    headers = {'Authorization': 'Bearer ' + jwt_token,
+               'Content-Type': 'application/json'}
+    response = requests.get(server_and_port + '/retrieve_historical/' + historical_id, headers=headers)
+    if response.status_code == 200:
+        data = {key: value for key, value in response.json().items() if key == 'message'}
+        app.logger.info('Historical endpoint get specific presentation called successfully')
+
+        # refresh the historical page with the success message, and the historical data
+        get_response = requests.get(server_and_port + '/available_historical/' + str(session['user_id']),
+                                    headers=headers)
+        response_data = get_response.json()
+        return render_template('historical.html', error_or_warning=data,
+                               historical=response_data['historical_data'])
+    else:
+        data = {key: value for key, value in response.json().items() if key == 'message'}
+        get_response = requests.get(server_and_port + '/available_historical/' + str(session['user_id']),
+                                    headers=headers)
+
+        # get the historical data for the user, and render the historical page with the error message
+        response_data = get_response.json()
+        app.logger.info('Historical endpoint get specific presentation failed with error: ' + response.text)
+        return render_template('historical.html', error_or_warning=data,
+                               historical=response_data['historical_data'])
+
+
+@app.route('/historical_endpoint_delete_presentation/<historical_id>', methods=['GET'])
+@user_authenticated
+def historical_endpoint_delete_presentation(historical_id):
+    """ The historical endpoint delete presentation for the website
+    :return: If successful, the historical page, otherwise, the index page with an error message
+    """
+    jwt_token = session['jwt_token']
+    app.logger.info('Historical endpoint delete presentation called')
+    headers = {'Authorization': 'Bearer ' + jwt_token,
+               'Content-Type': 'application/json'}
+    response = requests.delete(server_and_port + '/delete_historical_presentation/' + historical_id, headers=headers)
+    print(response.status_code)
+    print(response.text)
+    if response.status_code == 200:
+        data = {key: value for key, value in response.json().items() if key == 'message'}
+        app.logger.info('Historical endpoint delete presentation called successfully')
+        print("data: ", data)
+        # refresh the historical page with the success message, and the historical data
+        get_response = requests.get(server_and_port + '/available_historical/' + str(session['user_id']),
+                                    headers=headers)
+        response_data = get_response.json()
+        return render_template('historical.html', error_or_warning=data,
+                               historical=response_data['historical_data'])
+    else:
+        app.logger.info('Historical endpoint delete presentation failed with error: ' + response.text)
+        data = {key: value for key, value in response.json().items() if key == 'message'}
+
+        # refresh the historical page with the error message, and the historical data
+        get_response = requests.get(server_and_port + '/available_historical/' + str(session['user_id']),
+                                    headers=headers)
+        response_data = get_response.json()
+
+        return render_template('index.html', error_or_warning=data,
+                               historical=response_data['historical_data'])
 
 
 @app.route('/account_settings', methods=['GET'])
-@confirmed_login_required
+@user_authenticated
 def account_settings():
     """ The account settings endpoint for the website
     :return: The account settings page
@@ -288,13 +365,44 @@ def account_settings():
     return render_template('account_settings.html', session=session)
 
 
+@app.route('/change_password/<user_id_for_password_update>', methods=['POST'])
+@user_authenticated
+def change_user_password(user_id_for_password_update):
+    """ The change user password endpoint for the website
+    :return: If successful, the account settings page, otherwise, the index page with an error message
+    """
+    if request.method == 'POST' and request.form.get('_method') == 'PUT':
+
+        if request.form['new_password'] != request.form['confirm_password']:
+            app.logger.info('Change user password endpoint called with error: '
+                            'New password and confirm password do not match')
+            return render_template('account_settings.html',
+                                   error_or_warning={'message': 'New password and confirm password do not match'})
+
+        jwt_token = session['jwt_token']
+        app.logger.info('Change user password endpoint called')
+
+        headers = {'Authorization': 'Bearer ' + jwt_token,
+                   'Content-Type': 'application/json'}
+        data = {'password': request.form['confirm_password']}
+        response = requests.put(server_and_port + '/update_password/' + user_id_for_password_update,
+                                json=data, headers=headers)
+
+        data = {key: value for key, value in response.json().items() if key == 'message'}
+        if response.status_code == 200:
+            app.logger.info('Change user password endpoint called successfully')
+            return render_template('account_settings.html', error_or_warning=data)
+        else:
+            app.logger.info('Change user password endpoint failed with error: ' + response.text)
+            return render_template('account_settings.html', error_or_warning=data)
+
+
 @app.route('/logout_endpoint')
-@confirmed_login_required
+@user_authenticated
 def logout():
     """ The logout endpoint for the website, clears the session information
     :return: The index page
     """
-
     session.clear()
     return redirect(url_for('index'))
 
@@ -306,12 +414,10 @@ api.add_resource(PresentationGeneratorGet, '/presentation_generator')
 api.add_resource(PresentationGeneratorPost, '/presentation_generator')
 api.add_resource(PresentationController, '/presentation_controller')
 # api.add_resource(PresentationGeneratingInProgress, '/presentation_generating_in_progress')
-# api.add_resource(Historical, '/historical')
-api.add_resource(GetAllHistoricalForUser, '/historical/<user_id>')
+api.add_resource(GetAllHistoricalForUser, '/available_historical/<user_id>')
 api.add_resource(AddHistoricalPresentation, '/add_historical_presentation')
 api.add_resource(DeleteHistoricalPresentation, '/delete_historical_presentation/<historical_id>')
-# api.add_resource(GetSpecificHistoricalPresentation, '/historical/<presentation_id>')
-# api.add_resource(DeletePresentation, '/delete_presentation/<presentation_id>')
+api.add_resource(GetSpecificHistoricalPresentation, '/retrieve_historical/<historical_id>')
 # api.add_resource(AccountSettings, '/account_settings')
 api.add_resource(AddLlmAndModel, '/add_llm_and_model')
 api.add_resource(AddModel, '/add_model')
