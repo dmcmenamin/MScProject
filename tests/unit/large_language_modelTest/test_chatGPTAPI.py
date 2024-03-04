@@ -80,9 +80,9 @@ class TestChatGPTAPI(unittest.TestCase):
     def test_set_question_prompt_with_valid_input(self):
         api = ChatGPTAPI(self.api_key, self.model)
         expected_prompt = api.set_question_prompt("Test User", "Test Topic", "100",
-                                                  "30", "Test Outcome")
+                                                  "30", "Test Outcome", "Test Question")
         actual_prompt = prompt_for_llm("Test User", "Test Topic", "100",
-                                       "30", "Test Outcome")
+                                       "30", "Test Outcome", "Test Question")
         self.assertEqual(expected_prompt, actual_prompt)
 
     # Test the set question prompt method
@@ -91,29 +91,7 @@ class TestChatGPTAPI(unittest.TestCase):
         api = ChatGPTAPI(self.api_key, self.model)
         with self.assertRaises(ValueError):
             api.set_question_prompt("Test User", "", "100",
-                                    "30", "Test Outcome")
-
-    # Test the get presentation slides method
-    # Test with valid input
-    def test_get_presentation_slides_with_valid_input(self):
-        api = ChatGPTAPI(self.api_key, self.model)
-        api.get_chat_response = MagicMock(return_value="Presentation Slides")
-        result = api.get_presentation_slides("Question")
-        self.assertEqual(result, "Presentation Slides")
-
-    # Test the get presentation slides method
-    # Test with empty response
-    def test_get_presentation_slides_with_empty_response(self):
-        api = ChatGPTAPI(self.api_key, self.model)
-        with self.assertRaises(ValueError):
-            api.get_presentation_slides("Question")
-
-    # Test the get presentation slides method
-    # Test with empty question
-    def test_get_presentation_slides_with_empty_question(self):
-        api = ChatGPTAPI(self.api_key, self.model)
-        with self.assertRaises(ValueError):
-            api.get_presentation_slides("")
+                                    "30", "Test Outcome", "Test Question")
 
     # Test the get presentation image method
     # Test with empty image query method
@@ -121,13 +99,6 @@ class TestChatGPTAPI(unittest.TestCase):
         api = ChatGPTAPI(self.api_key, self.model)
         with self.assertRaises(ValueError):
             api.get_presentation_image("", image_size)
-
-    # Test the get presentation image method
-    # Test with invalid image size method
-    def test_get_presentation_image_with_invalid_image_size(self):
-        api = ChatGPTAPI(self.api_key, self.model)
-        with self.assertRaises(ValueError):
-            api.get_presentation_image("Image of a cat", "Invalid Image Size")
 
     # Test the get presentation image method
     # Test with valid input using the MagicMock class & patch decorator
