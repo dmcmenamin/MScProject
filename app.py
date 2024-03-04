@@ -107,7 +107,7 @@ def login():
         headers = {'Content-Type': 'application/json'}
         response = requests.post(server_and_port + '/user_login', json=data, headers=headers)
         if response.status_code == 200:
-            app.logger.info('Login successful for user: ' + request.form['username'])
+            app.logger.info('Login successful for user')
             data = response.json()
             # set the session information
             user_session(data['username'], data['first_name'], data['last_name'], data['is_admin'],
