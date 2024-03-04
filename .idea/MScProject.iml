@@ -10,6 +10,9 @@
     <orderEntry type="jdk" jdkName="Python 3.11 (MScProject)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
+  <component name="SonarLintModuleSettings">
+    <option name="uniqueId" value="065b30b6-138c-4b1d-9a31-6437e9393cae" />
+  </component>
   <component name="TemplatesService">
     <option name="TEMPLATE_CONFIGURATION" value="Jinja2" />
     <option name="TEMPLATE_FOLDERS">
