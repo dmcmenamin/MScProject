@@ -114,7 +114,7 @@ def login():
                          data['access_token'], data['user_id'])
             return redirect(url_for('presentation_creator'))
         else:
-            app.logger.info('Login failed for user: ' + request.form['username'] + ' with error: ' + response.text)
+            app.logger.info('Login failed for user with error: ' + response.text)
             data = {'message': 'Login failed: ' + value for key, value in response.json().items() if key == 'message'}
             return render_template('index.html', error_or_warning=data)
 
