@@ -1,6 +1,5 @@
 import os
 
-from flask import session
 from pptx import Presentation
 import re
 
