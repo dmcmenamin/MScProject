@@ -34,6 +34,7 @@ table {
 
 .bg-custom {
     background-color: #2D4263;
+    background-image: url("../Images/canva-background-image.png");
     height: auto;
     width: auto;
 }
@@ -53,7 +54,7 @@ table {
     font-size: 45px;
     font-weight: 300;
     line-height: 1.5;
-    color: #ECDBBA;
+    color: #323232;
     flex-shrink: 0;
 }
 
@@ -62,7 +63,7 @@ table {
     font-size: 24px;
     font-weight: 300;
     line-height: 1.5;
-    color: #ECDBBA;
+    color: #4b4b4b;
     flex-shrink: 0;
 }
 
@@ -71,7 +72,7 @@ table {
     font-size: 32px;
     font-weight: 700;
     line-height: 1.5;
-    color: White;
+    color: black;
     flex-shrink: 0;
     animation: animate 1s linear infinite; /*** Animation Blink for error message ***/
 }
@@ -81,7 +82,7 @@ table {
     font-size: 24px;
     font-weight: 700;
     line-height: 1.5;
-    color: White;
+    color: black;
     animation: animate 1s linear infinite; /*** Animation Blink for error message ***/
 }
 
@@ -90,7 +91,7 @@ table {
     font-size: 16px;
     font-weight: 700;
     line-height: 1.5;
-    color: #ECDBBA;
+    color: gray;
     flex-shrink: 0;
 }
 
@@ -99,7 +100,16 @@ table {
     font-size: 16px;
     font-weight: 700;
     line-height: 1.5;
-    color: #ECDBBA;
+    color: #4b4b4b;
+    flex-shrink: 0;
+}
+
+.font-standard-custom-2 {
+    font-family: 'Roboto', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.5;
+    color: white;
     flex-shrink: 0;
 }
 

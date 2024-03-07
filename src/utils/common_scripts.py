@@ -6,12 +6,8 @@ from datetime import datetime
 from pathlib import Path
 
 import platformdirs
-from functools import wraps
 
-from flask import send_file, jsonify, session, redirect, url_for
-
-# from src.database import queries
-# from src.database.connection import RelDBConnection
+from flask import send_file, jsonify, session
 
 
 def clean_up_string(line_to_clean):
@@ -75,16 +71,6 @@ def get_environment_variables():
             return json.load(env_variables)
 
 
-def set_presentation_themes_available(presentation_theme):
-    """ Returns the presentation theme
-    :param presentation_theme: The presentation theme
-    :return: The underlying presentation template
-    """
-
-    env_variables = get_environment_variables()
-    return env_variables["PRESENTATION_THEMES"][presentation_theme]
-
-
 def get_themes_available():
     """ Returns the list of themes available
     :return: The list of themes available
@@ -93,15 +79,14 @@ def get_themes_available():
     return env_variables["PRESENTATION_THEMES"]
 
 
-def create_unique_folder(filename):
+def create_unique_folder(filename, presenter_username):
     """ Creates a unique folder for the user to store their presentations
     :param filename: The name of the folder to be created
     :return: The full path of the folder and the absolute path of the folder
     """
-
     # create a unique filename for the user to store their presentations,
     # based on their username and the current date and time
-    unique_file_name = ("stored_presentations\\" + session['username'] + "_" +
+    unique_file_name = ("stored_presentations\\" + presenter_username + "_" +
                         filename + "_" + datetime.now().strftime("%Y%m%d-%H%M%S"))
 
     # create a unique folder for the user to store their presentations
@@ -126,7 +111,7 @@ def download_presentation(presentation_source_path):
             if send_file(presentation_source_path, as_attachment=True):
                 return jsonify({"message": "Presentation downloaded"}), 200
         except Exception as e:
-            return jsonify({"error": "Unable to download presentation"}), 500
+            return jsonify({"message": "Unable to download presentation"}), 500
     else:
         try:
             # for development purposes only - get the location of the user's download folder
@@ -159,17 +144,19 @@ def delete_file_of_type_specified(file_location, file_type=None):
             os.remove(file_location + "/" + file)
 
 
-def user_session(username, user_id, first_name, last_name, is_admin):
+def user_session(username, first_name, last_name, is_admin, access_token, user_id):
     """ Sets the user session
     :param username: The username
-    :param user_id: The user id
     :param first_name: The first name
     :param last_name: The last name
     :param is_admin: The admin status
+    :param access_token: The access
+    :param user_id: The user ID
     :return: None
     """
     set_session_values('username', username)
-    set_session_values('user_id', user_id)
     set_session_values('first_name', first_name)
     set_session_values('last_name', last_name)
     set_session_values('is_admin', is_admin)
+    set_session_values('jwt_token', access_token)
+    set_session_values('user_id', user_id)

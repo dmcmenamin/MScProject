@@ -1,6 +1,5 @@
 import os
 
-from flask import session
 from pptx import Presentation
 import re
 
@@ -29,19 +28,22 @@ class PowerPointPresentation:
     """ PowerPointPresentation class to handle all PowerPoint Presentation API calls
     """
 
-    def __init__(self, presentation_string=None):
+    def __init__(self, presentation_string=None, presentation_theme=None):
         """ Constructor for PowerPointPresentation class
         :param presentation_string: The presentation string
+        :param presentation_theme: The presentation theme
         """
         current_working_directory = os.getcwd()
         print(current_working_directory)
 
         if presentation_string:
-            if 'presentation_theme' not in session or session['presentation_theme'] is "":
+            if not presentation_theme:
+                self.presentation = Presentation()
+            elif presentation_theme not in "static/PresentationThemes/":
                 self.presentation = Presentation()
             else:
                 # get the theme from the session and create a presentation with that theme
-                theme = "static/PresentationThemes/" + session['presentation_theme'] + ".pptx"
+                theme = "static/PresentationThemes/" + presentation_theme + ".pptx"
                 self.presentation = Presentation(pptx=theme)
             self.populate_presentation(presentation_string)
         else:

@@ -5,21 +5,22 @@
 
 {% block content %}
 
-    {% if response %}
-        <div class="font-header-error" role="alert">
-            <h1 class="text-center"> {{ response.json['error'] }}</h1>
-        </div>
-    {% else %}
-        <!-- Sign Up Form -->
-        <form action="/signup_endpoint" method="post">
-            <div class="container">
-                    <div class="col-md-6 offset-md-3">
-                        <h1 class="text-center font-header-custom">Sign Up</h1>
-                        <p class="text-center font-header-custom-2">
-                            Please fill in this form to create an account.<br>
-                            An API is required, and is available from the below provider(s)</p>
-                        <hr class="mb-3">
+    <!-- Sign Up Form -->
+    <form action="/signup" method="post">
+        <div class="container">
+                <div class="col-md-6 offset-md-3">
+                    <h1 class="text-center font-header-custom">Sign Up</h1>
+                    <p class="text-center font-header-custom-2">
+                        Please fill in this form to create an account.<br>
+                        An API is required, and is available from the below provider(s)</p>
+                    <hr class="mb-3">
 
+                    {% if error_or_warning %}
+                        <div class="font-header-error" role="alert">
+                            <h1 class="text-center"> {{ error_or_warning['message'] }}</h1>
+                        </div>
+                    {% else %}
+                        <!-- Table for Sign Up Form -->
                         <table>
                             <tr>
                                 <td colspan="4">
@@ -54,16 +55,18 @@
                                     <input class="form-control" id="password" type="password" name="password" required>
                                 </td>
                             </tr>
-                            {%  for llm_model_name, llm_link in llm_model_names %}
+                            {% for llm_value in llm_names %}
+                                {% set llm_name = llm_value.llm_name %}
+                                {% set llm_link = llm_value.llm_link %}
                                 <tr>
                                     <td>
                                         <label for="LLM-Name" class="font-header-custom-2">Model Name</label>
-                                        <input class="form-control" id="LLM-Name" type="text" name="llm_name_{{ llm_model_name }}"
-                                               value="{{llm_model_name}}" readonly>
+                                        <input class="form-control" id="LLM-Name" type="text" name="llm_name_{{ llm_name }}"
+                                               value="{{llm_name}}" readonly>
                                     </td>
                                     <td colspan="2">
                                         <label for="API-Key" class="font-header-custom-2">API Key</label>
-                                        <input class="form-control" id="API-Key" type="text" name="api_key_{{ llm_model_name }}">
+                                        <input class="form-control" id="API-Key" type="text" name="api_key_{{ llm_name }}">
                                     </td>
                                     <td colspan="2">
                                         <a href="{{ llm_link }}" target="_blank" class="font-header-custom-2">API Provider</a>
@@ -77,9 +80,9 @@
                         <input class="btn btn-primary" type="reset" id="clear" name="clear" value="Reset">
                         <!-- Submit Button -->
                         <input class="btn btn-primary" type="submit" id="register" name="create" value="Sign Up">
-                    </div>
-            </div>
-        </form>
-    {% endif %}
+                    {% endif %}
+                </div>
+        </div>
+    </form>
 
 {% endblock %}

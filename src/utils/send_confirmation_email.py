@@ -1,4 +1,3 @@
-from flask import session
 from flask_mail import Message
 
 from src import mail
@@ -18,5 +17,4 @@ def send_confirmation_email(recipient_email, subject, html_body):
         html=html_body,
         sender=app.config['MAIL_DEFAULT_SENDER']
     )
-    print(msg)
     mail.send(msg)

@@ -1,5 +1,7 @@
 from unittest import TestCase
-from src.powerpoint.presentation import *
+from src.powerpoint.presentation import PowerPointPresentation, SLIDE_TITLE_AND_CONTENT_LAYOUT, SLIDE_TITLE_LAYOUT, \
+    SLIDE_BLANK_LAYOUT, SLIDE_TWO_CONTENT_LAYOUT, SLIDE_COMPARISON_LAYOUT, SLIDE_CONTENT_WITH_CAPTION_LAYOUT, \
+    SLIDE_PICTURE_WITH_CAPTION_LAYOUT, SLIDE_TITLE_ONLY_LAYOUT
 
 
 title = "Test Title"
