@@ -1,11 +1,8 @@
-from flask import jsonify
 from flask_jwt_extended import get_jwt_identity, jwt_required
 from flask_restful import Resource
 from sqlalchemy import select
 
 from app import db
-from src.database import queries
-from src.database.connection import RelDBConnection
 from src.models.api_key import ApiKey
 from src.models.llm_models import LlmModels
 from src.models.llm_name import Llm

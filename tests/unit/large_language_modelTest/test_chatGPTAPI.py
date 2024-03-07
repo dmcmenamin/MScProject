@@ -92,6 +92,41 @@ class TestChatGPTAPI(unittest.TestCase):
             api.set_question_prompt("Test User", "", "100",
                                     "30", "Test Outcome", "Test Question")
 
+    # Test the set question prompt method with empty presenter name
+    def test_set_question_prompt_with_empty_presenter_name(self):
+        api = ChatGPTAPI(self.api_key, self.model)
+        with self.assertRaises(ValueError):
+            api.set_question_prompt("", "Test Topic", "100",
+                                    "30", "Test Outcome", "Test Question")
+
+    # Test the set question prompt method with empty audience size
+    def test_set_question_prompt_with_empty_audience_size(self):
+        api = ChatGPTAPI(self.api_key, self.model)
+        with self.assertRaises(ValueError):
+            api.set_question_prompt("Test User", "Test Topic", "",
+                                    "30", "Test Outcome", "Test Question")
+
+    # Test the set question prompt method with empty presentation length
+    def test_set_question_prompt_with_empty_presentation_length(self):
+        api = ChatGPTAPI(self.api_key, self.model)
+        with self.assertRaises(ValueError):
+            api.set_question_prompt("Test User", "Test Topic", "100",
+                                    "", "Test Outcome", "Test Question")
+
+    # Test the set question prompt method with empty audience outcome
+    def test_set_question_prompt_with_empty_audience_outcome(self):
+        api = ChatGPTAPI(self.api_key, self.model)
+        with self.assertRaises(ValueError):
+            api.set_question_prompt("Test User", "Test Topic", "100",
+                                    "30", "", "Test Question")
+
+    # Test the set question prompt method with empty audience
+    def test_set_question_prompt_with_empty_audience(self):
+        api = ChatGPTAPI(self.api_key, self.model)
+        with self.assertRaises(ValueError):
+            api.set_question_prompt("Test User", "Test Topic", "100",
+                                    "30", "Test Outcome", "")
+
     # Test the get presentation image method
     # Test with empty image query method
     def test_get_presentation_image_with_empty_image_query(self, image_size="1024x1024"):

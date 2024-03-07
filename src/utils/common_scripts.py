@@ -6,12 +6,8 @@ from datetime import datetime
 from pathlib import Path
 
 import platformdirs
-from functools import wraps
 
-from flask import send_file, jsonify, session, redirect, url_for
-
-# from src.database import queries
-# from src.database.connection import RelDBConnection
+from flask import send_file, jsonify, session
 
 
 def clean_up_string(line_to_clean):
@@ -75,16 +71,6 @@ def get_environment_variables():
             return json.load(env_variables)
 
 
-def set_presentation_themes_available(presentation_theme):
-    """ Returns the presentation theme
-    :param presentation_theme: The presentation theme
-    :return: The underlying presentation template
-    """
-
-    env_variables = get_environment_variables()
-    return env_variables["PRESENTATION_THEMES"][presentation_theme]
-
-
 def get_themes_available():
     """ Returns the list of themes available
     :return: The list of themes available
@@ -125,7 +111,7 @@ def download_presentation(presentation_source_path):
             if send_file(presentation_source_path, as_attachment=True):
                 return jsonify({"message": "Presentation downloaded"}), 200
         except Exception as e:
-            return jsonify({"error": "Unable to download presentation"}), 500
+            return jsonify({"message": "Unable to download presentation"}), 500
     else:
         try:
             # for development purposes only - get the location of the user's download folder

@@ -1,13 +1,8 @@
 import json
 import requests
-import os
-
-from flask import session, jsonify, send_file
 
 from src.utils.common_scripts import clean_up_string, create_unique_folder, download_presentation, \
     delete_file_of_type_specified
-from src.database import queries
-from src.database.connection import RelDBConnection
 from src.orchestration.orchestrator import Orchestrator
 from src.powerpoint.presentation import PowerPointPresentation
 from io import BytesIO

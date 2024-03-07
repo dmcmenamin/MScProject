@@ -9,7 +9,7 @@ from flask_restful import Api
 from flask_sqlalchemy import SQLAlchemy
 
 from src.utils.common_scripts import user_session
-from src.utils.decorators import confirmed_login_required, user_authenticated
+from src.utils.decorators import user_authenticated
 
 
 def create_app(test_config=None):

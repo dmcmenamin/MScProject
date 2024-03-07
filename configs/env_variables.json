@@ -1,8 +1,4 @@
 {
-  "MockChatGPT": {
-    "MOCK_API_KEY": "MOCK_API_KEY",
-    "MOCK_MODEL_NAME": "MOCK_MODEL_NAME"
-  },
 
   "PRESENTATION_THEMES": {
     "Tech": "Futuristic",
@@ -11,13 +7,5 @@
 
   "EMAIL": {
     "EMAIL_SECRET_KEY": "789abc456def123"
-  },
-
-  "database": {
-    "host": "localhost",
-    "user": "root",
-    "password": "",
-    "database": "dynamicpowerpoint",
-    "connection_timeout": 500
   }
 }
