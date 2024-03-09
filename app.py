@@ -218,8 +218,9 @@ def presentation_creator():
                                    presentation_themes=response_data['data']['presentation_themes'])
         else:
             app.logger.info('Presentation creator endpoint failed with GET request with error: ' + response.text)
+            data = {key: value for key, value in response.json().items() if key == 'message'}
             return render_template('index.html',
-                                   response=response.text)
+                                   error_or_warning=data)
     elif request.method == 'POST':
         app.logger.info('Presentation creator endpoint called with POST request')
         headers = {'Authorization': 'Bearer ' + jwt_token,
@@ -234,10 +235,12 @@ def presentation_creator():
             return render_template('presentation_generating.html', response=response.text)
         else:
             app.logger.info('Presentation creator endpoint failed with POST request with error: ' + response.text)
-            return render_template('index.html', response=response.text)
+            data = {key: value for key, value in response.json().items() if key == 'message'}
+            return render_template('index.html', error_or_warning=data)
     else:
-        app.logger.info('Invalid request method')
-        return render_template('index.html', json={'message': 'Invalid request method'})
+        app.logger.info('Invalid request method in presentation creator endpoint')
+        return render_template('index.html', json={'message': 'Invalid request method, please contact'
+                                                              'system Administrator'})
 
 
 @app.route('/presentation_generating_in_progress', methods=['POST'])
@@ -262,15 +265,18 @@ def presentation_generating_in_progress():
                                      headers=headers)
             if response.status_code == 200:
                 app.logger.info('Presentation generating in progress called successfully with POST request')
+                # TODO - add the historical presentation to the database
+                # response = requests.post(server_and_port + '/add_historical_presentation', json=data, headers=headers)
                 return render_template('presentation_success.html', response=response.text)
             else:
                 app.logger.info('Presentation generating in progress failed with POST request with error: ' +
                                 response.text)
-                return render_template('index.html', response=response.text)
+                data = {key: value for key, value in response.json().items() if key == 'message'}
+                return render_template('index.html', error_or_warning=data)
     except Exception as e:
         app.logger.error('An error occurred' + str(e))
         return render_template('index.html',
-                               response={'message': 'An error occurred, please check database'})
+                               error_or_warning={'message': 'An error occurred, please check database'})
 
 
 @app.route('/historical', methods=['GET'])
@@ -290,7 +296,8 @@ def historical():
         return render_template('historical.html', historical=response_data['historical_data'])
     else:
         app.logger.info('Historical endpoint failed with error: ' + response.text)
-        return render_template('index.html', error_or_warning=response.text)
+        data = {key: value for key, value in response.json().items() if key == 'message'}
+        return render_template('historical.html', historical=data)
 
 
 @app.route('/historical_endpoint_get_specific_presentation/<historical_id>', methods=['GET'])
@@ -402,8 +409,9 @@ def change_user_password(user_id_for_password_update):
             app.logger.info('Change user password endpoint failed with error: ' + response.text)
             return render_template('account_settings.html', error_or_warning=data)
     else:
-        app.logger.info('Invalid request method')
-        return render_template('index.html', json={'message': 'Invalid request method'})
+        app.logger.info('Invalid request method, please contact system Administrator')
+        return render_template('index.html', json={'message': 'Invalid request method, '
+                                                              'please contact system Administrator'})
 
 
 @app.route('/delete_user_endpoint/<user_id_to_delete>', methods=['POST'])
@@ -427,8 +435,9 @@ def delete_user_endpoint(user_id_to_delete):
             app.logger.info('Delete user endpoint failed with error: ' + response.text)
             return render_template('account_settings.html', error_or_warning=data)
     else:
-        app.logger.info('Invalid request method')
-        return render_template('index.html', json={'message': 'Invalid request method'})
+        app.logger.info('Invalid request method, please contact system Administrator')
+        return render_template('index.html', json={'message': 'Invalid request method, '
+                                                              'please contact system Administrator'})
 
 
 @app.route('/logout_endpoint')
@@ -447,12 +456,10 @@ api.add_resource(GetAvailableLlms, '/available_llms')
 api.add_resource(PresentationGeneratorGet, '/presentation_generator')
 api.add_resource(PresentationGeneratorPost, '/presentation_generator')
 api.add_resource(PresentationController, '/presentation_controller')
-# api.add_resource(PresentationGeneratingInProgress, '/presentation_generating_in_progress')
 api.add_resource(GetAllHistoricalForUser, '/available_historical/<user_id>')
 api.add_resource(AddHistoricalPresentation, '/add_historical_presentation')
 api.add_resource(DeleteHistoricalPresentation, '/delete_historical_presentation/<historical_id>')
 api.add_resource(GetSpecificHistoricalPresentation, '/retrieve_historical/<historical_id>')
-# api.add_resource(AccountSettings, '/account_settings')
 api.add_resource(AddLlmAndModel, '/add_llm_and_model')
 api.add_resource(AddModel, '/add_model')
 api.add_resource(DeleteLlmModel, '/delete_llm_model/<llm_model_id>')
@@ -460,7 +467,6 @@ api.add_resource(DeleteLlmAndModelAndApiKeys, '/delete_llm_and_model_and_api_key
 api.add_resource(UpdatePassword, '/update_password/<user_id_for_password_update>')
 api.add_resource(AddOrUpdateApiKey, '/add_or_update_api_key')
 api.add_resource(DeleteUser, '/delete_user/<user_id_to_delete>')
-# api.add_resource(Logout, '/logout')
 
 if __name__ == '__main__':
     app.run(debug=False)

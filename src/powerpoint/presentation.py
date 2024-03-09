@@ -33,16 +33,23 @@ class PowerPointPresentation:
         :param presentation_string: The presentation string
         :param presentation_theme: The presentation theme
         """
-
+        print("presentation_theme: ", presentation_theme)
+        cwd = os.getcwd()
         if presentation_string:
             if not presentation_theme:
                 self.presentation = Presentation()
-            elif presentation_theme not in "static/PresentationThemes/":
+            elif not os.path.exists(cwd + "/static/PresentationThemes/"):
+                print("Presentation theme not found, using default theme")
                 self.presentation = Presentation()
-            else:
-                # get the theme from the session and create a presentation with that theme
-                theme = "static/PresentationThemes/" + presentation_theme + ".pptx"
-                self.presentation = Presentation(pptx=theme)
+            elif presentation_theme in os.listdir(cwd + "/static/PresentationThemes/"):
+                print("presentation_theme: ", presentation_theme)
+                self.presentation = Presentation(pptx=cwd + "/static/PresentationThemes/" + presentation_theme)
+            elif presentation_theme not in (cwd + "/static/PresentationThemes/"):
+                cwd = os.getcwd()
+                print("cwd: ", cwd)
+                for file in os.listdir(cwd + "/static/PresentationThemes/"):
+                    print(file)
+                print("Presentation theme not found, using default theme")
             self.populate_presentation(presentation_string)
         else:
             self.presentation = Presentation()
@@ -288,4 +295,3 @@ class PowerPointPresentation:
         """
 
         return self.presentation.slides
-

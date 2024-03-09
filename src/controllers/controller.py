@@ -1,8 +1,10 @@
 import json
 import requests
+from flask import session
 
+from app import app
 from src.utils.common_scripts import clean_up_string, create_unique_folder, download_presentation, \
-    delete_file_of_type_specified, get_image_model_name
+    delete_file_of_type_specified, get_image_model_name, get_specific_prsentation_theme
 from src.orchestration.orchestrator import Orchestrator
 from src.powerpoint.presentation import PowerPointPresentation
 from io import BytesIO
@@ -22,6 +24,7 @@ def get_ai_image_suggestion(string, folder_name, large_language_model, image_mod
     new_string = ""
     lines = string.splitlines()
     line_iterator = iter(lines)
+    app.logger.info('Searching for image suggestions')
 
     try:
         while True:
@@ -29,8 +32,11 @@ def get_ai_image_suggestion(string, folder_name, large_language_model, image_mod
             line = clean_up_string(line)
             if line.upper().startswith("IMAGE_SUGGESTION") or line.upper().startswith("IMAGE"):
 
+                app.logger.info('Image suggestion found')
                 image_requested = parse_image_request(line)
 
+                app.logger.info('Image requested: %s', image_requested)
+                # if the image requested is empty, get the next line, and use that as the image requested
                 if len(image_requested) == 0:
                     image_requested = next(string.splitlines())
                 # remove any slashes and colon's from the image requested
@@ -80,12 +86,15 @@ def generate_presentation(presenter_username, presenter_first_name, presenter_la
     :return: None
     """
 
+    app.logger.info('Generating presentation')
     # get user first and last name and api key from session
     presenter_name = presenter_first_name + " " + presenter_last_name
 
+    app.logger.info('Presenter name: %s', presenter_name)
     # create a unique folder for the user to store their presentations
     file_location, absolute_file_path = create_unique_folder(presentation_topic, presenter_username)
 
+    app.logger.info('File location: %s', file_location)
     # generate the prompt
     orchestration_service = Orchestrator(large_language_model, api_key, specific_model_name)
 
@@ -100,6 +109,7 @@ def generate_presentation(presenter_username, presenter_first_name, presenter_la
     presentation_response, status_code = (orchestration_service.
                                           call_large_language_model().get_presentation_slides(populated_prompt))
 
+    app.logger.info('Presentation response: %s', presentation_response)
     # if there is an error, don't proceed, and instead return the status code and the error message
     if status_code != 200:
         return presentation_response, status_code
@@ -110,29 +120,46 @@ def generate_presentation(presenter_username, presenter_first_name, presenter_la
     presentation_string = presentation_json['presentation_deck']
 
     # get the image model name from the environment variables
-    image_model = get_image_model_name(large_language_model.Upper())
+    image_model = get_image_model_name(large_language_model.upper())
 
+    app.logger.info('Image model: %s', image_model)
     # extract the image suggestions from the presentation string, and replace them with the image url
     presentation_string_with_images, status_code = get_ai_image_suggestion(presentation_string, file_location,
                                                                            large_language_model, image_model, api_key)
 
+    app.logger.info('Presentation string with images: %s', presentation_string_with_images)
     # if there is an error, don't proceed, and instead return the status code and the error message
     if status_code != 200:
         return presentation_string_with_images, status_code
 
-    # create the PowerPoint presentation from the presentation string by calling the PowerPoint Class
-    powerpoint_presentation = PowerPointPresentation(presentation_string_with_images, presentation_theme)
+    actual_presentation_theme = get_specific_prsentation_theme(presentation_theme)
 
+    app.logger.info('Creating PowerPoint presentation')
+    # create the PowerPoint presentation from the presentation string by calling the PowerPoint Class
+    powerpoint_presentation = PowerPointPresentation(presentation_string_with_images, actual_presentation_theme)
+
+    app.logger.info('Saving PowerPoint presentation')
     # save the PowerPoint presentation
     powerpoint_presentation.save(file_location + "/" + presentation_topic + ".pptx")
 
+    app.logger.info('Deleting images from folder')
     # delete the images from the folder
     delete_file_of_type_specified(file_location, ".jpg")
 
+    app.logger.info('Downloading PowerPoint presentation')
     # download the PowerPoint presentation
     response, status_code = download_presentation(absolute_file_path + "/" + presentation_topic + ".pptx")
     if status_code != 200:
         return response, status_code
+
+    app.logger.info('Adding historical presentation')
+    headers = {
+        'Authorization': 'Bearer ' + session['jwt_token'],
+        'Content-Type': 'application/json',
+    }
+    requests.post('http://localhost:5000/add_historical_presentation',
+                  json={"presentation_name": presentation_topic,
+                        "presentation_location": absolute_file_path}, headers=headers)
 
     return {"message": "Presentation generated successfully"}, 200
 
@@ -143,6 +170,7 @@ def parse_image_request(line):
     :return: The parsed image request
     """
     image_requested = ""
+    app.logger.info('Parsing image request')
     # sometimes the LLM doesn't return the image suggestion in the requested format e.g. Image suggestion:
     # so we need to check for both
     # first check if line is Image suggestion
@@ -153,6 +181,7 @@ def parse_image_request(line):
     elif line.upper().startswith("IMAGE"):
         image_requested = line.upper().split("IMAGE")[1]
 
+    app.logger.info('Image requested: %s', image_requested)
     # finally just incase, we haven't removed the colon at the start of the image requested
     # we need to check for this and remove it
     if image_requested.startswith(":"):
@@ -160,6 +189,7 @@ def parse_image_request(line):
     # if the image requested is empty, get the next line, and use that as the image requested
     # as sometimes the image requested is put on the next line
 
+    app.logger.info('Image requested: %s', image_requested)
     return image_requested
 
 
@@ -170,18 +200,24 @@ def store_image_and_update_line(image_url, image_requested, folder_name):
     :param folder_name: The folder name
     :return: The new line
     """
+
+    app.logger.info('Storing image and updating line')
     # get the image url from the response
     response = image_url.json['image_url']
 
     image = BytesIO(requests.get(response).content)
 
+    app.logger.info('Image url: %s', response)
     if image_requested.endswith("."):
         local_path = image_requested + "jpg"
     else:
         local_path = image_requested + ".jpg"
 
+    app.logger.info('Local path: %s', local_path)
+    # save the image to the folder
     with open(folder_name + "/" + local_path, "wb") as image_file:
         image_file.write(image.read())
 
+    app.logger.info('Image saved to folder')
     # replace the image suggestion with the image url
     return f"IMAGE: {folder_name}/{local_path}"

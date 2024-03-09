@@ -29,7 +29,7 @@ class PresentationController(Resource):
                 app.logger.info('User logged in')
 
                 # get user information
-                username, first_name, last_name, is_admin = User.get_user_information(user_id)
+                username, first_name, last_name, _ = User.get_user_information(user_id)
                 if not username:
                     return {'message': 'User not found'}, 404
 
@@ -61,5 +61,5 @@ class PresentationController(Resource):
                                                         expected_outcome, who_is_the_audience, large_language_model,
                                                         specific_model_name, api_key, presentation_theme)
             except Exception as e:
-                app.logger.error('Presentation could not be generated' + str(e))
+                app.logger.error('Presentation could not be generated ' + str(e))
                 return {'message': 'Presentation could not be generated'}, 500
