@@ -238,7 +238,7 @@ class PowerPointPresentation:
         if subtitle:
             created_slide.placeholders[1].text = subtitle
         if text:
-            created_slide.placeholders[2].text = text
+            created_slide.placeholders[1].text = text
         if notes:
             created_slide.notes_slide.notes_text_frame.text = notes
         return created_slide
