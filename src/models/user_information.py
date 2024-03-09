@@ -10,11 +10,11 @@ class User(db.Model):
     """
     __tablename__ = 'user_information'
     user_id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(256), unique=True, nullable=False)
+    username = db.Column(db.String(255), unique=True, nullable=False)
     user_first_name = db.Column(db.String(32), nullable=False)
     user_last_name = db.Column(db.String(64), nullable=False)
-    user_hashed_password = db.Column(db.VARBINARY, nullable=False)
-    user_salt = db.Column(db.VARBINARY, nullable=False)
+    user_hashed_password = db.Column(db.VARBINARY(length=255), nullable=False)
+    user_salt = db.Column(db.VARBINARY(length=255), nullable=False)
     user_is_admin = db.Column(db.Boolean, nullable=False, default=False)
     account_confirmed = db.Column(db.Boolean, nullable=False, default=False)
 

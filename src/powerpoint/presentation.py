@@ -33,8 +33,6 @@ class PowerPointPresentation:
         :param presentation_string: The presentation string
         :param presentation_theme: The presentation theme
         """
-        current_working_directory = os.getcwd()
-        print(current_working_directory)
 
         if presentation_string:
             if not presentation_theme:
@@ -54,8 +52,7 @@ class PowerPointPresentation:
         """ Returns the string representation of the PowerPointPresentation class
         :return: The string representation of the PowerPointPresentation class
         """
-
-        return f"PowerPointPresentation(presentation={self.presentation})"
+        return "PowerPointPresentation"
 
     def _slice_presentation(self, presliced_presentation):
         """ Private Method - returns a sliced presentation
@@ -90,7 +87,8 @@ class PowerPointPresentation:
 
             return sliced_presentation
 
-    def _get_slide_content(self, slide_pages):
+    @classmethod
+    def _get_slide_content(cls, slide_pages):
         """ Private Method - returns a title, subtitle, content and notes for each slide - if they exist
         :param slide_pages: The slide pages
         :return: A title, subtitle, content and notes for each slide
@@ -108,41 +106,44 @@ class PowerPointPresentation:
             for section in slide_pages.splitlines():
                 section = clean_up_string(section)
 
+                if len(section) == 0:
+                    continue
+
                 # parse the reply into the different sections
-                if len(section) >= 1:
-                    if section.startswith("TITLE:"):
-                        slide_title = section.replace("TITLE:", "").strip()
-                    elif section.startswith("SUBTITLE:"):
-                        slide_subtitle = section.replace("SUBTITLE:", "").strip()
-                    elif section.startswith("CONTENT:"):
-                        # If the slide content is "Content:", then set the slide content to the section, without the
-                        # "Content:" prefix and the "-" suffix, and strip any whitespace
-                        # This is done to ensure that the slide content is not set to "Content:"
-                        slide_content = section.replace("CONTENT:", "").replace("-", "").strip() + "\n"
-                        # If the slide content is "(No content ", then set the slide content to an empty string
-                        # This is done to ensure that the slide content is not set to "(No content required)"
-                        if "(no content" in slide_content.lower():
-                            slide_content = ""
-                        last_section = "Content"
-                    elif section.startswith("NOTES:"):
-                        slide_notes = section.replace("NOTES:", "").strip() + " \n"
-                        last_section = "Notes"
-                    elif section.startswith("IMAGE:"):
-                        slide_image += section.replace("IMAGE:", "").strip()
-                    elif section.lower().startswith("references"):
-                        # If the section starts with "References", insert this section into the slide content
-                        # This is done to ensure that the slide content is not set to "References"
-                        # removes the references header and adds it to the content
-                        slide_content = section.replace("references", "").strip() + "\n"
-                        last_section = "Content"
-                    elif last_section == "Content":
-                        slide_content += section.replace("-", "").strip() + "\n"
-                    elif last_section == "Notes":
-                        slide_notes += section.strip() + "\n"
+                if section.lower().startswith("TITLE".casefold()):
+                    slide_title = section[6:].strip()
+                elif section.lower().startswith("SUBTITLE".casefold()):
+                    slide_subtitle = section[9:].strip()
+                elif section.lower().startswith("CONTENT".casefold()):
+                    # If the slide content is "Content:", then set the slide content to the section, without the
+                    # "Content:" prefix and the "-" suffix, and strip any whitespace
+                    # This is done to ensure that the slide content is not set to "Content:"
+                    slide_content = section[8:].replace("-", "").strip() + "\n"
+                    # If the slide content is "(No content ", then set the slide content to an empty string
+                    # This is done to ensure that the slide content is not set to "(No content required)"
+                    if "(no content" in slide_content.lower():
+                        slide_content = ""
+                    last_section = "Content"
+                elif section.lower().startswith("NOTES".casefold()):
+                    slide_notes = section[6:].replace("-", "").strip() + "\n"
+                    last_section = "Notes"
+                elif section.lower().startswith("IMAGE".casefold()):
+                    slide_image += section[6:].strip()
+                elif section.lower().startswith("REFERENCES".casefold()):
+                    # If the section starts with "References", insert this section into the slide content
+                    # This is done to ensure that the slide content is not set to "References"
+                    # removes the references header and adds it to the content
+                    slide_content = section[10:].strip() + "\n"
+                    last_section = "Content"
+                elif last_section == "Content":
+                    slide_content += section.replace("-", "").strip() + "\n"
+                elif last_section == "Notes":
+                    slide_notes += section.replace("-", "").strip() + "\n"
 
             return slide_title, slide_subtitle, slide_content, slide_notes, slide_image
 
-    def _set_layouts(self, title, subtitle, content, image, notes):
+    @classmethod
+    def _set_layouts(cls, title, subtitle, content, image, notes):
         """ Private Method - returns the best slide layout for the presentation
         :param title: The title of the slide
         :param subtitle: The subtitle of the slide
@@ -153,6 +154,9 @@ class PowerPointPresentation:
         """
 
         if title and subtitle:
+            if image:
+                # if there is an image, then use the picture with caption layout
+                return SLIDE_PICTURE_WITH_CAPTION_LAYOUT
             return SLIDE_TITLE_LAYOUT
         elif image:
             return SLIDE_PICTURE_WITH_CAPTION_LAYOUT
@@ -193,21 +197,48 @@ class PowerPointPresentation:
 
         created_slide = self.presentation.slides.add_slide(self.presentation.slide_layouts[slide_layout])
         if slide_layout == SLIDE_PICTURE_WITH_CAPTION_LAYOUT:
-            if image:
-                created_slide.placeholders[1].insert_picture(image)
-            else:
-                raise ValueError("Image must be provided for picture with caption layout.")
-            if title:
-                created_slide.shapes.title.text = title
-            if text:
-                created_slide.placeholders[2].text = text
+            created_slide = self._create_slides_with_images(created_slide, title, subtitle, text, image, notes)
         else:
-            if title:
-                created_slide.shapes.title.text = title
-            if subtitle:
-                created_slide.placeholders[1].text = subtitle
-            if text:
-                created_slide.placeholders[1].text = text
+            created_slide = self._create_slides_without_images(created_slide, title, subtitle, text, notes)
+        return created_slide
+
+    @classmethod
+    def _create_slides_with_images(cls, created_slide, title, subtitle, text, image, notes):
+        """ Returns the created slide with images
+        :param created_slide: The created slide
+        :param title: The title of the slide
+        :param subtitle: The subtitle of the slide
+        :param text: The text of the slide
+        :param image: The image of the slide
+        :param notes: The notes of the slide
+        :return: The created slide with images
+        """
+        if image:
+            created_slide.placeholders[1].insert_picture(image)
+        else:
+            raise FileNotFoundError("Image must be provided for picture with caption layout.")
+        if title:
+            created_slide.shapes.title.text = title
+        if text:
+            created_slide.placeholders[2].text = text
+        return created_slide
+
+    @classmethod
+    def _create_slides_without_images(cls, created_slide, title, subtitle, text, notes):
+        """ Returns the created slide without images
+        :param created_slide: The created slide
+        :param title: The title of the slide
+        :param subtitle: The subtitle of the slide
+        :param text: The text of the slide
+        :param notes: The notes of the slide
+        :return: The created slide without images
+        """
+        if title:
+            created_slide.shapes.title.text = title
+        if subtitle:
+            created_slide.placeholders[1].text = subtitle
+        if text:
+            created_slide.placeholders[2].text = text
         if notes:
             created_slide.notes_slide.notes_text_frame.text = notes
         return created_slide

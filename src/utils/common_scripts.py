@@ -32,6 +32,14 @@ def get_email_secret_key():
     return env_variables['EMAIL']['EMAIL_SECRET_KEY']
 
 
+def get_image_model_name(llm_model_name):
+    """ Returns the image model name
+    :return: The image model name
+    """
+    env_variables = get_environment_variables()
+    return env_variables[llm_model_name]['IMAGE_MODEL_NAME']
+
+
 def print_text_file(text_file_name, text_file_descriptor):
     """ Prints the text file - used for debugging purposes only
     :param text_file_name: The name of the text file
@@ -110,7 +118,7 @@ def download_presentation(presentation_source_path):
         try:
             if send_file(presentation_source_path, as_attachment=True):
                 return jsonify({"message": "Presentation downloaded"}), 200
-        except Exception as e:
+        except Exception:
             return jsonify({"message": "Unable to download presentation"}), 500
     else:
         try:
@@ -124,7 +132,7 @@ def download_presentation(presentation_source_path):
             shutil.copy(presentation_source_path, destination_path)
 
             return jsonify({"message": "Presentation downloaded"}), 200
-        except Exception as e:
+        except Exception:
             return jsonify({"error": "Unable to download presentation"}), 500
 
 
@@ -141,8 +149,7 @@ def delete_file_of_type_specified(file_location, file_type=None):
             os.remove(file_location + "/" + file)
         elif file.endswith(file_type):
             # delete only files of a specific type in the folder
-            os.remove(file_location + "/" + file)
-
+            os.remove(file_location + "/" + file.endswith(file_type))
 
 def user_session(username, first_name, last_name, is_admin, access_token, user_id):
     """ Sets the user session

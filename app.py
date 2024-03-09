@@ -1,7 +1,8 @@
 import json
 import os
-
+import pkg_resources
 import requests
+
 from flask import Flask, render_template, redirect, url_for, request, session
 from flask_jwt_extended import JWTManager
 from flask_mail import Mail
@@ -23,11 +24,16 @@ def create_app(test_config=None):
     created_app.secret_key = os.urandom(24)
 
     if test_config is None:
+        # use the pkg_resources to get the config file
+        config_file = pkg_resources.resource_filename('configs', 'config.py')
+        print("config_file", config_file)
         # load the instance config, if it exists, when not testing
-        created_app.config.from_pyfile('/Users/mcmen/PycharmProjects/MScProject/configs/config.py', silent=True)
+        created_app.config.from_pyfile(config_file, silent=True)
     else:
+        # use the pkg_resources to get the test config file
+        test_config_file = pkg_resources.resource_filename('configs', 'test_config.py')
         # load the test config if passed in
-        created_app.config.from_mapping(test_config)
+        created_app.config.from_pyfile(test_config_file, silent=True)
 
     # ensure the instance folder exists
     try:
@@ -162,7 +168,7 @@ def signup():
         response = requests.post(server_and_port + '/add_user', json=data, headers=headers)
         if response.status_code == 200:
             # Successful response, render the index page with a success message
-            app.logger.info('User created successfully' + request.form['username'])
+            app.logger.info('User created successfully')
 
             response = {'message': 'User created successfully, please check your email to confirm your account'}
             return render_template('index.html', error_or_warning=response)

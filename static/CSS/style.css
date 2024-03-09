@@ -35,6 +35,8 @@ table {
 .bg-custom {
     background-color: #2D4263;
     background-image: url("../Images/canva-background-image.png");
+    background-repeat: no-repeat;
+    background-attachment: fixed;
     height: auto;
     width: auto;
 }
@@ -172,4 +174,12 @@ table {
         opacity: 0;
     }
 }
+
+/***** Media Styles *****/
+@media (min-width: 13in) {
+    .bg-custom {
+        background-size: cover;
+    }
+}
+
 

@@ -10,7 +10,7 @@ class Llm(db.Model):
     __tablename__ = 'llm'
     llm_id = db.Column(db.Integer, primary_key=True)
     llm_name = db.Column(db.String(30), unique=True, nullable=False)
-    llm_api_link = db.Column(db.String(256), nullable=False)
+    llm_api_link = db.Column(db.String(255), nullable=False)
 
     def __repr__(self):
         return '<Llm %r>' % self.llm_name
