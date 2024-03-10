@@ -38,12 +38,12 @@ class Test(TestCase):
 
     # Test the Constructor(self, filename, theme)
     def test_constructor_with_filename_and_theme(self):
-        presentation = PowerPointPresentation("test.pptx", "test")
+        presentation = PowerPointPresentation("test", "test.pptx")
         self.assertIsNotNone(presentation)
 
     # Test the Constructor with no theme
     def test_constructor_with_no_theme(self):
-        presentation = PowerPointPresentation("test.pptx")
+        presentation = PowerPointPresentation("test")
         self.assertIsNotNone(presentation)
 
     # Test the __str__ method
