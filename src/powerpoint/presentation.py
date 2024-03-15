@@ -3,6 +3,7 @@ import os
 from pptx import Presentation
 import re
 
+from app import app
 from src.utils.common_scripts import clean_up_string
 
 # Define constants for slide layouts
@@ -43,6 +44,10 @@ class PowerPointPresentation:
         elif presentation_theme not in (cwd + "/static/PresentationThemes/"):
             self.presentation = Presentation()
 
+        if presentation_string:
+            self.populate_presentation(presentation_string)
+
+
     # Return a string representation of the class
     def __str__(self):
         """ Returns the string representation of the PowerPointPresentation class
@@ -69,7 +74,7 @@ class PowerPointPresentation:
                     # If the presentation line starts with Slide, then it is the start of a new slide
                     # Add the line to the sliced presentation as a new slide, including a new line, so it can be
                     # formatted correctly. Done via regex to replace "Slide x:" with "Title:"
-                    slide_title = re.sub(r"Slide \d+:", "TITLE:", presentation_line, flags=re.IGNORECASE)
+                    slide_title = re.sub(r"Slide \d+", "TITLE:", presentation_line, flags=re.IGNORECASE)
                     sliced_presentation.append(slide_title + "\n")
                 elif len(sliced_presentation) != 0:
                     # Otherwise, it is part of the previous slide
@@ -131,6 +136,12 @@ class PowerPointPresentation:
                     # removes the references header and adds it to the content
                     slide_content = section[10:].strip() + "\n"
                     last_section = "Content"
+                elif section.lower().startswith("SCRIPT".casefold()):
+                    # If the section starts with "Script", insert this section into the slide notes
+                    # This is done incase the response doesn't have a notes section, or it is separated from the
+                    # slide content
+                    slide_notes += section.strip() + "\n"
+                    last_section = "Notes"
                 elif last_section == "Content":
                     slide_content += section.replace("-", "").strip() + "\n"
                 elif last_section == "Notes":

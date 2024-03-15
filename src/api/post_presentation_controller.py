@@ -56,10 +56,16 @@ class PresentationController(Resource):
                     presentation_length, expected_outcome, who_is_the_audience, large_language_model,
                     specific_model_name, api_key, presentation_theme)
 
-                return controller.generate_presentation(username, presenter_first_name, presenter_last_name,
-                                                        presentation_topic, audience_size, presentation_length,
-                                                        expected_outcome, who_is_the_audience, large_language_model,
-                                                        specific_model_name, api_key, presentation_theme)
+                return controller.generate_presentation(username,
+                                                        presenter_first_name,
+                                                        presenter_last_name,
+                                                        presentation_topic, audience_size,
+                                                        presentation_length,
+                                                        expected_outcome, who_is_the_audience,
+                                                        large_language_model,
+                                                        specific_model_name, api_key,
+                                                        presentation_theme)
+
             except Exception as e:
                 app.logger.error('Presentation could not be generated ' + str(e))
                 return {'message': 'Presentation could not be generated'}, 500

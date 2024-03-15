@@ -152,16 +152,12 @@ def generate_presentation(presenter_username, presenter_first_name, presenter_la
     if status_code != 200:
         return response, status_code
 
-    app.logger.info('Adding historical presentation')
-    headers = {
-        'Authorization': 'Bearer ' + session['jwt_token'],
-        'Content-Type': 'application/json',
+    data = {
+        "presentation_location": absolute_file_path,
+        "presentation_name": presentation_topic
     }
-    requests.post('http://localhost:5000/add_historical_presentation',
-                  json={"presentation_name": presentation_topic,
-                        "presentation_location": absolute_file_path}, headers=headers)
 
-    return {"message": "Presentation generated successfully"}, 200
+    return {"message": "Presentation generated", "data": data}, 200
 
 
 def parse_image_request(line):

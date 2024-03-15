@@ -263,10 +263,21 @@ def presentation_generating_in_progress():
             # call the presentation generating in progress endpoint
             response = requests.post(server_and_port + '/presentation_controller', json=data,
                                      headers=headers)
+            app.logger.info('Response: ' + response.text)
             if response.status_code == 200:
                 app.logger.info('Presentation generating in progress called successfully with POST request')
-                # TODO - add the historical presentation to the database
-                # response = requests.post(server_and_port + '/add_historical_presentation', json=data, headers=headers)
+
+                app.logger.info("Adding historical presentation")
+
+                data = {key: value for key, value in response.json().items() if key == 'data'}
+                app.logger.info("data: " + str(data))
+                location_and_name = {'presentation_name': data['data']['presentation_name'],
+                                     'presentation_location': data['data']['presentation_location']}
+
+                app.logger.info("location_and_name: " + str(location_and_name))
+                response = requests.post(server_and_port + '/add_historical_presentation', json=location_and_name,
+                                         headers=headers)
+
                 return render_template('presentation_success.html', response=response.text)
             else:
                 app.logger.info('Presentation generating in progress failed with POST request with error: ' +
@@ -293,11 +304,18 @@ def historical():
     if response.status_code == 200:
         app.logger.info('Historical endpoint called successfully')
         response_data = response.json()
-        return render_template('historical.html', historical=response_data['historical_data'])
+        historical_data = {"historical_data": [{"historical_id": historical_info['historical_id'],
+                                                "presentation_name": historical_info['presentation_name'],
+                                                "presentation_location": historical_info['presentation_location'],
+                                                "presentation_time_stamp": historical_info['presentation_time_stamp'],
+                                                "user_id": historical_info['user_id']}
+                                               for historical_info in response_data['data']['historical_data']]}
+
+        return render_template('historical.html', historical=historical_data)
     else:
         app.logger.info('Historical endpoint failed with error: ' + response.text)
         data = {key: value for key, value in response.json().items() if key == 'message'}
-        return render_template('historical.html', historical=data)
+        return render_template('historical.html', error_or_warning=data)
 
 
 @app.route('/historical_endpoint_get_specific_presentation/<historical_id>', methods=['GET'])
@@ -318,9 +336,16 @@ def historical_endpoint_get_specific_presentation(historical_id):
         # refresh the historical page with the success message, and the historical data
         get_response = requests.get(server_and_port + '/available_historical/' + str(session['user_id']),
                                     headers=headers)
+
         response_data = get_response.json()
-        return render_template('historical.html', error_or_warning=data,
-                               historical=response_data['historical_data'])
+        historical_data = {"historical_data": [{"historical_id": historical_info['historical_id'],
+                                                "presentation_name": historical_info['presentation_name'],
+                                                "presentation_location": historical_info['presentation_location'],
+                                                "presentation_time_stamp": historical_info['presentation_time_stamp'],
+                                                "user_id": historical_info['user_id']}
+                                               for historical_info in response_data['data']['historical_data']]}
+
+        return render_template('historical.html', historical=historical_data, information=data)
     else:
         data = {key: value for key, value in response.json().items() if key == 'message'}
         get_response = requests.get(server_and_port + '/available_historical/' + str(session['user_id']),
@@ -344,18 +369,24 @@ def historical_endpoint_delete_presentation(historical_id):
     headers = {'Authorization': 'Bearer ' + jwt_token,
                'Content-Type': 'application/json'}
     response = requests.delete(server_and_port + '/delete_historical_presentation/' + historical_id, headers=headers)
-    print(response.status_code)
-    print(response.text)
+
     if response.status_code == 200:
         data = {key: value for key, value in response.json().items() if key == 'message'}
         app.logger.info('Historical endpoint delete presentation called successfully')
-        print("data: ", data)
+
         # refresh the historical page with the success message, and the historical data
         get_response = requests.get(server_and_port + '/available_historical/' + str(session['user_id']),
                                     headers=headers)
+
         response_data = get_response.json()
-        return render_template('historical.html', error_or_warning=data,
-                               historical=response_data['historical_data'])
+        historical_data = {"historical_data": [{"historical_id": historical_info['historical_id'],
+                                                "presentation_name": historical_info['presentation_name'],
+                                                "presentation_location": historical_info['presentation_location'],
+                                                "presentation_time_stamp": historical_info['presentation_time_stamp'],
+                                                "user_id": historical_info['user_id']}
+                                               for historical_info in response_data['data']['historical_data']]}
+
+        return render_template('historical.html', historical=historical_data, information=data)
     else:
         app.logger.info('Historical endpoint delete presentation failed with error: ' + response.text)
         data = {key: value for key, value in response.json().items() if key == 'message'}
