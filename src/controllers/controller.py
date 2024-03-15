@@ -1,6 +1,5 @@
 import json
 import requests
-from flask import session
 
 from app import app
 from src.utils.common_scripts import clean_up_string, create_unique_folder, download_presentation, \

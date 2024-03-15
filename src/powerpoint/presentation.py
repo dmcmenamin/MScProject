@@ -3,7 +3,6 @@ import os
 from pptx import Presentation
 import re
 
-from app import app
 from src.utils.common_scripts import clean_up_string
 
 # Define constants for slide layouts
@@ -47,7 +46,6 @@ class PowerPointPresentation:
         if presentation_string:
             self.populate_presentation(presentation_string)
 
-
     # Return a string representation of the class
     def __str__(self):
         """ Returns the string representation of the PowerPointPresentation class
@@ -73,8 +71,8 @@ class PowerPointPresentation:
                 if presentation_line.lower().startswith("slide"):
                     # If the presentation line starts with Slide, then it is the start of a new slide
                     # Add the line to the sliced presentation as a new slide, including a new line, so it can be
-                    # formatted correctly. Done via regex to replace "Slide x:" with "Title:"
-                    slide_title = re.sub(r"Slide \d+", "TITLE:", presentation_line, flags=re.IGNORECASE)
+                    # formatted correctly. Done via regex to replace "Slide x" with "Title:"
+                    slide_title = re.sub(r"Slide \d:", "TITLE:", presentation_line, flags=re.IGNORECASE)
                     sliced_presentation.append(slide_title + "\n")
                 elif len(sliced_presentation) != 0:
                     # Otherwise, it is part of the previous slide
