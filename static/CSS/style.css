@@ -2,15 +2,16 @@
 /* Path: static/CSS/style.css */
 body {
     background-color: #2D4263;
+    color: #212529;
+    display: flex;
+    flex-direction: column;
     font-family: 'Roboto', sans-serif;
     font-size: 16px;
     font-weight: 700;
     line-height: 1.5;
-    color: #212529;
     height: 100%;
+    min-height: 100vh;
     width: 100%;
-    display: flex;
-    flex-direction: column;
 }
 
 html {
@@ -18,7 +19,7 @@ html {
 }
 
 footer {
-    flex-grow: 100;
+    margin-top: auto;
 }
 
 table {
@@ -35,6 +36,8 @@ table {
 .bg-custom {
     background-color: #2D4263;
     background-image: url("../Images/canva-background-image.png");
+    background-repeat: no-repeat;
+    background-attachment: fixed;
     height: auto;
     width: auto;
 }
@@ -172,4 +175,12 @@ table {
         opacity: 0;
     }
 }
+
+/***** Media Styles *****/
+@media (min-width: 13in) {
+    .bg-custom {
+        background-size: cover;
+    }
+}
+
 

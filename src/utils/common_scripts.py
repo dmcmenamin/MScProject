@@ -5,6 +5,7 @@ import shutil
 from datetime import datetime
 from pathlib import Path
 
+import pkg_resources
 import platformdirs
 
 from flask import send_file, jsonify, session
@@ -17,6 +18,8 @@ def clean_up_string(line_to_clean):
     """
     # clean up of the reply, to remove any unwanted characters
     line_to_clean = line_to_clean.replace("*", "")
+    line_to_clean = line_to_clean.replace(">", "")
+    line_to_clean = line_to_clean.replace('"', "")
     if line_to_clean.startswith("-"):
         line_to_clean = line_to_clean.replace("-", "")
     line_to_clean = line_to_clean.strip()
@@ -30,6 +33,23 @@ def get_email_secret_key():
     """
     env_variables = get_environment_variables()
     return env_variables['EMAIL']['EMAIL_SECRET_KEY']
+
+
+def get_image_model_name(llm_model_name):
+    """ Returns the image model name
+    :return: The image model name
+    """
+    env_variables = get_environment_variables()
+    return env_variables[llm_model_name]['IMAGE_MODEL_NAME']
+
+
+def get_specific_prsentation_theme(presentation_theme):
+    """ Returns the theme name
+    :param presentation_theme: The presentation theme
+    :return: The theme name
+    """
+    env_variables = get_environment_variables()
+    return env_variables['PRESENTATION_THEMES'][presentation_theme]+".pptx"
 
 
 def print_text_file(text_file_name, text_file_descriptor):
@@ -61,7 +81,8 @@ def get_environment_variables():
             return json.load(env_variables)
     elif __name__ == "__main__":
         # for development purposes
-        with open("./configs/env_variables.json", "r") as env_variables:
+        environment_variable_location = pkg_resources.resource_filename("configs", "env_variables.json")
+        with open(environment_variable_location, "r") as env_variables:
             return json.load(env_variables)
     else:
         # for testing purposes
@@ -81,6 +102,7 @@ def get_themes_available():
 
 def create_unique_folder(filename, presenter_username):
     """ Creates a unique folder for the user to store their presentations
+    :param presenter_username: The username of the presenter
     :param filename: The name of the folder to be created
     :return: The full path of the folder and the absolute path of the folder
     """
@@ -110,7 +132,7 @@ def download_presentation(presentation_source_path):
         try:
             if send_file(presentation_source_path, as_attachment=True):
                 return jsonify({"message": "Presentation downloaded"}), 200
-        except Exception as e:
+        except Exception:
             return jsonify({"message": "Unable to download presentation"}), 500
     else:
         try:
@@ -124,7 +146,7 @@ def download_presentation(presentation_source_path):
             shutil.copy(presentation_source_path, destination_path)
 
             return jsonify({"message": "Presentation downloaded"}), 200
-        except Exception as e:
+        except Exception:
             return jsonify({"error": "Unable to download presentation"}), 500
 
 

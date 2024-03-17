@@ -18,18 +18,11 @@
             <hr class="mb-3">
         </div>
 
-        <div class="container">
-            <div class="row">
-                <div class="col-12">
-                    {% if error_or_warning %}
-                    <div class="font-header-error" role="alert">
-                        <h1 class="text-center"> {{ error_or_warning['message'] }}</h1>
-                    </div>
-                    {% endif %}
-                </div>
+        {%  if information %}
+            <div class="font-header-error" role="alert">
+                <h1 class="text-center"> {{ information['message'] }}</h1>
             </div>
-        </div>
-
+        {% endif %}
 
         <table class="table table-dark table-striped table-hover historical-table">
             <tr>
@@ -45,7 +38,7 @@
                 <th>
                     <h2 class="text-center">Presentation Delete</h2>
                 </th>
-                {% for historical_data in historical %}
+                {% for historical_data in historical['historical_data'] %}
                     <tr>
                         <td>
                             <p class="text-center">{{ historical_data['presentation_name'] }}</p>
@@ -70,15 +63,12 @@
                     </tr>
                 {% endfor %}
         </table>
-    {% else %}
-        <div class="container-fluid content">
-            <div class="row">
-                <div class="col-12">
-                    <h1 class="text-center font-header-custom">Welcome to DynaPoint Historical Details</h1>
-                    <h2 class="test-center font-header-custom-2">There are no historical presentations to display</h2>
-                </div>
+        {% elif error_or_warning %}
+            <h1 class="text-center font-header-custom">Welcome to DynaPoint Historical Details</h1>
+            <div class="font-header-error" role="alert">
+                <h1 class="text-center"> {{ error_or_warning['message'] }}</h1>
             </div>
-    {% endif %}
+        {% endif %}
     </div>
 
 {% endblock %}

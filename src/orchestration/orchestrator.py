@@ -39,7 +39,8 @@ class Orchestrator:
         else:
             raise ValueError("Large Language Model is not supported.")
 
-    def _call_chatgpt_api(self, api_key, model):
+    @classmethod
+    def _call_chatgpt_api(cls, api_key, model):
         """ Returns the ChatGPTAPI to be used
         :param api_key: The API key
         :param model: The model

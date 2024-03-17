@@ -30,6 +30,8 @@ class DeleteHistoricalPresentation(Resource):
                     # delete the files
                     if os.path.exists(historical_presentation_location):
                         delete_file_of_type_specified(historical_presentation_location)
+                        # delete the folder as well
+                        os.rmdir(historical_presentation_location)
                         app.logger.info('Historical presentation deleted successfully')
                     else:
                         app.logger.info('Historical presentation not found')

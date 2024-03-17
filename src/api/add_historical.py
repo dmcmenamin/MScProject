@@ -21,6 +21,7 @@ class AddHistoricalPresentation(Resource):
                 app.logger.info('User logged in')
 
                 # get user input
+                app.logger.info('Data: %s', request.get_json())
                 data = request.get_json()
                 historical_user_id = user_id
                 historical_presentation_name = data.get('presentation_name')

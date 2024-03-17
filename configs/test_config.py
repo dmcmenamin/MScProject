@@ -8,7 +8,7 @@ MAIL_PASSWORD = ''
 
 SECURITY_PASSWORD_SALT = 'security_password_salt'
 
-SQLALCHEMY_DATABASE_URI = 'mysql+mysqlconnector://root:@localhost/dynamicpowerpoint'
+SQLALCHEMY_DATABASE_URI = 'sqlite:///memory:dynamicpowerpoint'
 
 JWT_SECRET_KEY = 'jwt-secret-string'
 

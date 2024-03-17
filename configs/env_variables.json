@@ -2,10 +2,16 @@
 
   "PRESENTATION_THEMES": {
     "Tech": "Futuristic",
+    "Digital": "Digital",
+    "Crisp": "Slate",
     "None": ""
   },
 
   "EMAIL": {
     "EMAIL_SECRET_KEY": "789abc456def123"
+  },
+
+  "CHATGPT": {
+    "IMAGE_MODEL_NAME": "dall-e-3"
   }
 }

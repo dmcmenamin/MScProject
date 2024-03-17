@@ -61,5 +61,5 @@ class PresentationGeneratorGet(Resource):
                         "llm_names_and_models": llm_names_and_models,
                         "presentation_themes": presentation_themes}
                 return {'message': 'Success', 'data': data}, 200
-            except Exception as e:
+            except Exception:
                 return {'message': 'Something went wrong'}, 500
