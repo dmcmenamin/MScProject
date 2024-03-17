@@ -36,7 +36,7 @@ class UpdatePassword(Resource):
             try:
                 db.session.commit()
                 return {'message': 'Password updated successfully'}, 200
-            except Exception as e:
+            except Exception:
                 return {'message': 'Password could not be updated'}, 500
         else:
             return {'message': 'User does not exist'}, 404
