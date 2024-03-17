@@ -1,8 +1,7 @@
 import os
-
-from pptx import Presentation
 import re
 
+from pptx import Presentation
 from src.utils.common_scripts import clean_up_string
 
 # Define constants for slide layouts
@@ -33,14 +32,15 @@ class PowerPointPresentation:
         :param presentation_string: The presentation string
         :param presentation_theme: The presentation theme
         """
+        self.theme = presentation_theme
         cwd = os.getcwd()
-        if not presentation_theme:
+        if not self.theme:
             self.presentation = Presentation()
         elif not os.path.exists(cwd + "/static/PresentationThemes/"):
             self.presentation = Presentation()
-        elif presentation_theme in os.listdir(cwd + "/static/PresentationThemes/"):
-            self.presentation = Presentation(pptx=cwd + "/static/PresentationThemes/" + presentation_theme)
-        elif presentation_theme not in (cwd + "/static/PresentationThemes/"):
+        elif self.theme in os.listdir(cwd + "/static/PresentationThemes/"):
+            self.presentation = Presentation(pptx=cwd + "/static/PresentationThemes/" + self.theme)
+        elif self.theme not in (cwd + "/static/PresentationThemes/"):
             self.presentation = Presentation()
 
         if presentation_string:
@@ -53,7 +53,8 @@ class PowerPointPresentation:
         """
         return "PowerPointPresentation"
 
-    def _slice_presentation(self, presliced_presentation):
+    @classmethod
+    def _slice_presentation(cls, presliced_presentation):
         """ Private Method - returns a sliced presentation
         :param presliced_presentation: The presentation to slice
         :return: The sliced presentation
@@ -180,27 +181,36 @@ class PowerPointPresentation:
         :return: The populated presentation
         """
         sliced_presentation = self._slice_presentation(input_presentation)
-        for section in sliced_presentation:
+        for index, section in enumerate(sliced_presentation):
 
             if len(section) == 0:
                 continue
             title, subtitle, content, notes, image = self._get_slide_content(section)
 
-            self.add_slide(title=title, subtitle=subtitle, text=content, notes=notes, image=image)
+            if index == 0 and self.theme:
+                first_slide_with_theme = True
+            else:
+                first_slide_with_theme = False
 
-    def add_slide(self, title=None, subtitle=None, text=None, image=None, notes=None):
+            self.add_slide(title=title, subtitle=subtitle, text=content, notes=notes, image=image,
+                           first_slide_with_theme=first_slide_with_theme)
+
+    def add_slide(self, title=None, subtitle=None, text=None, image=None, notes=None, first_slide_with_theme=False):
         """ Returns the created slide
         :param title: The title of the slide
         :param subtitle: The subtitle of the slide
         :param text: The text of the slide
         :param image: The image of the slide
         :param notes: The notes of the slide
+        :param first_slide_with_theme: The first slide with the theme, meaning we want to use this slide rather than add
+        a new one
         :return: The created slide
         """
 
         slide_layout = self._set_layouts(title, subtitle, text, image, notes)
 
-        created_slide = self.presentation.slides.add_slide(self.presentation.slide_layouts[slide_layout])
+        created_slide = self.create_slide(slide_layout, first_slide_with_theme)
+
         if slide_layout == SLIDE_PICTURE_WITH_CAPTION_LAYOUT:
             created_slide = self._create_slides_with_images(created_slide, title, subtitle, text, image, notes)
         else:
@@ -224,8 +234,12 @@ class PowerPointPresentation:
             raise FileNotFoundError("Image must be provided for picture with caption layout.")
         if title:
             created_slide.shapes.title.text = title
+        if subtitle:
+            created_slide.placeholders[1].text = subtitle
         if text:
             created_slide.placeholders[2].text = text
+        if notes:
+            created_slide.notes_slide.notes_text_frame.text = notes
         return created_slide
 
     @classmethod
@@ -293,3 +307,17 @@ class PowerPointPresentation:
         """
 
         return self.presentation.slides
+
+    def create_slide(self, slide_layout, first_slide_with_theme=False):
+        """ Returns the created slide
+        :param slide_layout: The slide layout
+        :param first_slide_with_theme: The first slide with the theme, meaning we want to use this slide rather than add
+        a new one
+        :return: The created slide
+        """
+
+        if first_slide_with_theme:
+            return self.get_slide(0)
+        else:
+            return self.presentation.slides.add_slide(self.presentation.slide_layouts[slide_layout])
+

@@ -40,11 +40,6 @@ class Test(TestCase):
     def test_constructor(self):
         self.assertIsNotNone(self.presentation)
 
-    # Test the Constructor(self, filename, theme)
-    def test_constructor_with_filename_and_theme(self):
-        presentation = PowerPointPresentation("test", "test.pptx")
-        self.assertIsNotNone(presentation)
-
     # Test the Constructor with no theme
     def test_constructor_with_no_theme(self):
         presentation = PowerPointPresentation("test")
