@@ -1,16 +1,21 @@
+from datetime import timedelta
+
 MAIL_SERVER = 'smtp.gmail.com'
 MAIL_PORT = 465
 MAIL_USE_TLS = False
 MAIL_USE_SSL = True
 MAIL_DEFAULT_SENDER = 'noreply@dynapoint.com'
-MAIL_USERNAME = ''
-MAIL_PASSWORD = ''
+MAIL_USERNAME = 'dynapoint06@gmail.com'
+MAIL_PASSWORD = 'eatnzqjislmvbdzz'
 
 SECURITY_PASSWORD_SALT = 'security_password_salt'
 
 SQLALCHEMY_DATABASE_URI = 'mysql+mysqlconnector://root:@localhost/dynamicpowerpoint'
 
 JWT_SECRET_KEY = 'jwt-secret-string'
+JWT_ACCESS_TOKEN_EXPIRES = timedelta(minutes=30)
+
+CSRF_SECRET_KEY = 'csrf-secret-string'
 
 SERVER_NAME = '127.0.0.1:5000'
 

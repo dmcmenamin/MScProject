@@ -13,7 +13,7 @@ def generate_sign_up_token(username):
     # create a serializer
     serializer = URLSafeTimedSerializer(get_email_secret_key())
     # create a token
-    return serializer.dumps(username, salt=app.config['SECURITY_PASSWORD_SALT'])
+    return serializer.dumps(username, salt=app.config["SECURITY_PASSWORD_SALT"])
 
 
 def verify_sign_up_token(token, expiration=3600):
@@ -26,7 +26,7 @@ def verify_sign_up_token(token, expiration=3600):
     serializer = URLSafeTimedSerializer(get_email_secret_key())
     # verify the token
     try:
-        username = serializer.loads(token, salt=app.config['SECURITY_PASSWORD_SALT'], max_age=expiration)
+        username = serializer.loads(token, salt=app.config["SECURITY_PASSWORD_SALT"], max_age=expiration)
         return username
     except:
         return False

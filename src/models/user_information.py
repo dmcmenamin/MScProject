@@ -8,7 +8,7 @@ class User(db.Model):
     """ The User class
     :param db.Model: The database model
     """
-    __tablename__ = 'user_information'
+    __tablename__ = "user_information"
     user_id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(255), unique=True, nullable=False)
     user_first_name = db.Column(db.String(32), nullable=False)
@@ -19,7 +19,7 @@ class User(db.Model):
     account_confirmed = db.Column(db.Boolean, nullable=False, default=False)
 
     def __repr__(self):
-        return '<User %r>' % self.username
+        return "<User %r>" % self.username
 
     def __init__(self, username, user_first_name, user_last_name, user_is_admin=False,
                  account_confirmed=False):
@@ -169,7 +169,7 @@ class User(db.Model):
         :return: The hashed password
         """
 
-        return hashlib.sha512(password.encode('utf-8') + salt).digest()
+        return hashlib.sha512(password.encode("utf-8") + salt).digest()
 
     @classmethod
     def check_password(cls, password, salt, hashed_password):

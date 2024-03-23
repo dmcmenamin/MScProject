@@ -20,7 +20,7 @@ class PresentationGeneratorGet(Resource):
 
         user_id = get_jwt_identity()
         if not user_id:
-            return {'message': 'User not logged in'}, 401
+            return {"message": "User not logged in"}, 401
         else:
             # get user's available llm model names
             api_keys_subquery = (db.session.query(ApiKey.api_key_llm)
@@ -47,7 +47,7 @@ class PresentationGeneratorGet(Resource):
                     .all()
 
                 # Convert each detail tuple to a dict
-                details_list = [{'model_name': detail[0], 'description': detail[1]} for detail in
+                details_list = [{"model_name": detail[0], "description": detail[1]} for detail in
                                 llm_details_and_description]
 
                 llm_names_and_models[
@@ -60,6 +60,6 @@ class PresentationGeneratorGet(Resource):
                 data = {"llm_model_names": [{"name": llm_model[0]} for llm_model in llm_model_names],
                         "llm_names_and_models": llm_names_and_models,
                         "presentation_themes": presentation_themes}
-                return {'message': 'Success', 'data': data}, 200
+                return {"message": "Success", "data": data}, 200
             except Exception:
-                return {'message': 'Something went wrong'}, 500
+                return {"message": "Something went wrong"}, 500

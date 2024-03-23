@@ -6,14 +6,14 @@ class ApiKey(db.Model):
     :param db.Model: The database model
     """
 
-    __tablename__ = 'api_key'
+    __tablename__ = "api_key"
     api_key_id = db.Column(db.Integer, primary_key=True)
-    api_key_llm = db.Column(db.Integer, db.ForeignKey('llm.llm_id'), nullable=False)
-    api_key_user = db.Column(db.Integer, db.ForeignKey('user_information.user_id'), nullable=False)
+    api_key_llm = db.Column(db.Integer, db.ForeignKey("llm.llm_id"), nullable=False)
+    api_key_user = db.Column(db.Integer, db.ForeignKey("user_information.user_id"), nullable=False)
     api_key_user_key = db.Column(db.String(256), nullable=False)
 
     def __repr__(self):
-        return '<ApiKey %r>' % self.api_key_user_key
+        return "<ApiKey %r>" % self.api_key_user_key
 
     def __init__(self, api_key_llm, api_key_user, api_key_user_key):
         """ The constructor for the ApiKey class
