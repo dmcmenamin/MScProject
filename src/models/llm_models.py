@@ -7,14 +7,14 @@ class LlmModels(db.Model):
     @param db.Models: The database model
     """
 
-    __tablename__ = 'llm_model'
+    __tablename__ = "llm_model"
     llm_model_id = db.Column(db.Integer, primary_key=True)
-    llm_id = db.Column(db.Integer, db.ForeignKey('llm.llm_id'), nullable=False)
+    llm_id = db.Column(db.Integer, db.ForeignKey("llm.llm_id"), nullable=False)
     llm_model_name = db.Column(db.String(30), nullable=False)
     llm_model_description = db.Column(db.String(255), nullable=False)
 
     def __repr__(self):
-        return '<LlmDetails %r>' % self.llm_model_name
+        return "<LlmDetails %r>" % self.llm_model_name
 
     def __init__(self, llm_id, llm_model_name, llm_model_description):
         """ The constructor for the LlmDetails class

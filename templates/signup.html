@@ -69,7 +69,8 @@
                                         <input class="form-control" id="API-Key" type="text" name="api_key_{{ llm_name }}">
                                     </td>
                                     <td colspan="2">
-                                        <a href="{{ llm_link }}" target="_blank" class="font-header-custom-2">API Provider</a>
+                                        <!-- Link to API Provider, with noopener to increase security -->
+                                        <a href="{{ llm_link }}" target="_blank" class="font-header-custom-2" rel="noopener">API Provider</a>
                                     </td>
                                 </tr>
                             {% endfor %}

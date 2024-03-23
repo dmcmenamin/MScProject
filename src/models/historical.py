@@ -9,15 +9,15 @@ class Historical(db.Model):
     :param db.Model: The database model
     """
 
-    __tablename__ = 'historical'
+    __tablename__ = "historical"
     historical_id = db.Column(db.Integer, primary_key=True)
-    historical_user_id = db.Column(db.Integer, db.ForeignKey('user_information.user_id'), nullable=False)
+    historical_user_id = db.Column(db.Integer, db.ForeignKey("user_information.user_id"), nullable=False)
     historical_presentation_name = db.Column(db.String(255), nullable=False)
     historical_time_stamp = db.Column(db.DateTime, nullable=False)
     historical_presentation_location = db.Column(db.String(255), nullable=False)
 
     def __repr__(self):
-        return '<Historical %r>' % self.historical_presentation_name
+        return "<Historical %r>" % self.historical_presentation_name
 
     def __init__(self, historical_user_id, historical_presentation_name, historical_presentation_location,
                  historical_time_stamp=datetime.datetime.now()):

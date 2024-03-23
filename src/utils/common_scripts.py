@@ -32,7 +32,7 @@ def get_email_secret_key():
     :return: The email secret key
     """
     env_variables = get_environment_variables()
-    return env_variables['EMAIL']['EMAIL_SECRET_KEY']
+    return env_variables["EMAIL"]["EMAIL_SECRET_KEY"]
 
 
 def get_image_model_name(llm_model_name):
@@ -40,16 +40,17 @@ def get_image_model_name(llm_model_name):
     :return: The image model name
     """
     env_variables = get_environment_variables()
-    return env_variables[llm_model_name]['IMAGE_MODEL_NAME']
+    return env_variables[llm_model_name]["IMAGE_MODEL_NAME"]
 
 
-def get_specific_prsentation_theme(presentation_theme):
+def get_specific_presentation_theme(presentation_theme):
     """ Returns the theme name
     :param presentation_theme: The presentation theme
     :return: The theme name
     """
     env_variables = get_environment_variables()
-    return env_variables['PRESENTATION_THEMES'][presentation_theme]+".pptx"
+
+    return env_variables["PRESENTATION_THEMES"][presentation_theme]+".pptx"
 
 
 def print_text_file(text_file_name, text_file_descriptor):
@@ -176,9 +177,9 @@ def user_session(username, first_name, last_name, is_admin, access_token, user_i
     :param user_id: The user ID
     :return: None
     """
-    set_session_values('username', username)
-    set_session_values('first_name', first_name)
-    set_session_values('last_name', last_name)
-    set_session_values('is_admin', is_admin)
-    set_session_values('jwt_token', access_token)
-    set_session_values('user_id', user_id)
+    set_session_values("username", username)
+    set_session_values("first_name", first_name)
+    set_session_values("last_name", last_name)
+    set_session_values("is_admin", is_admin)
+    set_session_values("jwt_token", access_token)
+    set_session_values("user_id", user_id)

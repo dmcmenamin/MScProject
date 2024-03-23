@@ -15,6 +15,6 @@ def send_confirmation_email(recipient_email, subject, html_body):
         subject,
         recipients=[recipient_email],
         html=html_body,
-        sender=app.config['MAIL_DEFAULT_SENDER']
+        sender=app.config["MAIL_DEFAULT_SENDER"]
     )
     mail.send(msg)

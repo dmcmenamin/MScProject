@@ -109,33 +109,33 @@ class ChatGPTAPI(large_language_model_parent.LargeLanguageModel):
             # If so, raise a ValueError
             # Otherwise, return the response
             if not response:
-                return jsonify({"error": "ChatGPT failed to generate a presentation deck."}), 400
+                return jsonify({"message": "ChatGPT failed to generate a presentation deck."}), 400
             elif response == "Sorry, I don't have an answer for that.":
-                return jsonify({"error": "ChatGPT failed to generate a presentation deck."}), 400
+                return jsonify({"message": "ChatGPT failed to generate a presentation deck."}), 400
             else:
                 return jsonify({"presentation_deck": response}), 200
 
         except openai.BadRequestError as e:
             # Catching bad request error
-            return jsonify({"error": f"OpenAI API request failed"}), 400
+            return jsonify({"message": f"OpenAI API request failed"}), 400
         except openai.APIConnectionError as e:
             # Catching connection error here
-            return jsonify({"error": f"OpenAI API request failed - API Connection Error, Please retry"}), 400
+            return jsonify({"message": f"OpenAI API request failed - API Connection Error, Please retry"}), 400
         except openai.RateLimitError as e:
             # Catching Error where Token has exceeded rate limit
-            return jsonify({"error": f"Insufficient Balance complete. Please top up OpenAI account"}), 400
+            return jsonify({"message": f"Insufficient Balance complete. Please top up OpenAI account"}), 400
         except openai.APIError as e:
             # Catching API error here
-            return jsonify({"error": f"OpenAI API returned an API Error, please contact support"}), 400
+            return jsonify({"message": f"OpenAI API returned an API Error, please contact support"}), 400
         except openai.AuthenticationError as e:
             # Catching Error where Token is invalid
-            return jsonify({"error": f"OpenAI API request failed due to invalid token, please check your API key"}), 400
+            return jsonify({"message": f"OpenAI API request failed due to invalid token, please check your API key"}), 400
         except openai.OpenAIError as e:
             # Catching Error where OpenAI API fails
-            return jsonify({"error": f"OpenAI API request failed - OpenAIError, please contact support"}), 400
+            return jsonify({"message": f"OpenAI API request failed - OpenAIError, please contact support"}), 400
         except Exception as e:
             # Catching any other errors
-            return jsonify({"error": f"OpenAI API request failed - General Exception, please contact support"}), 400
+            return jsonify({"message": f"OpenAI API request failed - General Exception, please contact support"}), 400
 
     def get_presentation_image(self, image_query, image_size):
         """ Returns an image from OpenAI
@@ -162,28 +162,28 @@ class ChatGPTAPI(large_language_model_parent.LargeLanguageModel):
             # If so, raise a ValueError
             # Otherwise, return the image_url
             if not image_url:
-                return jsonify({"error": "ChatGPT failed to generate an image."}), 400
+                return jsonify({"message": "ChatGPT failed to generate an image."}), 400
             else:
                 return jsonify({"image_url": image_url}), 200
 
         except openai.BadRequestError as e:
             # Catching bad request error
-            return jsonify({"error": f"OpenAI API request failed, please contact support"}), 400
+            return jsonify({"message": f"OpenAI API request failed, please contact support"}), 400
         except openai.APIConnectionError as e:
             # Catching connection error here
-            return jsonify({"error": f"OpenAI API request failed, Please retry"}), 400
+            return jsonify({"message": f"OpenAI API request failed, Please retry"}), 400
         except openai.RateLimitError as e:
             # Catching Error where Token has exceeded rate limit
-            return jsonify({"error": f"Insufficient Balance complete. Please top up OpenAI account"}), 400
+            return jsonify({"message": f"Insufficient Balance complete. Please top up OpenAI account"}), 400
         except openai.AuthenticationError as e:
             # Catching Error where Token is invalid
-            return jsonify({"error": f"penAI API request failed due to invalid token, please check your API key"}), 400
+            return jsonify({"message": f"penAI API request failed due to invalid token, please check your API key"}), 400
         except openai.APIError as e:
             # Catching API error here
-            return jsonify({"error": f"OpenAI API returned an API Error, please contact support"}), 400
+            return jsonify({"message": f"OpenAI API returned an API Error, please contact support"}), 400
         except openai.OpenAIError as e:
             # Catching Error where OpenAI API fails
-            return jsonify({"error": f"OpenAI API request failed, please contact support"}), 400
+            return jsonify({"message": f"OpenAI API request failed, please contact support"}), 400
         except Exception as e:
             # Catching any other errors
-            return jsonify({"error": f"OpenAI API request failed, please contact support"}), 400
+            return jsonify({"message": f"OpenAI API request failed, please contact support"}), 400

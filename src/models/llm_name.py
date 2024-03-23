@@ -7,13 +7,13 @@ class Llm(db.Model):
     :param db.Model: The database model
     """
 
-    __tablename__ = 'llm'
+    __tablename__ = "llm"
     llm_id = db.Column(db.Integer, primary_key=True)
     llm_name = db.Column(db.String(30), unique=True, nullable=False)
     llm_api_link = db.Column(db.String(255), nullable=False)
 
     def __repr__(self):
-        return '<Llm %r>' % self.llm_name
+        return "<Llm %r>" % self.llm_name
 
     def __init__(self, llm_name, llm_api_link):
         """ The constructor for the Llm class
