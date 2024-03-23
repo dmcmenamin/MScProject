@@ -104,7 +104,7 @@ def get_url():
     """ Get the url for the server
     :return: The url
     """
-    return 'http://' + app.config['SERVER_NAME']
+    return 'https://' + app.config['SERVER_NAME']
 
 
 # set the server and port for the app
