@@ -26,7 +26,7 @@ def create_app(test_config=None):
     if test_config is None:
         # use the pkg_resources to get the config file
         config_file = pkg_resources.resource_filename('configs', 'config.py')
-        print("config_file", config_file)
+
         # load the instance config, if it exists, when not testing
         created_app.config.from_pyfile(config_file, silent=True)
     else:
@@ -69,9 +69,6 @@ api = Api(app)
 mail = Mail(app)
 db = SQLAlchemy(app)
 
-# set the server and port for the app
-server_and_port = 'http://' + app.config['SERVER_NAME']
-
 from src.api.get_login import UserLogin
 from src.api.get_available_llms import GetAvailableLlms
 from src.api.add_user import AddUser
@@ -90,6 +87,28 @@ from src.api.get_historical import GetAllHistoricalForUser
 from src.api.add_historical import AddHistoricalPresentation
 from src.api.get_specific_historical_presentation import GetSpecificHistoricalPresentation
 from src.api.delete_historical import DeleteHistoricalPresentation
+
+
+def set_headers():
+    """ Set the headers for the request
+    :return: The headers
+    """
+    jwt_token = session['jwt_token']
+    return {
+        'Authorization': 'Bearer ' + jwt_token,
+        'Content-Type': 'application/json'
+    }
+
+
+def get_url():
+    """ Get the url for the server
+    :return: The url
+    """
+    return 'http://' + app.config['SERVER_NAME']
+
+
+# set the server and port for the app
+server_and_port = get_url()
 
 
 @app.route('/')
@@ -114,7 +133,11 @@ def login():
         response = requests.post(server_and_port + '/user_login', json=data, headers=headers)
         if response.status_code == 200:
             app.logger.info('Login successful for user')
-            data = response.json()
+
+            data_dictionary = {key: value for key, value in response.json().items() if key == 'data'}
+
+            data = data_dictionary['data']
+
             # set the session information
             user_session(data['username'], data['first_name'], data['last_name'], data['is_admin'],
                          data['access_token'], data['user_id'])
@@ -129,6 +152,7 @@ def login():
 def signup():
     if request.method == 'GET':
         app.logger.info('Signup endpoint called')
+        print("server_and_port" + server_and_port)
         response = requests.get(server_and_port + '/available_llms')
 
         # Successful response, render the signup page with the available LLMs
@@ -156,7 +180,6 @@ def signup():
                 llm.append(llm_data)
                 llm_data = {}
 
-        print(llm)
         # create the data dictionary, and add the username, password, first name, last name, and llm to it
         data = {'username': request.form['username'],
                 'password': request.form['password'],
@@ -203,11 +226,9 @@ def presentation_creator():
     """ The presentation creator endpoint for the website
     :return: If successful, the presentation creator page, otherwise, the index page with an error message
     """
-    jwt_token = session['jwt_token']
     if request.method == 'GET':
         app.logger.info('Presentation creator endpoint called with GET request')
-        headers = {'Authorization': 'Bearer ' + jwt_token,
-                   'Content-Type': 'application/json'}
+        headers = set_headers()
         response = requests.get(server_and_port + '/presentation_generator', headers=headers)
         if response.status_code == 200:
             app.logger.info('Presentation creator endpoint called successfully with GET request')
@@ -223,8 +244,7 @@ def presentation_creator():
                                    error_or_warning=data)
     elif request.method == 'POST':
         app.logger.info('Presentation creator endpoint called with POST request')
-        headers = {'Authorization': 'Bearer ' + jwt_token,
-                   'Content-Type': 'application/json'}
+        headers = set_headers()
 
         # get the form data, and convert it to a dictionary
         data = {key: value for key, value in request.form.items()}
@@ -252,10 +272,8 @@ def presentation_generating_in_progress():
     """
     try:
         if request.method == 'POST':
-            jwt_token = session['jwt_token']
             app.logger.info('Presentation generating in progress called with POST request')
-            headers = {'Authorization': 'Bearer ' + jwt_token,
-                       'Content-Type': 'application/json'}
+            headers = set_headers()
             # get the form data, and convert it to a dictionary
             data_string = request.form['response']
             data = json.loads(data_string)['data']
@@ -296,10 +314,8 @@ def historical():
     """ The historical endpoint for the website
     :return: If successful, the historical page, otherwise, the index page with an error message
     """
-    jwt_token = session['jwt_token']
     app.logger.info('Historical endpoint called')
-    headers = {'Authorization': 'Bearer ' + jwt_token,
-               'Content-Type': 'application/json'}
+    headers = set_headers()
     response = requests.get(server_and_port + '/available_historical/' + str(session['user_id']), headers=headers)
     if response.status_code == 200:
         app.logger.info('Historical endpoint called successfully')
@@ -324,10 +340,8 @@ def historical_endpoint_get_specific_presentation(historical_id):
     """ The historical endpoint get specific presentation for the website
     :return: If successful, download the presentation, otherwise, display the historical page with an error message
     """
-    jwt_token = session['jwt_token']
     app.logger.info('Historical endpoint get specific presentation called')
-    headers = {'Authorization': 'Bearer ' + jwt_token,
-               'Content-Type': 'application/json'}
+    headers = set_headers()
     response = requests.get(server_and_port + '/retrieve_historical/' + historical_id, headers=headers)
     if response.status_code == 200:
         data = {key: value for key, value in response.json().items() if key == 'message'}
@@ -364,10 +378,8 @@ def historical_endpoint_delete_presentation(historical_id):
     """ The historical endpoint delete presentation for the website
     :return: If successful, the historical page, otherwise, the index page with an error message
     """
-    jwt_token = session['jwt_token']
     app.logger.info('Historical endpoint delete presentation called')
-    headers = {'Authorization': 'Bearer ' + jwt_token,
-               'Content-Type': 'application/json'}
+    headers = set_headers()
     response = requests.delete(server_and_port + '/delete_historical_presentation/' + historical_id, headers=headers)
 
     if response.status_code == 200:
@@ -423,11 +435,9 @@ def change_user_password(user_id_for_password_update):
             return render_template('account_settings.html',
                                    error_or_warning={'message': 'New password and confirm password do not match'})
 
-        jwt_token = session['jwt_token']
         app.logger.info('Change user password endpoint called')
 
-        headers = {'Authorization': 'Bearer ' + jwt_token,
-                   'Content-Type': 'application/json'}
+        headers = set_headers()
         data = {'password': request.form['confirm_password']}
         response = requests.put(server_and_port + '/update_password/' + user_id_for_password_update,
                                 json=data, headers=headers)
@@ -452,10 +462,8 @@ def delete_user_endpoint(user_id_to_delete):
     :return: If successful, the index page, otherwise, the account settings page with an error message
     """
     if request.method == 'POST' and request.form.get('_method') == 'DELETE':
-        jwt_token = session['jwt_token']
         app.logger.info('Delete user endpoint called')
-        headers = {'Authorization': 'Bearer ' + jwt_token,
-                   'Content-Type': 'application/json'}
+        headers = set_headers()
         response = requests.delete(server_and_port + '/delete_user/' + user_id_to_delete, headers=headers)
         data = {key: value for key, value in response.json().items() if key == 'message'}
         if response.status_code == 200:

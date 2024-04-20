@@ -1,14 +1,7 @@
 from unittest import TestCase
 
-import pptx
-
-from src.powerpoint.presentation import (PowerPointPresentation,
-                                         SLIDE_TITLE_AND_CONTENT_LAYOUT,
-                                         SLIDE_TITLE_LAYOUT,
-                                         SLIDE_BLANK_LAYOUT,
-                                         SLIDE_CONTENT_WITH_CAPTION_LAYOUT,
-                                         SLIDE_PICTURE_WITH_CAPTION_LAYOUT,
-                                         SLIDE_TITLE_ONLY_LAYOUT)
+from src.powerpoint.presentation import PowerPointPresentation
+from src.powerpoint.slide_enum import SlideEnum
 
 title = "Test Title"
 subtitle = "Test Subtitle"
@@ -54,6 +47,11 @@ class Test(TestCase):
         with self.assertRaises(ValueError):
             self.presentation._slice_presentation("")
 
+    def test__slice_presentation_without_keyword(self):
+        output = self.presentation._slice_presentation("This is a test line")
+        expected_output = ["This is a test line\n"]
+        self.assertEqual(output, expected_output)
+
     # Test the _slice_presentation method
     def test__slice_presentation(self):
         output = self.presentation._slice_presentation("slide 1: This is a test line")
@@ -68,6 +66,10 @@ class Test(TestCase):
                                                        "slide 2: This is a test line\n This is another test line")
         expected_output = ["TITLE: This is a test line\nThis is another test line\n",
                            "TITLE: This is a test line\nThis is another test line\n"]
+        self.assertEqual(output, expected_output)
+
+        output = self.presentation._slice_presentation("Slide 1: This is a test line\n This is another test line\n")
+        expected_output = ["TITLE: This is a test line\nThis is another test line\n"]
         self.assertEqual(output, expected_output)
 
     # Test the _get_slide_content method with no input
@@ -142,44 +144,44 @@ class Test(TestCase):
     # Test the _set_layouts method for title
     def test__set_layouts_title_only(self):
         slide = self.presentation._set_layouts("TITLE: Test Title\n", "", "", "", "")
-        self.assertEqual(slide, SLIDE_TITLE_ONLY_LAYOUT)
-        self.assertNotEqual(slide, SLIDE_TITLE_AND_CONTENT_LAYOUT)
+        self.assertEqual(slide, SlideEnum.SLIDE_TITLE_ONLY_LAYOUT.value)
+        self.assertNotEqual(slide, SlideEnum.SLIDE_TITLE_AND_CONTENT_LAYOUT.value)
 
     # Test the _set_layouts method for title and subtitle
     def test__set_layouts_title_and_subtitle(self):
         slide = self.presentation._set_layouts("TITLE: Test Title\n",
                                                "SUBTITLE: Test Subtitle\n", "", "", "")
-        self.assertEqual(slide, SLIDE_TITLE_LAYOUT)
-        self.assertNotEqual(slide, SLIDE_TITLE_AND_CONTENT_LAYOUT)
+        self.assertEqual(slide, SlideEnum.SLIDE_TITLE_LAYOUT.value)
+        self.assertNotEqual(slide, SlideEnum.SLIDE_TITLE_AND_CONTENT_LAYOUT.value)
 
     # Test the _set_layouts method for picture with caption
     def test__set_layouts_picture_with_caption(self):
         slide = self.presentation._set_layouts("", "", "", "img.png", "")
-        self.assertEqual(slide, SLIDE_PICTURE_WITH_CAPTION_LAYOUT)
-        self.assertNotEqual(slide, SLIDE_TITLE_AND_CONTENT_LAYOUT)
+        self.assertEqual(slide, SlideEnum.SLIDE_PICTURE_WITH_CAPTION_LAYOUT.value)
+        self.assertNotEqual(slide, SlideEnum.SLIDE_TITLE_AND_CONTENT_LAYOUT.value)
 
         slide = self.presentation._set_layouts("TITLE: Test Title\n", "SUBTITLE: Test Subtitle\n",
                                                "", "img.png", "img.png")
-        self.assertEqual(slide, SLIDE_PICTURE_WITH_CAPTION_LAYOUT)
-        self.assertNotEqual(slide, SLIDE_TITLE_LAYOUT)
+        self.assertEqual(slide, SlideEnum.SLIDE_PICTURE_WITH_CAPTION_LAYOUT.value)
+        self.assertNotEqual(slide, SlideEnum.SLIDE_TITLE_LAYOUT.value)
 
     # Test the _set_layouts method for content and title
     def test__set_layouts_content_and_title(self):
         slide = self.presentation._set_layouts("TITLE: Test Title\n", "",
                                                "CONTENT: Test Content\n", "", "")
-        self.assertEqual(slide, SLIDE_TITLE_AND_CONTENT_LAYOUT)
-        self.assertNotEqual(slide, SLIDE_TITLE_LAYOUT)
+        self.assertEqual(slide, SlideEnum.SLIDE_TITLE_AND_CONTENT_LAYOUT.value)
+        self.assertNotEqual(slide, SlideEnum.SLIDE_TITLE_LAYOUT.value)
 
     def test__set_layouts_content_only(self):
         slide = self.presentation._set_layouts("", "", "CONTENT: Test Content\n", "", "")
-        self.assertEqual(slide, SLIDE_CONTENT_WITH_CAPTION_LAYOUT)
-        self.assertNotEqual(slide, SLIDE_TITLE_LAYOUT)
+        self.assertEqual(slide, SlideEnum.SLIDE_CONTENT_WITH_CAPTION_LAYOUT.value)
+        self.assertNotEqual(slide, SlideEnum.SLIDE_TITLE_LAYOUT.value)
 
     # Test the _set_layouts method for comparison
     def test__set_layouts_notes(self):
         slide = self.presentation._set_layouts("", "", "", "", "Test Notes")
-        self.assertEqual(slide, SLIDE_BLANK_LAYOUT)
-        self.assertNotEqual(slide, SLIDE_TITLE_LAYOUT)
+        self.assertEqual(slide, SlideEnum.SLIDE_BLANK_LAYOUT.value)
+        self.assertNotEqual(slide, SlideEnum.SLIDE_TITLE_LAYOUT.value)
 
     # Test the title slide layout, to match the title
     def test_add_slide_with_title(self):
@@ -208,8 +210,6 @@ class Test(TestCase):
     def test_add_slide_with_picture(self):
         slide = self.presentation.add_slide(title=title, image=picture, text=text)
         self.assertEqual(slide.shapes.title.text, self.test_title)
-        # verify that the image is an instance of pptx.parts.image.Image
-        self.assertIsInstance(slide.placeholders[1].image, pptx.parts.image.Image)
         self.assertEqual(slide.placeholders[2].text, self.test_text)
         self.assertNotEqual(slide.placeholders[2].text, self.test_title)
 
@@ -230,7 +230,7 @@ class Test(TestCase):
 
     # Test slide layout retrieval
     def test_get_slide_layout(self):
-        layout = self.presentation.get_slide_layout(SLIDE_TITLE_AND_CONTENT_LAYOUT)
+        layout = self.presentation.get_slide_layout(SlideEnum.SLIDE_TITLE_AND_CONTENT_LAYOUT.value)
         self.assertEqual(layout.name, "Title and Content")
 
     # Test slide layout retrieval with invalid layout

@@ -2,18 +2,9 @@ import os
 import re
 
 from pptx import Presentation
-from src.utils.common_scripts import clean_up_string
 
-# Define constants for slide layouts
-SLIDE_TITLE_LAYOUT = 0
-SLIDE_TITLE_AND_CONTENT_LAYOUT = 1
-SLIDE_SECTION_HEADER_LAYOUT = 2
-SLIDE_TWO_CONTENT_LAYOUT = 3
-SLIDE_COMPARISON_LAYOUT = 4
-SLIDE_TITLE_ONLY_LAYOUT = 5
-SLIDE_BLANK_LAYOUT = 6
-SLIDE_CONTENT_WITH_CAPTION_LAYOUT = 7
-SLIDE_PICTURE_WITH_CAPTION_LAYOUT = 8
+from src.powerpoint.slide_enum import SlideEnum
+from src.utils.common_scripts import clean_up_string
 
 
 # PowerPointPresentation class
@@ -32,8 +23,13 @@ class PowerPointPresentation:
         :param presentation_string: The presentation string
         :param presentation_theme: The presentation theme
         """
-        self.theme = presentation_theme
+        if presentation_theme == "Blank" or presentation_theme == "":
+            self.theme = None
+        else:
+            self.theme = presentation_theme
+
         cwd = os.getcwd()
+
         if not self.theme:
             self.presentation = Presentation()
         elif not os.path.exists(cwd + "/static/PresentationThemes/"):
@@ -60,6 +56,7 @@ class PowerPointPresentation:
         :return: The sliced presentation
         :raises ValueError: If the presentation is empty
         """
+
         if not presliced_presentation:
             raise ValueError("Presentation cannot be empty.")
         else:
@@ -94,6 +91,7 @@ class PowerPointPresentation:
         :return: A title, subtitle, content and notes for each slide
         :raises ValueError: If the slide pages are empty
         """
+
         if not slide_pages:
             raise ValueError("Slide pages cannot be empty.")
         else:
@@ -162,24 +160,25 @@ class PowerPointPresentation:
         if title and subtitle:
             if image:
                 # if there is an image, then use the picture with caption layout
-                return SLIDE_PICTURE_WITH_CAPTION_LAYOUT
-            return SLIDE_TITLE_LAYOUT
+                return SlideEnum.SLIDE_PICTURE_WITH_CAPTION_LAYOUT.value
+            return SlideEnum.SLIDE_TITLE_LAYOUT.value
         elif image:
-            return SLIDE_PICTURE_WITH_CAPTION_LAYOUT
+            return SlideEnum.SLIDE_PICTURE_WITH_CAPTION_LAYOUT.value
         elif title and content:
-            return SLIDE_TITLE_AND_CONTENT_LAYOUT
+            return SlideEnum.SLIDE_TITLE_AND_CONTENT_LAYOUT.value
         elif title:
-            return SLIDE_TITLE_ONLY_LAYOUT
+            return SlideEnum.SLIDE_TITLE_ONLY_LAYOUT.value
         elif content:
-            return SLIDE_CONTENT_WITH_CAPTION_LAYOUT
+            return SlideEnum.SLIDE_CONTENT_WITH_CAPTION_LAYOUT.value
         else:
-            return SLIDE_BLANK_LAYOUT
+            return SlideEnum.SLIDE_BLANK_LAYOUT.value
 
     def populate_presentation(self, input_presentation):
         """ Returns a populated presentation
         :param input_presentation: The input presentation
         :return: The populated presentation
         """
+
         sliced_presentation = self._slice_presentation(input_presentation)
         for index, section in enumerate(sliced_presentation):
 
@@ -211,7 +210,7 @@ class PowerPointPresentation:
 
         created_slide = self.create_slide(slide_layout, first_slide_with_theme)
 
-        if slide_layout == SLIDE_PICTURE_WITH_CAPTION_LAYOUT:
+        if slide_layout == SlideEnum.SLIDE_PICTURE_WITH_CAPTION_LAYOUT.value:
             created_slide = self._create_slides_with_images(created_slide, title, subtitle, text, image, notes)
         else:
             created_slide = self._create_slides_without_images(created_slide, title, subtitle, text, notes)
@@ -228,6 +227,7 @@ class PowerPointPresentation:
         :param notes: The notes of the slide
         :return: The created slide with images
         """
+
         if image:
             created_slide.placeholders[1].insert_picture(image)
         else:
@@ -252,6 +252,7 @@ class PowerPointPresentation:
         :param notes: The notes of the slide
         :return: The created slide without images
         """
+
         if title:
             created_slide.shapes.title.text = title
         if subtitle:
@@ -268,6 +269,7 @@ class PowerPointPresentation:
         :return: The saved presentation
         :raises ValueError: If the filename is empty or does not end with .pptx
         """
+
         if not filename:
             raise ValueError("Filename cannot be empty.")
         else:
@@ -279,8 +281,9 @@ class PowerPointPresentation:
         :return: The slide layout
         :raises ValueError: If the slide layout is not between 0 and 8 or not an integer
         """
-        if slide_layout not in range(0, 9):
-            raise ValueError("Slide layout must be between 0 and 8.")
+
+        if int(slide_layout) < 0 or int(slide_layout) > (len(SlideEnum) - 1):
+            raise ValueError("Slide layout must be between 0 and " + str(len(SlideEnum) - 1) + ".")
         elif not isinstance(slide_layout, int):
             raise ValueError("Slide layout must be an integer.")
         else:
@@ -320,4 +323,3 @@ class PowerPointPresentation:
             return self.get_slide(0)
         else:
             return self.presentation.slides.add_slide(self.presentation.slide_layouts[slide_layout])
-
