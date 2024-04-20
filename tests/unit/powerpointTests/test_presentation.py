@@ -47,6 +47,11 @@ class Test(TestCase):
         with self.assertRaises(ValueError):
             self.presentation._slice_presentation("")
 
+    def test__slice_presentation_without_keyword(self):
+        output = self.presentation._slice_presentation("This is a test line")
+        expected_output = ["This is a test line\n"]
+        self.assertEqual(output, expected_output)
+
     # Test the _slice_presentation method
     def test__slice_presentation(self):
         output = self.presentation._slice_presentation("slide 1: This is a test line")
@@ -61,6 +66,10 @@ class Test(TestCase):
                                                        "slide 2: This is a test line\n This is another test line")
         expected_output = ["TITLE: This is a test line\nThis is another test line\n",
                            "TITLE: This is a test line\nThis is another test line\n"]
+        self.assertEqual(output, expected_output)
+
+        output = self.presentation._slice_presentation("Slide 1: This is a test line\n This is another test line\n")
+        expected_output = ["TITLE: This is a test line\nThis is another test line\n"]
         self.assertEqual(output, expected_output)
 
     # Test the _get_slide_content method with no input

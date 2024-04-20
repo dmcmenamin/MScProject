@@ -12,7 +12,8 @@
                     <h1 class="text-center font-header-custom">Sign Up</h1>
                     <p class="text-center font-header-custom-2">
                         Please fill in this form to create an account.<br>
-                        An API is required, and is available from the below provider(s)</p>
+                        An API Key is required, and is available from the below provider(s).<br>
+                        You only need to sign up with one provider. </p>
                     <hr class="mb-3">
 
                     {% if error_or_warning %}
@@ -25,7 +26,7 @@
                             <tr>
                                 <td colspan="4">
                                     <!-- Input Text Box for Username -->
-                                    <label for="username" class="font-header-custom-2">Username</label>
+                                    <label for="username" class="font-header-custom-2">E-Mail</label>
                                     <input class="form-control" id="username" type="text" name="username" required>
                                     <!-- Validation message to check if username is already taken -->
                                     {% if username_taken_error %}

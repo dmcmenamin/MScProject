@@ -104,7 +104,7 @@ def get_url():
     """ Get the url for the server
     :return: The url
     """
-    return 'https://' + app.config['SERVER_NAME']
+    return 'http://' + app.config['SERVER_NAME']
 
 
 # set the server and port for the app
@@ -152,6 +152,7 @@ def login():
 def signup():
     if request.method == 'GET':
         app.logger.info('Signup endpoint called')
+        print("server_and_port" + server_and_port)
         response = requests.get(server_and_port + '/available_llms')
 
         # Successful response, render the signup page with the available LLMs

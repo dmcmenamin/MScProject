@@ -117,25 +117,25 @@ class ChatGPTAPI(large_language_model_parent.LargeLanguageModel):
 
         except openai.BadRequestError as e:
             # Catching bad request error
-            return jsonify({"message": f"OpenAI API request failed"}), 400
+            return jsonify({"message": "OpenAI API request failed"}), 400
         except openai.APIConnectionError as e:
             # Catching connection error here
-            return jsonify({"message": f"OpenAI API request failed - API Connection Error, Please retry"}), 400
+            return jsonify({"message": "OpenAI API request failed - API Connection Error, Please retry"}), 400
         except openai.RateLimitError as e:
             # Catching Error where Token has exceeded rate limit
-            return jsonify({"message": f"Insufficient Balance complete. Please top up OpenAI account"}), 400
+            return jsonify({"message": "Insufficient Balance complete. Please top up OpenAI account"}), 400
         except openai.APIError as e:
             # Catching API error here
-            return jsonify({"message": f"OpenAI API returned an API Error, please contact support"}), 400
+            return jsonify({"message": "OpenAI API returned an API Error, please contact support"}), 400
         except openai.AuthenticationError as e:
             # Catching Error where Token is invalid
-            return jsonify({"message": f"OpenAI API request failed due to invalid token, please check your API key"}), 400
+            return jsonify({"message": "OpenAI API request failed due to invalid token, please check your API key"}), 400
         except openai.OpenAIError as e:
             # Catching Error where OpenAI API fails
-            return jsonify({"message": f"OpenAI API request failed - OpenAIError, please contact support"}), 400
+            return jsonify({"message": "OpenAI API request failed - OpenAIError, please contact support"}), 400
         except Exception as e:
             # Catching any other errors
-            return jsonify({"message": f"OpenAI API request failed - General Exception, please contact support"}), 400
+            return jsonify({"message": "OpenAI API request failed - General Exception, please contact support"}), 400
 
     def get_presentation_image(self, image_query, image_size):
         """ Returns an image from OpenAI
