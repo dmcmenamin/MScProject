@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 28, 2024 at 05:04 PM
+-- Generation Time: Apr 28, 2024 at 05:11 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -33,14 +33,6 @@ CREATE TABLE `api_key` (
   `api_key_user` int(11) NOT NULL COMMENT 'API Key User ID number',
   `api_key_user_key` varchar(256) NOT NULL COMMENT 'API Key Encrypted API Key'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `api_key`
---
-
-INSERT INTO `api_key` (`api_key_id`, `api_key_llm`, `api_key_user`, `api_key_user_key`) VALUES
-(1, 1, 1, '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'),
-(28, 2, 1, 'fake gemini key');
 
 -- --------------------------------------------------------
 
@@ -114,13 +106,6 @@ CREATE TABLE `user_information` (
   `user_is_admin` tinyint(1) NOT NULL DEFAULT 0 COMMENT 'Is User an Admin',
   `account_confirmed` tinyint(1) DEFAULT 0 COMMENT 'User Account is Confirmed'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `user_information`
---
-
-INSERT INTO `user_information` (`user_id`, `username`, `user_first_name`, `user_last_name`, `user_hashed_password`, `user_salt`, `user_is_admin`, `account_confirmed`) VALUES
-(1, 'Ad@min', 'Darren', 'McMenamin', 0x3d3d01b7454e1dd760c706b2fe60609aa320ef429a467a3a5ebcd1c9795dcd0c9bb79ebf10ce76e616e931e05c19e331930ed9bea05d821f5c162ccc5f8783e4, 0xb82c62831ab7dad523583e93ba2e6085021cad9c89ad99b2d9230f7a37214f07, 1, 1);
 
 --
 -- Indexes for dumped tables
