@@ -1,0 +1,900 @@
+{
+	"info": {
+		"_postman_id": "599dfd9d-b3a3-4155-897e-57e6b7c4611c",
+		"name": "API Tests",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "5974461",
+		"_collection_link": "https://martian-satellite-686263.postman.co/workspace/martian-satellite-686263-Worksp~11a6f0f9-8059-4cf9-8172-ac7ec295ae34/collection/5974461-599dfd9d-b3a3-4155-897e-57e6b7c4611c?action=share&source=collection_link&creator=5974461"
+	},
+	"item": [
+		{
+			"name": "Automated API Tests",
+			"item": [
+				{
+					"name": "User Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response time is less than 500ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Valid Response Code\", function () {\r",
+									"    pm.response.to.have.status(200)\r",
+									"});\r",
+									"\r",
+									"var jsonData = JSON.parse(responseBody)\r",
+									"pm.test(\"User successfully logged in\", function () {\r",
+									"    var responseData = pm.response.json();\r",
+									"\r",
+									"    pm.expect(responseData).to.be.an('object');\r",
+									"    pm.expect(responseData.message).to.exist.and.to.be.a('string');\r",
+									"    \r",
+									"    pm.expect(responseData.data).to.be.an('object');\r",
+									"    pm.expect(responseData.data.username).to.exist.and.to.be.a('string');\r",
+									"    pm.expect(responseData.data.user_id).to.exist.and.to.be.a('number');\r",
+									"    pm.expect(responseData.data.first_name).to.exist.and.to.be.a('string');\r",
+									"    pm.expect(responseData.data.last_name).to.exist.and.to.be.a('string');\r",
+									"    pm.expect(responseData.data.is_admin).to.exist.and.to.be.a('boolean');\r",
+									"    pm.expect(responseData.data.account_confirmed).to.exist.and.to.be.a('boolean');\r",
+									"    pm.expect(responseData.data.access_token).to.exist.and.to.be.a('string');\r",
+									"});\r",
+									"\r",
+									"postman.setEnvironmentVariable(\"access_token\", jsonData.data[\"access_token\"])\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"Admin\",\r\n    \"password\": \"Admin\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/user_login",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"user_login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Invalid User Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response time is less than 500ms\", function () {\r",
+									"  pm.expect(pm.response.responseTime).to.be.below(500);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"401 Response Code\", function () {\r",
+									"  pm.response.to.have.status(401);\r",
+									"});\r",
+									"\r",
+									"var jsonData = pm.response.json();\r",
+									"pm.test(\"Invalid credentials\", function () {\r",
+									"    var responseData = pm.response.json();\r",
+									"    pm.expect(responseData).to.be.an(\"object\");\r",
+									"    pm.expect(responseData.message).to.exist.and.to.be.a(\"string\");\r",
+									"\r",
+									"    pm.expect(jsonData.message).to.equal(\"Invalid credentials\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"Admin\",\r\n    \"password\": \"Admi\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/user_login",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"user_login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add New User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response less than 500ms\"), function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+									"};\r",
+									"\r",
+									"pm.test(\"Valid Response Code\", function () {\r",
+									"    pm.response.to.have.status(200)\r",
+									"});\r",
+									"\r",
+									"\r",
+									"var jsonData = JSON.parse(responseBody)\r",
+									"\r",
+									"pm.test(\"User Created Succesfully\"), function() {\r",
+									"\r",
+									"    var responseData = pm.response.json();\r",
+									"    pm.expect(responseData).to.be.an(\"object\");\r",
+									"    pm.expect(responseData.message).to.exist.and.to.be.a(\"string\");\r",
+									"\r",
+									"    pm.expect(responseData.message).to.exist.and.to.be(\"User created successfully, please check your email to confirm your account\")\r",
+									"\r",
+									"    pm.expect(responseData.data).to.exist.and.to.be.an(\"object\")\r",
+									"    pm.expect(responseData.data.username).to.exist.and.to.be.a(\"string\")\r",
+									"    pm.expect(responseData.data.first_name).to.exist.and.to.be.a(\"string\")\r",
+									"    pm.expect(responseData.data.last_name).to.exist.and.to.be.a(\"string\")\r",
+									"    pm.expect(responseData.data.user_id).to.exist.and.to.be.a(\"number\")\r",
+									"    \r",
+									"}\r",
+									"\r",
+									"postman.setEnvironmentVariable(\"temp_user\", jsonData.data[\"user_id\"])"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"dmcmenamin06@qub.ac.uk\",\r\n    \"password\": \"123456\",\r\n    \"first_name\": \"Bobby\",\r\n    \"last_name\": \"The Builder\",\r\n    \"llm\": [{\r\n        \"llm_model_name\": \"Gemini\",\r\n        \"api_key_Gemini\": 123456 \r\n    }]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/add_user",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"add_user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add User Who Already Exists",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response less than 500ms\"), function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+									"};\r",
+									"\r",
+									"pm.test(\"401 Response Code\", function () {\r",
+									"    pm.response.to.have.status(401)\r",
+									"});\r",
+									"\r",
+									"var jsonData = JSON.parse(responseBody)\r",
+									"\r",
+									"pm.test(\"User Already Exists\"), function() {\r",
+									"    var responseData = pm.response.json();\r",
+									"    pm.expect(responseData).to.exist.and.to.be.an(\"object\");\r",
+									"    pm.expect(responseData.message).to.exist.and.to.be.a(\"string\");\r",
+									"\r",
+									"    pm.expect(jsonData.message).to.exist.and.to.equal(\"User already exists\")\r",
+									"}\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"dmcmenamin06@qub.ac.uk\",\r\n    \"password\": \"123456\",\r\n    \"first_name\": \"Bobby\",\r\n    \"last_name\": \"The Builder\",\r\n    \"llm\": [{\r\n        \"llm_model_name\": \"Gemini\",\r\n        \"api_key_Gemini\": 123456 \r\n    }]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/add_user",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"add_user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Available LLM's",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response less than 500ms\"), function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+									"}\r",
+									"\r",
+									"pm.test(\"Valid Response Code\", function () {\r",
+									"    pm.response.to.have.status(200)\r",
+									"});\r",
+									"\r",
+									"var jsonData = JSON.parse(responseBody)\r",
+									"\r",
+									"pm.test(\"Available LLMs\"), function() {\r",
+									"\r",
+									"    var responseData = pm.response.json();\r",
+									"    pm.expect(responseData).to.exist.and.to.be.an(\"object\");\r",
+									"    pm.expect(responseData.message).to.exist.and.to.be.a(\"string\");\r",
+									"\r",
+									"    pm.expect(responseData.message).to.exist.and.to.be(\"Available LLMs\")\r",
+									"\r",
+									"    pm.expect(responseData.data).to.exist.and.to.be.an(\"object\")\r",
+									"    pm.expect(responseData.data[0].llm_name).to.exist.and.to.be.a(\"string\")\r",
+									"    pm.expect(responseData.data[0].llm_link).to.exist.and.to.be.a(\"string\")\r",
+									"\r",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/available_llms",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"available_llms"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Presentation Creator Options",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response less than 500ms\"), function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+									"};\r",
+									"\r",
+									"pm.test(\"Valid Response Code\", function () {\r",
+									"    pm.response.to.have.status(200)\r",
+									"});\r",
+									"\r",
+									"var jsonData = JSON.parse(responseBody)\r",
+									"\r",
+									"pm.test(\"Presentation Creator Options\"), function() {\r",
+									"\r",
+									"    var responseData = pm.response.json();\r",
+									"    pm.expect(responseData).to.be.an(\"object\");\r",
+									"    pm.expect(responseData.message).to.exist.and.to.be.a(\"string\");\r",
+									"\r",
+									"    pm.expect(responseData.message).to.be(\"Success\")\r",
+									"\r",
+									"    pm.expect(responseData.data).to.exist.and.to.be.an(\"object\")\r",
+									"    pm.expect(responseData.data.llm_model_names).to.exist.and.to.be.an(\"object\")\r",
+									"    pm.expect(responseData.data.llm_model_names[0].name).to.exist.and.to.be.a(\"string\")\r",
+									"    \r",
+									"    pm.expect(responseData.data.llm_names_and_models).to.exist.and.to.be.an(\"object\")\r",
+									"    pm.expect(responseData.data.llm_names_and_models[0]).to.exist.and.to.be.an(\"object\")\r",
+									"    pm.expect(responseData.data.llm_names_and_models[0].model_name).to.exist.and.to.be.a(\"string\")\r",
+									"    pm.expect(responseData.data.llm_names_and_models[0].description).to.exist.and.to.be.a(\"string\")\r",
+									"\r",
+									"    pm.expect(responseData.data.presentation_themes).to.exist.and.to.be.an(\"object\")\r",
+									"}\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/presentation_generator",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"presentation_generator"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Input for Creating Presentation",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Response time is less than 500ms', function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(500);",
+									"})",
+									"",
+									"pm.test('Valid Response Code', function () {",
+									"    pm.response.to.have.status(200);",
+									"})",
+									"",
+									"var jsonData = JSON.parse(responseBody);",
+									"",
+									"pm.test(\"User authorized for this LLM\", function () {",
+									"    var responseData = pm.response.json();",
+									"",
+									"    pm.expect(responseData).to.be.an(\"object\");",
+									"    pm.expect(responseData.message).to.exist.and.to.be.a(\"string\");",
+									"    pm.expect(responseData.message).to.eql(\"User authorized to use the large language model\");",
+									"    ",
+									"    pm.expect(responseData.data).to.be.an(\"object\");",
+									"    pm.expect(responseData.data.large_language_model).to.exist.and.to.be.a(\"string\");",
+									"    pm.expect(responseData.data.specific_model_name).to.exist.and.to.be.a(\"string\");",
+									"    pm.expect(responseData.data.presentation_topic).to.exist.and.to.be.a(\"string\");",
+									"    pm.expect(responseData.data.audience_size).to.exist.and.to.be.a(\"number\");",
+									"    pm.expect(responseData.data.presentation_length).to.exist.and.to.be.a(\"number\");",
+									"    pm.expect(responseData.data.expected_outcome).to.exist.and.to.be.a(\"string\");",
+									"    pm.expect(responseData.data.audience).to.exist.and.to.be.a(\"string\");",
+									"    pm.expect(responseData.data.presentation_theme).to.exist.and.to.be.a(\"string\");",
+									"    pm.expect(responseData.data.api_key).to.exist.and.to.be.a(\"string\");",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"presentation_topic\": \"Peppa Pig\",\r\n    \"audience_size\": 150,\r\n    \"presentation_length\": 30,\r\n    \"expected_outcome\": \"Who Peppa Pig is\",\r\n    \"audience\": \"5 year olds\",\r\n    \"presentation_theme\": \"Futuristic\",\r\n    \"llm_model_name\": \"ChatGPT_gpt-4-0125-preview\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/presentation_generator",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"presentation_generator"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Historical Presentations By User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Response time is less than 500ms', function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+									"})\r",
+									"\r",
+									"pm.test('Valid Response Code', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"})\r",
+									"\r",
+									"var jsonData = pm.response.json();\r",
+									"pm.test(\"Historical Data\"), function() {\r",
+									"    pm.expect(jsonData.message).to.exist.and.to.be(\"Historical data found\")\r",
+									"}\r",
+									"\r",
+									"\r",
+									"pm.test(\"Historical Data Found\", function () {\r",
+									"    var responseData = jsonData;\r",
+									"\r",
+									"    pm.expect(responseData).to.be.an('object');\r",
+									"    pm.expect(responseData.message).to.exist.and.to.be.a(\"string\");\r",
+									"\r",
+									"\r",
+									"    pm.expect(responseData.data).to.be.an(\"object\");\r",
+									"\r",
+									"    pm.expect(responseData.data.historical_data).to.exist.and.to.be.an(\"array\");\r",
+									"\r",
+									"    pm.expect(responseData.data.historical_data[0].historical_id).to.exist.and.to.be.a(\"number\");\r",
+									"    pm.expect(responseData.data.historical_data[0].presentation_name).to.exist.and.to.be.a(\"string\");\r",
+									"    pm.expect(responseData.data.historical_data[0].presentation_time_stamp).to.exist.and.to.be.a(\"string\");\r",
+									"    pm.expect(responseData.data.historical_data[0].user_id).to.exist.and.to.be.a(\"number\");\r",
+									"\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/available_historical/1",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"available_historical",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Historical Presentation Invalid User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Response time is less than 500ms', function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+									"})\r",
+									"\r",
+									"pm.test('401 Response Code', function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"})\r",
+									"\r",
+									"var jsonData = pm.response.json();\r",
+									"pm.test(\"Historical Data\"), function() {\r",
+									"    pm.expect(jsonData.message).to.exist.and.to.be(\"User not logged in\")\r",
+									"}\r",
+									"\r",
+									"\r",
+									"pm.test(\"Historical Data Found\", function () {\r",
+									"    var responseData = jsonData;\r",
+									"\r",
+									"    pm.expect(responseData).to.be.an('object');\r",
+									"    pm.expect(responseData.message).to.exist.and.to.be.a(\"string\");\r",
+									"\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/available_historical/2",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"available_historical",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Historical Presentation",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response time is less than 500ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Valid Response Code\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"var jsonData = pm.response.json();\r",
+									"pm.test(\"Historical Presentation Added\", function () {\r",
+									"    var responseData = pm.response.json();\r",
+									"\r",
+									"    pm.expect(responseData).to.be.an(\"object\");\r",
+									"    pm.expect(responseData.message).to.exist.and.to.be.a(\"string\");\r",
+									"    pm.expect(responseData.message).to.equal(\"Historical presentation added successfully\");\r",
+									"\r",
+									"    pm.expect(responseData.data).to.exist.and.to.be.an(\"object\");\r",
+									"    pm.expect(responseData.data.historical_user_id).to.exist.and.to.be.a(\"number\");\r",
+									"    pm.expect(responseData.data.historical_presentation_name).to.exist.and.to.be.a(\"string\");\r",
+									"    pm.expect(responseData.data.historical_presentation_location).to.exist.and.to.be.a(\"string\");\r",
+									"    pm.expect(responseData.data.historical_presentation_id).to.exist.and.to.be.a(\"number\");\r",
+									"});\r",
+									"\r",
+									"postman.setEnvironmentVariable(\"historical_id\", jsonData.data[\"historical_presentation_id\"]);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"presentation_name\": \"Another Presentation\",\r\n    \"presentation_location\": \"Fake Location\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/add_historical_presentation",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"add_historical_presentation"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Historical Presentation",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Response time is less than 500ms', function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+									"})\r",
+									"\r",
+									"pm.test('Valid Response Code', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"})\r",
+									"\r",
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Historical Presentation Deleted Message\", function () {\r",
+									"    pm.expect(jsonData.message).to.exist;\r",
+									"    pm.expect(jsonData.message).to.equal(\"Historical presentation deleted successfully\");\r",
+									"});\r",
+									"\r",
+									"pm.test('Historical Presentation Deleted object', function () {\r",
+									"    var responseData = pm.response.json();\r",
+									"    pm.expect(responseData).to.be.an('object');\r",
+									"    pm.expect(responseData.message).to.exist.and.to.be.a('string');\r",
+									"})\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/delete_historical_presentation/{{historical_id}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"delete_historical_presentation",
+								"{{historical_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Non-Existant Historical Presentation",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Response time is less than 500ms', function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+									"})\r",
+									"\r",
+									"pm.test('500 Response Code', function () {\r",
+									"    pm.response.to.have.status(500);\r",
+									"})\r",
+									"\r",
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Historical Presentation Deleted Message\", function () {\r",
+									"    pm.expect(jsonData.message).to.exist;\r",
+									"    pm.expect(jsonData.message).to.equal(\"Error deleting historical presentation\");\r",
+									"});\r",
+									"\r",
+									"pm.test('Historical Presentation Deleted object', function () {\r",
+									"    var responseData = pm.response.json();\r",
+									"    pm.expect(responseData).to.be.an('object');\r",
+									"    pm.expect(responseData.message).to.exist.and.to.be.a('string');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/delete_historical_presentation/{{historical_id}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"delete_historical_presentation",
+								"{{historical_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Response time is less than 500ms', function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+									"})\r",
+									"\r",
+									"pm.test('Valid Response Code', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"})\r",
+									"\r",
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"User deleted successfully Message\", function () {\r",
+									"    pm.expect(jsonData.message).to.exist;\r",
+									"    pm.expect(jsonData.message).to.equal(\"User deleted successfully\");\r",
+									"});\r",
+									"\r",
+									"pm.test('User deleted successfully object', function () {\r",
+									"    var responseData = pm.response.json();\r",
+									"    pm.expect(responseData).to.be.an('object');\r",
+									"    pm.expect(responseData.message).to.exist.and.to.be.a('string');\r",
+									"})"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/delete_user/{{temp_user}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"delete_user",
+								"{{temp_user}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Non Existant User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Response time is less than 500ms', function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+									"})\r",
+									"\r",
+									"pm.test('Valid Response Code', function () {\r",
+									"    pm.response.to.have.status(404);\r",
+									"})\r",
+									"\r",
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"User does not exist\", function () {\r",
+									"    pm.expect(jsonData.message).to.exist;\r",
+									"    pm.expect(jsonData.message).to.equal(\"User does not exist\");\r",
+									"});\r",
+									"\r",
+									"pm.test('User does not exist object', function () {\r",
+									"    var responseData = pm.response.json();\r",
+									"    pm.expect(responseData).to.be.an('object');\r",
+									"    pm.expect(responseData.message).to.exist.and.to.be.a('string');\r",
+									"})"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/delete_user/{{temp_user}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"delete_user",
+								"{{temp_user}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

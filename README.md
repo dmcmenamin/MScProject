@@ -54,7 +54,7 @@ Ensure that the following values are set:
 - Once installed, start the Apache and MySQL services.
 - Go to the phpMyAdmin page by visiting [http://localhost/phpmyadmin](http://localhost/phpmyadmin)
 - Create a new database called ```dynamicpowerpoint```
-- From the support folder, import the ```dynamicpowerpoint.sql``` file into the database.
+- From the ```Support\Database Setup``` folder, import the ```dynamicpowerpoint.sql``` file into the database.
 - This will create the required tables for the application.
 - Update the ```sqlalchemy_database_uri``` in the configuration file with the correct values.
 
