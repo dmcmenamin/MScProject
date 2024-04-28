@@ -1,7 +1,9 @@
 # MSc Project - DynaPoint
 
+![img.png](img.png)
+
 This repository contains the code for DynaPoint - which is the MSc project of Darren McMenamin.
-A Student at Queens University Belfast. 
+A Student at Queen's University Belfast. 
 
 It was submitted in partial fulfilment of the requirements for the degree of 
 Masters of Science in Software Development.
@@ -58,11 +60,11 @@ Ensure that the following values are set:
 
 ## Running the application
 To run the application, run the following command:
-``` flask run```
+```flask run```
 
 The application will be available at [http://localhost:5000](http://localhost:5000)
 
 ## Admin User
-- Once the application is running, go to the Sign Up page and create a new user.
+- Once the application is running, go to the Sign-Up page and create a new user.
 - Once the user is created, 
   - Go to the phpMyAdmin page and update the ```user_is_admin``` column in the ```user_information``` table to 1.
