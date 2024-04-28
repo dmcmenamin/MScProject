@@ -22,8 +22,8 @@ Masters of Science in Software Development.
  - [ ] Install the required dependencies
  - [ ] Update the configuration file
  - [ ] Setting up the database
- - [ ] Add admin user to the database
  - [ ] Running the application
+ - [ ] Making a user an admin
 
 
 ## Clone the repository
