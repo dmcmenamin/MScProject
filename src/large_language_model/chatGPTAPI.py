@@ -166,24 +166,24 @@ class ChatGPTAPI(large_language_model_parent.LargeLanguageModel):
             else:
                 return jsonify({"image_url": image_url}), 200
 
-        except openai.BadRequestError as e:
+        except openai.BadRequestError:
             # Catching bad request error
             return jsonify({"message": "OpenAI API request failed, please contact support"}), 400
-        except openai.APIConnectionError as e:
+        except openai.APIConnectionError:
             # Catching connection error here
             return jsonify({"message": "OpenAI API request failed, Please retry"}), 400
-        except openai.RateLimitError as e:
+        except openai.RateLimitError:
             # Catching Error where Token has exceeded rate limit
             return jsonify({"message": "Insufficient Balance complete. Please top up OpenAI account"}), 400
-        except openai.AuthenticationError as e:
+        except openai.AuthenticationError:
             # Catching Error where Token is invalid
             return jsonify({"message": "penAI API request failed due to invalid token, please check your API key"}), 400
-        except openai.APIError as e:
+        except openai.APIError:
             # Catching API error here
             return jsonify({"message": "OpenAI API returned an API Error, please contact support"}), 400
-        except openai.OpenAIError as e:
+        except openai.OpenAIError:
             # Catching Error where OpenAI API fails
             return jsonify({"message": "OpenAI API request failed, please contact support"}), 400
-        except Exception as e:
+        except Exception:
             # Catching any other errors
             return jsonify({"message": "OpenAI API request failed, please contact support"}), 400
