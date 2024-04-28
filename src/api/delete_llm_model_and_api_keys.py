@@ -6,6 +6,10 @@ from src.models.api_key import ApiKey
 from src.models.llm_models import LlmModels
 from src.models.llm_name import Llm
 
+# Class DeleteLlmAndModelAndApiKeys
+# This class allows the user to delete a large language model and model and api keys associated with the model
+# - delete: Deletes a large language model and model and api keys
+
 
 class DeleteLlmAndModelAndApiKeys(Resource):
     """

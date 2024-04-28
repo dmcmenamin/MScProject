@@ -8,6 +8,13 @@ from src.models.user_information import User
 from src.utils.send_confirmation_email import send_confirmation_email
 from src.utils.sign_up_token import generate_sign_up_token
 
+# Class AddUser
+# This class allows the user to sign up for an account
+# - post: Signs up for an account
+# - add_user: Adds a user to the database
+# - create_user_api_key: Creates an API key for the user
+# - send_confirmation_email: Sends a confirmation email to the user
+
 
 class AddUser(Resource):
     """

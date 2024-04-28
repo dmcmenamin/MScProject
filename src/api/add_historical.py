@@ -5,6 +5,9 @@ from flask_restful import Resource
 from app import app, db
 from src.models.historical import Historical
 
+# Class AddHistoricalPresentation
+# This class allows the user to add a historical presentation to the database
+# - post: Adds a historical presentation to the database
 
 class AddHistoricalPresentation(Resource):
 

@@ -5,6 +5,10 @@ from app import app
 from src.models.historical import Historical
 from src.utils.common_scripts import download_presentation
 
+# Class GetSpecificHistoricalPresentation
+# This class allows the user to get a specific historical presentation by historical id
+# - get: Gets a specific historical presentation by historical id
+
 
 class GetSpecificHistoricalPresentation(Resource):
 

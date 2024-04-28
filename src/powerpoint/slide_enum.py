@@ -1,5 +1,6 @@
 from enum import Enum
 
+# Enum class for slide layouts
 
 class SlideEnum(Enum):
     # Define constants for slide layouts

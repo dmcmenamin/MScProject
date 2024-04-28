@@ -1,7 +1,4 @@
-import os
-
 from itsdangerous import URLSafeTimedSerializer
-from src.utils.common_scripts import get_email_secret_key
 from flask import current_app as app
 
 
@@ -11,7 +8,7 @@ def generate_sign_up_token(username):
     :return: The sign-up token
     """
     # create a serializer
-    serializer = URLSafeTimedSerializer(get_email_secret_key())
+    serializer = URLSafeTimedSerializer(app.config["EMAIL_SECRET_KEY"])
     # create a token
     return serializer.dumps(username, salt=app.config["SECURITY_PASSWORD_SALT"])
 
@@ -23,10 +20,11 @@ def verify_sign_up_token(token, expiration=3600):
     :return: The username
     """
     # create a serializer
-    serializer = URLSafeTimedSerializer(get_email_secret_key())
+    serializer = URLSafeTimedSerializer(app.config["EMAIL_SECRET_KEY"])
     # verify the token
     try:
         username = serializer.loads(token, salt=app.config["SECURITY_PASSWORD_SALT"], max_age=expiration)
         return username
-    except:
+    except Exception as e:
+        app.logger.error(f"Error verifying sign-up token: {e}")
         return False

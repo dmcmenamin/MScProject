@@ -9,6 +9,10 @@ from src.models.llm_name import Llm
 from src.models.user_information import User
 from src.utils.common_scripts import get_themes_available
 
+# Class PresentationGeneratorGet
+# This class allows the user to get the presentation generator page
+# - get: Gets the presentation generator page
+
 
 class PresentationGeneratorGet(Resource):
 

@@ -6,6 +6,9 @@ from app import db, app
 from src.models.llm_models import LlmModels
 from src.models.llm_name import Llm
 
+# Class AddModel
+# This class allows the user to add a new model to the database
+# - post: Adds a new model to the database
 
 class AddModel(Resource):
     """

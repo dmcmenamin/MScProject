@@ -5,6 +5,10 @@ from flask_restful import Resource
 from app import app
 from src.models.user_information import User
 
+# Class UserLogin
+# This class allows the user to login
+# - post: Logs in the user and returns an access token
+
 
 class UserLogin(Resource):
 

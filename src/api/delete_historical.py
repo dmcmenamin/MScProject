@@ -7,6 +7,9 @@ from app import app
 from src.models.historical import Historical
 from src.utils.common_scripts import delete_file_of_type_specified
 
+# Class DeleteHistoricalPresentation
+# This class allows the user to delete a historical presentation
+# - delete: Deletes a historical presentation
 
 class DeleteHistoricalPresentation(Resource):
 

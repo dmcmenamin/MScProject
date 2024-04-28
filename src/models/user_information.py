@@ -1,6 +1,5 @@
 import hashlib
 import os
-import secrets
 from app import db
 
 

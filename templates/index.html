@@ -63,11 +63,12 @@
         <form id="loginForm" class="row gy-2 gx-3 align-items-center" action="{{ url_for('login') }}" method="POST">
             <table aria-label="Log in ">
                 <tr>
+                    <th></th>
                     <td>
                         <div class="col-md-16">
                             <div class="input-group">
                                 <label class="input-group-text" for="username">E-Mail</label>
-                                <input type="text" class="form-control" id="username"
+                                <input type="email" class="form-control" id="username"
                                            placeholder="E-Mail" name="username">
                             </div>
                         </div>

@@ -4,6 +4,11 @@ from src.models.user_information import User
 from src.utils.sign_up_token import verify_sign_up_token
 
 
+# Class GetSignupConfirmation
+# This class allows the user to confirm their signup by verifying the token sent to their email
+# - get: Confirms the user's signup
+
+
 class GetSignupConfirmation:
 
     @classmethod

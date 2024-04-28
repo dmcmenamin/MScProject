@@ -27,14 +27,6 @@ def clean_up_string(line_to_clean):
     return line_to_clean
 
 
-def get_email_secret_key():
-    """ Returns the email secret key
-    :return: The email secret key
-    """
-    env_variables = get_environment_variables()
-    return env_variables["EMAIL"]["EMAIL_SECRET_KEY"]
-
-
 def get_image_model_name(llm_model_name):
     """ Returns the image model name
     :return: The image model name
@@ -50,7 +42,7 @@ def get_specific_presentation_theme(presentation_theme):
     """
     env_variables = get_environment_variables()
 
-    return env_variables["PRESENTATION_THEMES"][presentation_theme]+".pptx"
+    return env_variables["PRESENTATION_THEMES"][presentation_theme] + ".pptx"
 
 
 def print_text_file(text_file_name, text_file_descriptor):

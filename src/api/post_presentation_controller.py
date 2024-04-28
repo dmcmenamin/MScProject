@@ -6,6 +6,10 @@ from app import app
 from src.controllers import controller
 from src.models.user_information import User
 
+# Class PresentationController
+# This class allows the user to generate a presentation
+# - post: Generates a presentation
+
 
 class PresentationController(Resource):
     """

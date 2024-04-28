@@ -4,6 +4,10 @@ from flask_restful import Resource
 from app import app
 from src.models.llm_models import LlmModels
 
+# Class DeleteLlmModel
+# This class allows the user to delete a large language model and model
+# - delete: Deletes a large language model and model
+
 
 class DeleteLlmModel(Resource):
     """

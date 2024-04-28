@@ -6,6 +6,10 @@ from app import db
 from src.models.api_key import ApiKey
 from src.models.user_information import User
 
+# Class PresentationGeneratorPost
+# This class allows the user to post the presentation generator page
+# - post: Posts the presentation generator page
+
 
 class PresentationGeneratorPost(Resource):
     """

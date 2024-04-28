@@ -3,6 +3,10 @@ from flask_restful import Resource
 from app import app
 from src.models.llm_name import Llm
 
+# Class GetAvailableLlms
+# This class allows the user to get the available LLMs
+# - get: Gets the available LLMs
+
 
 class GetAvailableLlms(Resource):
     """

@@ -5,6 +5,10 @@ from flask_restful import Resource
 from app import db
 from src.models.user_information import User
 
+# Class UpdatePassword
+# This class allows the user to update their password or an admin to update another user's password
+# - put: Updates the password
+
 
 class UpdatePassword(Resource):
     """

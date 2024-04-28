@@ -6,6 +6,10 @@ from app import db, app
 from src.api.add_model import AddModel
 from src.models.llm_name import Llm
 
+# Class AddLlmAndModel
+# This class allows the user to add a new large language model and model to the database
+# - post: Adds a new large language model and model to the database
+
 
 class AddLlmAndModel(Resource):
     """

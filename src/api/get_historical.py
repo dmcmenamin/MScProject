@@ -4,6 +4,10 @@ from flask_restful import Resource
 from app import app
 from src.models.historical import Historical
 
+# Class GetAllHistoricalForUser
+# This class allows the user to get all historical data for a user
+# - get: Gets all historical data for a user
+
 
 class GetAllHistoricalForUser(Resource):
 

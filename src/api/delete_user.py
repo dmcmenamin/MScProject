@@ -1,15 +1,17 @@
 import os
 
-from flask import request
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask_restful import Resource
 
 from app import app
-from src.models import historical
 from src.models.api_key import ApiKey
 from src.models.historical import Historical
 from src.models.user_information import User
 from src.utils.common_scripts import delete_file_of_type_specified
+
+# Class DeleteUser
+# This class allows the user to delete a user
+# - delete: Deletes a user and all associated data (API keys, presentations)
 
 
 class DeleteUser(Resource):

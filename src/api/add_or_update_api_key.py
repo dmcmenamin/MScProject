@@ -7,6 +7,10 @@ from src.models.api_key import ApiKey
 from src.models.llm_name import Llm
 
 
+# Class AddOrUpdateApiKey
+# This class allows the user to add or update an api key
+# - post: Adds or updates an api key
+
 class AddOrUpdateApiKey(Resource):
     """
     The post method for adding or updating an api key
