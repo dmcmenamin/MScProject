@@ -152,7 +152,6 @@ def login():
 def signup():
     if request.method == "GET":
         app.logger.info("Signup endpoint called")
-        print("server_and_port" + server_and_port)
         response = requests.get(server_and_port + "/available_llms")
 
         # Successful response, render the signup page with the available LLMs
@@ -367,9 +366,17 @@ def historical_endpoint_get_specific_presentation(historical_id):
 
         # get the historical data for the user, and render the historical page with the error message
         response_data = get_response.json()
+
+        historical_data = {"historical_data": [{"historical_id": historical_info["historical_id"],
+                                                "presentation_name": historical_info["presentation_name"],
+                                                "presentation_location": historical_info["presentation_location"],
+                                                "presentation_time_stamp": historical_info["presentation_time_stamp"],
+                                                "user_id": historical_info["user_id"]}
+                                               for historical_info in response_data["data"]["historical_data"]]}
+
         app.logger.info("Historical endpoint get specific presentation failed with error: " + response.text)
         return render_template("historical.html", error_or_warning=data,
-                               historical=response_data["historical_data"])
+                               historical=historical_data)
 
 
 @app.route("/historical_endpoint_delete_presentation/<historical_id>", methods=["GET"])

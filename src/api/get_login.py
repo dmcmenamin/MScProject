@@ -26,6 +26,12 @@ class UserLogin(Resource):
             app.logger.info("User input: username: %s", username)
             user = User.query.filter_by(username=username).first()
             if user and user.check_password(password, user.user_salt, user.user_hashed_password):
+
+                # check if the account is confirmed
+                if not user.account_confirmed:
+                    app.logger.info("Account not confirmed")
+                    return {"message": "Account not confirmed - please check your e-mail"}, 401
+
                 access_token = create_access_token(identity=user.user_id, expires_delta=None)
                 app.logger.info("User logged in successfully")
                 data = {

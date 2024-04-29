@@ -135,7 +135,9 @@ def download_presentation(presentation_source_path):
             # create the destination path for the presentation
             destination_path = Path(download_location) / Path(presentation_source_path).name
 
-            # copy the presentation to the user's download folder
+            # copy the presentation to the user's download folder, overwriting any existing files
+            if os.path.exists(destination_path):
+                os.remove(destination_path)
             shutil.copy(presentation_source_path, destination_path)
 
             return jsonify({"message": "Presentation downloaded"}), 200

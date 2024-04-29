@@ -1,10 +1,9 @@
 {
 
   "PRESENTATION_THEMES": {
-    "Tech": "Futuristic",
     "Digital": "Digital",
-    "Crisp": "Slate",
-    "Dark": "Black",
+    "Training": "Green",
+    "Dark": "Parallax",
     "None": ""
   },
 

@@ -126,7 +126,7 @@ class PowerPointPresentation:
                     slide_notes = section[6:].replace("-", "").strip() + "\n"
                     last_section = "Notes"
                 elif section.lower().startswith("IMAGE".casefold()):
-                    slide_image += section[6:].strip()
+                    slide_image = section[6:].strip()
                 elif section.lower().startswith("REFERENCES".casefold()):
                     # If the section starts with "References", insert this section into the slide content
                     # This is done to ensure that the slide content is not set to "References"
@@ -185,6 +185,10 @@ class PowerPointPresentation:
             if len(section) == 0:
                 continue
             title, subtitle, content, notes, image = self._get_slide_content(section)
+
+            if index == 0:
+                # for the first slide, we don't want any images; as we want to show the title instead
+                image = None
 
             if index == 0 and self.theme:
                 first_slide_with_theme = True
